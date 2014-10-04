@@ -23,47 +23,50 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
-import de.perdian.apps.tagtiger.business.model.SelectedDirectory;
+import de.perdian.apps.tagtiger.business.model.DirectoryWrapper;
 
-class FileSelectionDirectoryTreeItem extends TreeItem<SelectedDirectory> {
+class FileSelectionDirectoryTreeItem extends TreeItem<DirectoryWrapper> {
 
     private boolean childrenLoaded = false;
 
-    private FileSelectionDirectoryTreeItem(SelectedDirectory path) {
+    private FileSelectionDirectoryTreeItem(DirectoryWrapper path) {
         super(path);
     }
 
     static List<FileSelectionDirectoryTreeItem> listRoots() {
         return StreamSupport.stream(FileSystems.getDefault().getRootDirectories().spliterator(), false)
-                .map(path -> new SelectedDirectory(path, path.toString()))
-                .map(FileSelectionDirectoryTreeItem::new).collect(Collectors.toList());
+                .map(path -> new DirectoryWrapper(path, path.toString()))
+                .map(FileSelectionDirectoryTreeItem::new)
+                .peek(item -> item.ensureChildrenInternal(0))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public ObservableList<TreeItem<SelectedDirectory>> getChildren() {
-        this.ensureChildren();
+    public ObservableList<TreeItem<DirectoryWrapper>> getChildren() {
+        this.ensureChildren(1);
         return super.getChildren();
     }
 
     @Override
     public boolean isLeaf() {
-        this.ensureChildren();
+        this.ensureChildren(1);
         return super.isLeaf();
     }
 
-    private synchronized void ensureChildren() {
-        ObservableList<TreeItem<SelectedDirectory>> children = super.getChildren();
+    synchronized void ensureChildren(int level) {
+        ObservableList<TreeItem<DirectoryWrapper>> children = super.getChildren();
         if(!this.isChildrenLoaded()) {
             this.setChildrenLoaded(true);
-            children.setAll(Arrays.asList(new TreeItem<>(new SelectedDirectory(null, "..."))));
-            new Thread(() -> this.ensureChildren(2)).start();
+            children.setAll(Arrays.asList(new TreeItem<>(new DirectoryWrapper(null, "..."))));
+            new Thread(() -> this.ensureChildrenInternal(level)).start();
         }
     }
 
-    private void ensureChildren(int level) {
+    void ensureChildrenInternal(int level) {
         this.setChildrenLoaded(true);
         try {
             List<FileSelectionDirectoryTreeItem> items = FXCollections.observableArrayList(Files
@@ -72,16 +75,16 @@ class FileSelectionDirectoryTreeItem extends TreeItem<SelectedDirectory> {
                 .filter(Files::isDirectory)
                 .filter(path -> { try { return !Files.isHidden(path); } catch (Exception e) { return false; } })
                 .sorted()
-                .map(path -> new SelectedDirectory(path, path.getFileName().toString()))
+                .map(path -> new DirectoryWrapper(path, path.getFileName().toString()))
                 .map(FileSelectionDirectoryTreeItem::new)
                 .collect(Collectors.toList())
             );
             if (level > 0) {
-                items.stream().forEach(item -> item.ensureChildren(level - 1));
+                items.stream().forEach(item -> item.ensureChildrenInternal(level - 1));
             }
-            super.getChildren().setAll(items);
+            Platform.runLater(() -> super.getChildren().setAll(items));
         } catch (IOException e) {
-            super.getChildren().setAll(FXCollections.observableArrayList());
+            Platform.runLater(() -> super.getChildren().setAll(FXCollections.observableArrayList()));
         }
     }
 

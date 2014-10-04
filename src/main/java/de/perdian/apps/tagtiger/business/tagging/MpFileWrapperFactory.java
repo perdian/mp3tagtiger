@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.business;
+package de.perdian.apps.tagtiger.business.tagging;
 
-import de.perdian.apps.tagtiger.business.model.SelectedFileList;
+import java.nio.file.Path;
 
-/**
- * Factory to create a {@link TagTiger} business delegate
- *
- * @author Christian Robert
- */
+import de.perdian.apps.tagtiger.business.model.MpFileWrapper;
 
-public class TagTigerFactory {
+public class MpFileWrapperFactory {
 
-    public static TagTiger createTagTiger() {
+    public MpFileWrapper createFileWrapper(Path path) {
 
-        TagTiger tagTiger = new TagTiger();
-        tagTiger.setLocalization(new TagTigerLocalization() {});
-        tagTiger.setSelectedFiles(new SelectedFileList());
-        return tagTiger;
+        try {
+            Thread.sleep(100);
+        } catch(Exception e) {};
+
+        MpFileWrapper fileWrapper = new MpFileWrapper();
+        return fileWrapper;
 
     }
 

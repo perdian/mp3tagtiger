@@ -31,6 +31,7 @@
 
     <properties>
         <log4j.version>1.2.16</log4j.version>
+        <mp3agic.version>0.8.2</mp3agic.version>
         <slf4j.version>1.7.7</slf4j.version>
     </properties>
 
@@ -49,6 +50,11 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mpatric</groupId>
+            <artifactId>mp3agic</artifactId>
+            <version>${mp3agic.version}</version>
         </dependency>
     </dependencies>
 

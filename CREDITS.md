@@ -11,3 +11,7 @@ Log4J
 http://logging.apache.org/log4j/
 Apache License
 
+mp3agic
+-------
+https://github.com/mpatric/mp3agic
+MIT License

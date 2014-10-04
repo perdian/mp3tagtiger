@@ -15,9 +15,11 @@
  */
 package de.perdian.apps.tagtiger.fx.panels;
 
+import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
@@ -31,8 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.tagtiger.business.TagTiger;
-import de.perdian.apps.tagtiger.business.model.SelectedDirectory;
-import de.perdian.apps.tagtiger.business.model.SelectedFile;
+import de.perdian.apps.tagtiger.business.model.DirectoryWrapper;
+import de.perdian.apps.tagtiger.business.model.MpFileWrapper;
 
 class FileSelectionPane extends BorderPane {
 
@@ -45,11 +47,11 @@ class FileSelectionPane extends BorderPane {
         HBox directoryFieldWrapper = new HBox(directoryField);
         directoryFieldWrapper.setPadding(new Insets(0, 0, 5, 0));
 
-        TreeItem<SelectedDirectory> rootTreeItem = new TreeItem<>(null);
+        TreeItem<DirectoryWrapper> rootTreeItem = new TreeItem<>(null);
         rootTreeItem.getChildren().addAll(FileSelectionDirectoryTreeItem.listRoots());
         rootTreeItem.setExpanded(true);
 
-        TreeView<SelectedDirectory> directoryTree = new TreeView<>(rootTreeItem);
+        TreeView<DirectoryWrapper> directoryTree = new TreeView<>(rootTreeItem);
         directoryTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && !newValue.isExpanded()) {
                 newValue.expandedProperty().set(true);
@@ -58,20 +60,24 @@ class FileSelectionPane extends BorderPane {
         directoryTree.getSelectionModel().selectedItemProperty().addListener(new FileSelectionDirectoryListener(tagTiger));
         directoryTree.setShowRoot(false);
 
-        ListView<SelectedFile> selectedFilesList = new ListView<>();
+        ListView<MpFileWrapper> selectedFilesList = new ListView<>();
+        selectedFilesList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         selectedFilesList.setBorder(null);
         VBox.setVgrow(selectedFilesList, Priority.ALWAYS);
+        tagTiger.getSelection().getAvailableFiles().addListener((ListChangeListener.Change<? extends MpFileWrapper> change) -> {
+            Platform.runLater(() -> selectedFilesList.getItems().setAll(change.getList()));
+        });
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().add(directoryTree);
         splitPane.getItems().add(selectedFilesList);
 
-        Label statusLabel = new Label(tagTiger.getLocalization().noFilesSelectedYet());
-        statusLabel.setPadding(new Insets(5, 5, 0, 5));
+        FileSelectionStatusPane statusPane = new FileSelectionStatusPane(tagTiger);
+        statusPane.setPadding(new Insets(5, 0, 0, 0));
 
         this.setTop(directoryFieldWrapper);
         this.setCenter(splitPane);
-        this.setBottom(statusLabel);
+        this.setBottom(statusPane);
         this.setPadding(new Insets(5, 5, 5, 5));
 
     }

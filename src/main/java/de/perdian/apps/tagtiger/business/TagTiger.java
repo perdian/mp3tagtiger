@@ -15,7 +15,6 @@
  */
 package de.perdian.apps.tagtiger.business;
 
-import de.perdian.apps.tagtiger.business.model.SelectedFileList;
 
 /**
  * Central accessor class for all non-ui specific functions. This call is
@@ -27,8 +26,8 @@ import de.perdian.apps.tagtiger.business.model.SelectedFileList;
 
 public class TagTiger {
 
-    private TagTigerLocalization localization = null;
-    private SelectedFileList selectedFiles = null;
+    private TagTigerLocalization localization = new TagTigerLocalization() {};
+    private TagTigerSelection selection = new TagTigerSelection();
 
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
@@ -41,11 +40,11 @@ public class TagTiger {
         this.localization = localization;
     }
 
-    public SelectedFileList getSelectedFiles() {
-        return this.selectedFiles;
+    public TagTigerSelection getSelection() {
+        return this.selection;
     }
-    void setSelectedFiles(SelectedFileList selectedFiles) {
-        this.selectedFiles = selectedFiles;
+    void setSelection(TagTigerSelection selection) {
+        this.selection = selection;
     }
 
 }

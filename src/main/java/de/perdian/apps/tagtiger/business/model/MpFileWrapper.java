@@ -15,6 +15,6 @@
  */
 package de.perdian.apps.tagtiger.business.model;
 
-public class SelectedFile {
+public class MpFileWrapper {
 
 }

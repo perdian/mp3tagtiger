@@ -19,7 +19,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TreeItem;
 import de.perdian.apps.tagtiger.business.TagTiger;
-import de.perdian.apps.tagtiger.business.model.SelectedDirectory;
+import de.perdian.apps.tagtiger.business.model.DirectoryWrapper;
 
 /**
  * The listener that notifies the TagTiger when a directory has been selected
@@ -27,7 +27,7 @@ import de.perdian.apps.tagtiger.business.model.SelectedDirectory;
  * @author Christian Robert
  */
 
-class FileSelectionDirectoryListener implements ChangeListener<TreeItem<SelectedDirectory>> {
+class FileSelectionDirectoryListener implements ChangeListener<TreeItem<DirectoryWrapper>> {
 
     private TagTiger tagTiger = null;
 
@@ -36,7 +36,8 @@ class FileSelectionDirectoryListener implements ChangeListener<TreeItem<Selected
     }
 
     @Override
-    public void changed(ObservableValue<? extends TreeItem<SelectedDirectory>> observable, TreeItem<SelectedDirectory> oldValue, TreeItem<SelectedDirectory> newValue) {
+    public void changed(ObservableValue<? extends TreeItem<DirectoryWrapper>> observable, TreeItem<DirectoryWrapper> oldValue, TreeItem<DirectoryWrapper> newValue) {
+        this.getTagTiger().getSelection().loadFilesFromDirectory(newValue.getValue().getPath());
     }
 
     // -------------------------------------------------------------------------

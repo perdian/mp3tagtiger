@@ -17,12 +17,12 @@ package de.perdian.apps.tagtiger.business.model;
 
 import java.nio.file.Path;
 
-public class SelectedDirectory {
+public class DirectoryWrapper {
 
     private String title = null;
     private Path path = null;
 
-    public SelectedDirectory(Path path, String title) {
+    public DirectoryWrapper(Path path, String title) {
         this.setPath(path);
         this.setTitle(title);
     }

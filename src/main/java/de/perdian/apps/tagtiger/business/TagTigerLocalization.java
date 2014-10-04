@@ -43,4 +43,20 @@ public interface TagTigerLocalization {
         return "No files selected yet";
     }
 
+    default String startProcessingOfFiles(int size) {
+        return "Start processing of " + size + " files";
+    }
+
+    default String processingFile(String fileName) {
+        return "Processing file " + fileName;
+    }
+
+    default String analyzingFilesFromDirectory(String directory) {
+        return "Analyzing files from directory: " + directory;
+    }
+
+    default String cancel() {
+        return "Cancel";
+    }
+
 }
