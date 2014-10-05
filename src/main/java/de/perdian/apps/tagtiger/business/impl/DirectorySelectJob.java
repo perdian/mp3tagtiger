@@ -71,12 +71,12 @@ public class DirectorySelectJob implements Job {
 
     private void executeInternal(JobContext context) {
 
-        context.updateProgress(this.getLocalization().analyzingFilesFromDirectory(this.getSelectedDirectory().getName()));
+        context.updateProgress(this.getLocalization().analyzingFilesFromDirectory(this.getSelectedDirectory().getName()), -1, -1);
 
         List<File> sourceFiles = this.resolveSourceFiles(context);
 
         log.debug("Collected {} files from directory: {}", sourceFiles.size(), this.getSelectedDirectory().getName());
-        context.updateProgress(this.getLocalization().startProcessingOfFiles(sourceFiles.size()));
+        context.updateProgress(this.getLocalization().startProcessingOfFiles(sourceFiles.size()), -1, -1);
 
         FileWithTagsFactory fileWithTagsFactory = new FileWithTagsFactory();
         List<FileWithTags> filesWithTags = new ArrayList<>(sourceFiles.size());

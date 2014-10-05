@@ -40,8 +40,6 @@ public class JobExecutor {
      *
      * @param job
      *     the job to be executed
-     * @param otions
-     *     the options determining the behaviour of the job execution
      */
     public synchronized void executeJob(Job job) {
 

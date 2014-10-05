@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels;
+package de.perdian.apps.tagtiger.fx.panels.selection.directories;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 class DirectoryTreeFileItem extends TreeItem<DirectoryTreeFile> {
 
     private boolean childrenLoaded = false;
 
     private DirectoryTreeFileItem(DirectoryTreeFile path) {
-        super(path);
+        super(path, new ImageView(new Image(DirectoryTreeFileItem.class.getClassLoader().getResourceAsStream("icons/16/folder.png"))));
+        this.addEventHandler(TreeItem.branchExpandedEvent(), new ChangeIconHandler(new Image(DirectoryTreeFileItem.class.getClassLoader().getResourceAsStream("icons/16/folder-open.png"))));
+        this.addEventHandler(TreeItem.branchCollapsedEvent(), new ChangeIconHandler(new Image(DirectoryTreeFileItem.class.getClassLoader().getResourceAsStream("icons/16/folder.png"))));
     }
 
     static List<DirectoryTreeFileItem> listRoots() {
@@ -72,6 +77,37 @@ class DirectoryTreeFileItem extends TreeItem<DirectoryTreeFile> {
         }
         super.getChildren().setAll(items);
     }
+
+    // -------------------------------------------------------------------------
+    // --- Inner classes -------------------------------------------------------
+    // -------------------------------------------------------------------------
+
+    static class ChangeIconHandler implements EventHandler<TreeModificationEvent<DirectoryTreeFileItem>> {
+
+        private Image image = null;
+
+        ChangeIconHandler(Image image) {
+            this.setImage(image);
+        }
+
+        @Override
+        public void handle(TreeModificationEvent<DirectoryTreeFileItem> event) {
+            event.getSource().setGraphic(new ImageView(this.getImage()));
+        }
+
+        // ---------------------------------------------------------------------
+        // --- Property access methods -----------------------------------------
+        // ---------------------------------------------------------------------
+
+        private Image getImage() {
+            return this.image;
+        }
+        private void setImage(Image image) {
+            this.image = image;
+        }
+
+    }
+
 
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------

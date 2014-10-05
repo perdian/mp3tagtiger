@@ -21,6 +21,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
+import de.perdian.apps.tagtiger.fx.panels.selection.SelectionPane;
 
 /**
  * The central pane in which the main components of the application are being

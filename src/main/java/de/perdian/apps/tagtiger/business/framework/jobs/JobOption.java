@@ -15,18 +15,12 @@
  */
 package de.perdian.apps.tagtiger.business.framework.jobs;
 
+public enum JobOption {
 
-
-/**
- * Listener that will be notified upon changes within the exeuction of a job
- *
- * @author Christian Robert
- */
-
-public interface JobListener {
-
-    void jobStarted(Job job);
-    void jobProgress(Job job, String progressMessage, Integer progressStep, Integer totalProgressSteps);
-    void jobCompleted(Job job, boolean otherJobsActive);
+    /**
+     * Marks the job as modal, meaning the GUI should not respond to any changes
+     * as long as the job is running
+     */
+    MODAL;
 
 }

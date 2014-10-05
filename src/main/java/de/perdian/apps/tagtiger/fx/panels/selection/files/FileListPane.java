@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels;
+package de.perdian.apps.tagtiger.fx.panels.selection.files;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -25,9 +25,9 @@ import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
 import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
 
-class FileListPane extends BorderPane {
+public class FileListPane extends BorderPane {
 
-    FileListPane(TagTiger tagTiger) {
+    public FileListPane(TagTiger tagTiger) {
 
         ListView<FileWithTags> selectedFilesList = new ListView<>();
         selectedFilesList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

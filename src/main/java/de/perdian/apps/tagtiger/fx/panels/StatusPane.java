@@ -77,7 +77,9 @@ class StatusPane extends HBox implements JobListener {
     public void jobProgress(Job job, String progressMessage, Integer progressStep, Integer totalProgressSteps) {
         Platform.runLater(() -> {
             if (progressStep != null && totalProgressSteps != null) {
-                if (totalProgressSteps.intValue() == 0) {
+                if (progressStep.intValue() < 0) {
+                    this.getProgressBar().setProgress(-1d);
+                } else  if (totalProgressSteps.intValue() == 0) {
                     this.getProgressBar().setProgress(0d);
                 } else {
                     this.getProgressBar().setProgress((1d / totalProgressSteps) * (progressStep + 1));

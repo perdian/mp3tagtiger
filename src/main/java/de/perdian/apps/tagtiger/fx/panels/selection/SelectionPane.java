@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels;
+package de.perdian.apps.tagtiger.fx.panels.selection;
 
 import java.io.File;
 
@@ -29,13 +29,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
+import de.perdian.apps.tagtiger.fx.panels.selection.directories.DirectoryTreePane;
+import de.perdian.apps.tagtiger.fx.panels.selection.files.FileListPane;
 
-
-class SelectionPane extends BorderPane {
+public class SelectionPane extends BorderPane {
 
     static final Logger log = LoggerFactory.getLogger(SelectionPane.class);
 
-    SelectionPane(TagTiger tagTiger) {
+    public SelectionPane(TagTiger tagTiger) {
 
         TextField directoryField = new TextField();
         HBox.setHgrow(directoryField, Priority.ALWAYS);

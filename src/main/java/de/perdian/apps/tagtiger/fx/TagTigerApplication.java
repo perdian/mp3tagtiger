@@ -17,6 +17,7 @@ package de.perdian.apps.tagtiger.fx;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import org.slf4j.Logger;
@@ -58,6 +59,8 @@ public class TagTigerApplication extends Application {
         log.info("Creating JavaFX UI");
         Scene scene = new Scene(new MainApplicationPane(this.getTagTiger()));
 
+        primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/application.png")));
+        primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/64/application.png")));
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(event -> System.exit(0));
         primaryStage.setMinWidth(800);

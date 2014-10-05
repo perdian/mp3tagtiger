@@ -4,19 +4,24 @@ of TagTiger:
 ControlsFX
 ----------
 http://fxexperience.com/controlsfx/
-3-Clause BSD license
+BSD license
 
 Log4J
 -----
 http://logging.apache.org/log4j/
-Apache License
+Apache license
 
 mp3agic
 -------
 https://github.com/mpatric/mp3agic
-MIT License
+MIT license
 
 SLF4J
 -----
 http://www.slf4j.org/
-MIT License
+MIT license
+
+Oxygen Icons
+------------
+https://github.com/pasnox/oxygen-icons-png
+LGPL license
