@@ -21,7 +21,9 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
+import de.perdian.apps.tagtiger.fx.panels.editor.EditorPane;
 import de.perdian.apps.tagtiger.fx.panels.selection.SelectionPane;
+import de.perdian.apps.tagtiger.fx.panels.status.StatusPane;
 
 /**
  * The central pane in which the main components of the application are being
@@ -42,25 +44,14 @@ public class MainApplicationPane extends VBox {
         fileSelectionWrapperPanel.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(fileSelectionWrapperPanel, Priority.ALWAYS);
 
-        FileInformationPane fileInformationPane = new FileInformationPane(tagTiger);
-        TitledPane fileInformationWrapperPanel = new TitledPane(tagTiger.getLocalization().mp3File(), fileInformationPane);
-        fileInformationWrapperPanel.setPadding(new Insets(5, 5, 5, 5));
-        fileInformationWrapperPanel.setCollapsible(false);
-
-        TagEditorPane tagEditorPane = new TagEditorPane(tagTiger);
-        TitledPane tagEditorWrapperPanel = new TitledPane(tagTiger.getLocalization().id3Tag(), tagEditorPane);
-        tagEditorWrapperPanel.setMaxHeight(Double.MAX_VALUE);
-        tagEditorWrapperPanel.setCollapsible(false);
-        tagEditorWrapperPanel.setPadding(new Insets(5, 5, 5, 5));
-        VBox.setVgrow(tagEditorWrapperPanel, Priority.ALWAYS);
-
-        VBox rightPane = new VBox(fileInformationWrapperPanel, tagEditorWrapperPanel);
-        rightPane.setMinWidth(400d);
+        EditorPane editorPane = new EditorPane(tagTiger);
+        editorPane.setMinWidth(400d);
+        VBox.setVgrow(editorPane, Priority.ALWAYS);
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().add(fileSelectionWrapperPanel);
-        splitPane.getItems().add(rightPane);
-        splitPane.setDividerPositions(0.9f);
+        splitPane.getItems().add(editorPane);
+        splitPane.setDividerPositions(0.3f);
         VBox.setVgrow(splitPane, Priority.ALWAYS);
 
         StatusPane statusPane = new StatusPane(tagTiger);

@@ -15,8 +15,6 @@
  */
 package de.perdian.apps.tagtiger.business.framework.jobs;
 
-
-
 /**
  * Listener that will be notified upon changes within the exeuction of a job
  *
@@ -25,8 +23,13 @@ package de.perdian.apps.tagtiger.business.framework.jobs;
 
 public interface JobListener {
 
-    void jobStarted(Job job);
-    void jobProgress(Job job, String progressMessage, Integer progressStep, Integer totalProgressSteps);
-    void jobCompleted(Job job, boolean otherJobsActive);
+    default void jobStarted(Job job) {
+    }
+
+    default void jobProgress(Job job, String progressMessage, Integer progressStep, Integer totalProgressSteps) {
+    }
+
+    default void jobCompleted(Job job, boolean otherJobsActive) {
+    }
 
 }

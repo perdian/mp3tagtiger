@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels;
+package de.perdian.apps.tagtiger.fx.panels.status;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -27,13 +27,13 @@ import de.perdian.apps.tagtiger.business.framework.TagTiger;
 import de.perdian.apps.tagtiger.business.framework.jobs.Job;
 import de.perdian.apps.tagtiger.business.framework.jobs.JobListener;
 
-class StatusPane extends HBox implements JobListener {
+public class StatusPane extends HBox implements JobListener {
 
     private Label statusLabel = null;
     private ProgressBar progressBar = null;
     private Button cancelButton = null;
 
-    StatusPane(TagTiger tagTiger) {
+    public StatusPane(TagTiger tagTiger) {
 
         Label statusLabel = new Label(tagTiger.getLocalization().noFilesSelectedYet());
         statusLabel.setPadding(new Insets(5, 5, 0, 5));
@@ -44,6 +44,7 @@ class StatusPane extends HBox implements JobListener {
 
         ProgressBar progressBar = new ProgressBar(0);
         progressBar.setMaxHeight(Double.MAX_VALUE);
+        progressBar.setMinWidth(200);
         this.setProgressBar(progressBar);
 
         Button cancelButton = new Button(tagTiger.getLocalization().cancel());

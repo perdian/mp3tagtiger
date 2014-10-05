@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels;
+package de.perdian.apps.tagtiger.fx.components;
 
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import de.perdian.apps.tagtiger.business.framework.TagTiger;
+import javafx.scene.layout.HBox;
 
-class TagEditorPane extends BorderPane {
+/**
+ * Component that edits a single tag and also provides the option of copying the
+ * value to all other currently selected files
+ *
+ * @author Christian Robert
+ */
 
-    TagEditorPane(TagTiger tagTiger) {
-        this.setCenter(new Label("FILE EDITOR"));
-    }
+public class TagFieldComponent extends HBox {
 
 }

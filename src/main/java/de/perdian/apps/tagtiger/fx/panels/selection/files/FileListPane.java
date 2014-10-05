@@ -23,6 +23,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
+import de.perdian.apps.tagtiger.business.framework.jobs.Job;
+import de.perdian.apps.tagtiger.business.framework.jobs.JobListener;
 import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
 
 public class FileListPane extends BorderPane {
@@ -38,6 +40,22 @@ public class FileListPane extends BorderPane {
         });
 
         this.setCenter(selectedFilesList);
+
+        tagTiger.getJobExecutor().addListener(new JobListener() {
+
+            @Override
+            public void jobStarted(Job job) {
+                Platform.runLater(() -> FileListPane.this.setDisable(true));
+            }
+
+            @Override
+            public void jobCompleted(Job job, boolean otherJobsActive) {
+                if (!otherJobsActive) {
+                    Platform.runLater(() -> FileListPane.this.setDisable(false));
+                }
+            }
+
+        });
 
     }
 
