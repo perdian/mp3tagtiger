@@ -17,7 +17,7 @@ package de.perdian.apps.tagtiger.fx.panels;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import de.perdian.apps.tagtiger.business.TagTiger;
+import de.perdian.apps.tagtiger.business.framework.TagTiger;
 
 class FileInformationPane extends BorderPane {
 

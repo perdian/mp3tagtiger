@@ -20,7 +20,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import de.perdian.apps.tagtiger.business.TagTiger;
+import de.perdian.apps.tagtiger.business.framework.TagTiger;
 
 /**
  * The central pane in which the main components of the application are being
@@ -33,9 +33,9 @@ public class MainApplicationPane extends VBox {
 
     public MainApplicationPane(TagTiger tagTiger) {
 
-        FileSelectionPane fileSelectionPane = new FileSelectionPane(tagTiger);
-        fileSelectionPane.setMinWidth(400d);
-        TitledPane fileSelectionWrapperPanel = new TitledPane(tagTiger.getLocalization().selectFiles(), fileSelectionPane);
+        SelectionPane selectionPane = new SelectionPane(tagTiger);
+        selectionPane.setMinWidth(400d);
+        TitledPane fileSelectionWrapperPanel = new TitledPane(tagTiger.getLocalization().selectFiles(), selectionPane);
         fileSelectionWrapperPanel.setMaxHeight(Double.MAX_VALUE);
         fileSelectionWrapperPanel.setCollapsible(false);
         fileSelectionWrapperPanel.setPadding(new Insets(5, 5, 5, 5));

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.business;
+package de.perdian.apps.tagtiger.business.framework.localization;
 
 /**
  * Interface to provide methods for accessing localized values
@@ -21,7 +21,7 @@ package de.perdian.apps.tagtiger.business;
  * @author Christian Robert
  */
 
-public interface TagTigerLocalization {
+public interface Localization {
 
     default String applicationTitle() {
         return "MP3 TagTiger";
@@ -57,6 +57,18 @@ public interface TagTigerLocalization {
 
     default String cancel() {
         return "Cancel";
+    }
+
+    default String loadingDirectory(String directory) {
+        return "Loading directory: " + directory;
+    }
+
+    default String directoryNotFound() {
+        return "Directory not found!";
+    }
+
+    default String cannotFindDirectory(String directory) {
+        return "Cannot find directory: " + directory;
     }
 
 }

@@ -13,8 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.business.model;
+package de.perdian.apps.tagtiger.business.framework.jobs;
 
-public class MpFileWrapper {
+
+/**
+ * Listener that will be notified upon changes within the exeuction of a job
+ *
+ * @author Christian Robert
+ */
+
+public interface JobListener {
+
+    void jobStarted(Job job);
+    void jobProgress(Job job, String progressMessage, Integer progressStep, Integer totalProgressSteps);
+    void jobCompleted(Job job, boolean otherJobsActive);
 
 }

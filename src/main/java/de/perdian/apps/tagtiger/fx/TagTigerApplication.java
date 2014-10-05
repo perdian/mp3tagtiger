@@ -22,7 +22,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.tagtiger.business.TagTiger;
+import de.perdian.apps.tagtiger.business.framework.TagTiger;
 import de.perdian.apps.tagtiger.fx.panels.MainApplicationPane;
 
 /**
@@ -43,8 +43,13 @@ public class TagTigerApplication extends Application {
 
     @Override
     public void init() throws Exception {
+
         log.info("Creating TagTiger business delegate");
-        this.setTagTiger(new TagTiger());
+        TagTiger tagTiger = new TagTiger();
+        tagTiger.getMessageDistributor().addConsumer(new TagTigerMessageConsumer());
+
+        this.setTagTiger(tagTiger);
+
     }
 
     @Override

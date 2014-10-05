@@ -13,41 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.business.model;
+package de.perdian.apps.tagtiger.business.framework.messages;
 
-import java.nio.file.Path;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
-public class DirectoryWrapper {
+/**
+ * Sends messages through the system
+ *
+ * @author Christian Robert
+ */
 
-    private String title = null;
-    private Path path = null;
+public class MessageDistributor {
 
-    public DirectoryWrapper(Path path, String title) {
-        this.setPath(path);
-        this.setTitle(title);
-    }
+    private List<Consumer<Message>> consumers = new CopyOnWriteArrayList<>();
 
-    @Override
-    public String toString() {
-        return this.getTitle();
+    public void distributeMessage(Message message) {
+        this.getConsumers().forEach(consumer -> consumer.accept(message));
     }
 
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
-    public String getTitle() {
-        return this.title;
+    public void addConsumer(Consumer<Message> consumer) {
+        this.getConsumers().add(consumer);
     }
-    private void setTitle(String title) {
-        this.title = title;
+    List<Consumer<Message>> getConsumers() {
+        return this.consumers;
     }
-
-    public Path getPath() {
-        return this.path;
-    }
-    private void setPath(Path path) {
-        this.path = path;
+    void setConsumers(List<Consumer<Message>> consumers) {
+        this.consumers = consumers;
     }
 
 }

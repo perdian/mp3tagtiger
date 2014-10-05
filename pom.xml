@@ -32,6 +32,7 @@
     <properties>
         <log4j.version>1.2.16</log4j.version>
         <mp3agic.version>0.8.2</mp3agic.version>
+        <openjfx-dialogs.version>1.0.2</openjfx-dialogs.version>
         <slf4j.version>1.7.7</slf4j.version>
     </properties>
 
@@ -55,6 +56,11 @@
             <groupId>com.mpatric</groupId>
             <artifactId>mp3agic</artifactId>
             <version>${mp3agic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>openjfx-dialogs</artifactId>
+            <version>${openjfx-dialogs.version}</version>
         </dependency>
     </dependencies>
 

@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels;
+package de.perdian.apps.tagtiger.business.framework.jobs;
 
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import de.perdian.apps.tagtiger.business.framework.TagTiger;
+/**
+ * Represents any kind of job that has to be executed throughout the GUI. It
+ * will be run within a separate thread and therefore any implementation should
+ * make sure that GUI relevant operations should be performed in the GUI thread.
+ *
+ * @author Christian Robert
+ */
 
-class TagEditorPane extends BorderPane {
+public interface Job {
 
-    TagEditorPane(TagTiger tagTiger) {
-        this.setCenter(new Label("FILE EDITOR"));
-    }
+    /**
+     * Executes the given job
+     *
+     * @param context
+     *     the context through which the job can communicate with the outer
+     *     world
+     */
+    void execute(JobContext context);
 
 }

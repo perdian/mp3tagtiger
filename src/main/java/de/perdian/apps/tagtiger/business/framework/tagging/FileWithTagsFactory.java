@@ -13,23 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.business.tagging;
+package de.perdian.apps.tagtiger.business.framework.tagging;
 
-import java.nio.file.Path;
+import java.io.File;
 
-import de.perdian.apps.tagtiger.business.model.MpFileWrapper;
+public class FileWithTagsFactory {
 
-public class MpFileWrapperFactory {
-
-    public MpFileWrapper createFileWrapper(Path path) {
-
-        try {
-            Thread.sleep(100);
-        } catch(Exception e) {};
-
-        MpFileWrapper fileWrapper = new MpFileWrapper();
+    public FileWithTags createFileWrapper(File file) {
+        FileWithTags fileWrapper = new FileWithTags();
         return fileWrapper;
-
     }
 
 }

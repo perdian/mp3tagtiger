@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels;
+package de.perdian.apps.tagtiger.business.framework.messages;
 
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import de.perdian.apps.tagtiger.business.framework.TagTiger;
+public enum MessageType {
 
-class TagEditorPane extends BorderPane {
-
-    TagEditorPane(TagTiger tagTiger) {
-        this.setCenter(new Label("FILE EDITOR"));
-    }
+    ERROR;
 
 }

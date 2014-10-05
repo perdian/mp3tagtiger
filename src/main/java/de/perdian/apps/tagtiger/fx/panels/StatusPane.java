@@ -15,14 +15,112 @@
  */
 package de.perdian.apps.tagtiger.fx.panels;
 
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import de.perdian.apps.tagtiger.business.TagTiger;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.text.TextAlignment;
+import de.perdian.apps.tagtiger.business.framework.TagTiger;
+import de.perdian.apps.tagtiger.business.framework.jobs.Job;
+import de.perdian.apps.tagtiger.business.framework.jobs.JobListener;
 
-class StatusPane extends BorderPane {
+class StatusPane extends HBox implements JobListener {
+
+    private Label statusLabel = null;
+    private ProgressBar progressBar = null;
+    private Button cancelButton = null;
 
     StatusPane(TagTiger tagTiger) {
-        this.setCenter(new Label("STATUS"));
+
+        Label statusLabel = new Label(tagTiger.getLocalization().noFilesSelectedYet());
+        statusLabel.setPadding(new Insets(5, 5, 0, 5));
+        statusLabel.setTextAlignment(TextAlignment.LEFT);
+        statusLabel.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(statusLabel, Priority.ALWAYS);
+        this.setStatusLabel(statusLabel);
+
+        ProgressBar progressBar = new ProgressBar(0);
+        progressBar.setMaxHeight(Double.MAX_VALUE);
+        this.setProgressBar(progressBar);
+
+        Button cancelButton = new Button(tagTiger.getLocalization().cancel());
+        cancelButton.setDisable(true);
+        cancelButton.setMaxHeight(Double.MAX_VALUE);
+        cancelButton.setOnAction(event -> {
+            cancelButton.setDisable(true);
+            tagTiger.getJobExecutor().cancelCurrentJob();
+        });
+        this.setCancelButton(cancelButton);
+
+        this.setSpacing(5);
+        this.getChildren().addAll(statusLabel, progressBar, cancelButton);
+
+        tagTiger.getJobExecutor().addListener(this);
+
+    }
+
+    // -------------------------------------------------------------------------
+    // --- ProgressListener ----------------------------------------------------
+    // -------------------------------------------------------------------------
+
+    @Override
+    public void jobStarted(Job job) {
+        Platform.runLater(() -> {
+            this.getCancelButton().setDisable(false);
+        });
+    }
+
+    @Override
+    public void jobProgress(Job job, String progressMessage, Integer progressStep, Integer totalProgressSteps) {
+        Platform.runLater(() -> {
+            if (progressStep != null && totalProgressSteps != null) {
+                if (totalProgressSteps.intValue() == 0) {
+                    this.getProgressBar().setProgress(0d);
+                } else {
+                    this.getProgressBar().setProgress((1d / totalProgressSteps) * (progressStep + 1));
+                }
+            }
+            this.getStatusLabel().setText(progressMessage);
+        });
+    }
+
+    @Override
+    public void jobCompleted(Job job, boolean otherJobsActive) {
+        if (!otherJobsActive) {
+            Platform.runLater(() -> {
+                this.getCancelButton().setDisable(true);
+                this.getStatusLabel().setText("");
+                this.getProgressBar().setProgress(0d);
+            });
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // --- Property access methods ---------------------------------------------
+    // -------------------------------------------------------------------------
+
+    private Label getStatusLabel() {
+        return this.statusLabel;
+    }
+    private void setStatusLabel(Label statusLabel) {
+        this.statusLabel = statusLabel;
+    }
+
+    private ProgressBar getProgressBar() {
+        return this.progressBar;
+    }
+    private void setProgressBar(ProgressBar progressBar) {
+        this.progressBar = progressBar;
+    }
+
+    private Button getCancelButton() {
+        return this.cancelButton;
+    }
+    private void setCancelButton(Button cancelButton) {
+        this.cancelButton = cancelButton;
     }
 
 }
