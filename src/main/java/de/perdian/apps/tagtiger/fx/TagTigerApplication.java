@@ -15,6 +15,8 @@
  */
 package de.perdian.apps.tagtiger.fx;
 
+import java.io.File;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -24,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
+import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesKey;
 import de.perdian.apps.tagtiger.fx.panels.MainApplicationPane;
 
 /**
@@ -48,7 +51,6 @@ public class TagTigerApplication extends Application {
         log.info("Creating TagTiger business delegate");
         TagTiger tagTiger = new TagTiger();
         tagTiger.getMessageDistributor().addConsumer(new TagTigerMessageConsumer());
-
         this.setTagTiger(tagTiger);
 
     }
@@ -69,6 +71,12 @@ public class TagTigerApplication extends Application {
         primaryStage.setWidth(1024);
         primaryStage.setHeight(768);
         primaryStage.show();
+
+        String currentDirectoryValue = this.getTagTiger().getPreferences().getString(PreferencesKey.CURRENT_DIRECTORY, null);
+        File currentDirectory = currentDirectoryValue == null ? null : new File(currentDirectoryValue);
+        if (currentDirectory != null && currentDirectory.exists() && currentDirectory.isDirectory()) {
+            this.getTagTiger().getSelection().updateDirectory(currentDirectory);
+        }
 
         log.info("Application start completed");
 

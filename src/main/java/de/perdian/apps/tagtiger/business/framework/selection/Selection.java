@@ -22,6 +22,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesKey;
+import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesLookup;
 import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
 
 /**
@@ -35,16 +37,19 @@ public class Selection {
     private ObjectProperty<File> selectedDirectory = null;
     private ObservableList<FileWithTags> availableFiles = null;
     private ObservableList<FileWithTags> selectedFiles = null;
+    private PreferencesLookup preferences = null;
 
-    public Selection() {
+    public Selection(PreferencesLookup preferences) {
         this.setAvailableFiles(FXCollections.observableArrayList());
         this.setSelectedFiles(FXCollections.observableArrayList());
         this.setSelectedDirectory(new SimpleObjectProperty<>());
+        this.setPreferences(preferences);
     }
 
     public void updateDirectory(File directory) {
         if (this.getSelectedDirectory().get() == null || !this.getSelectedDirectory().getValue().equals(directory)) {
             this.getSelectedDirectory().setValue(directory);
+            this.getPreferences().setString(PreferencesKey.CURRENT_DIRECTORY, directory.getAbsolutePath());
         }
     }
 
@@ -76,6 +81,13 @@ public class Selection {
     }
     private void setSelectedDirectory(ObjectProperty<File> selectedDirectory) {
         this.selectedDirectory = selectedDirectory;
+    }
+
+    private PreferencesLookup getPreferences() {
+        return this.preferences;
+    }
+    private void setPreferences(PreferencesLookup preferences) {
+        this.preferences = preferences;
     }
 
 }

@@ -18,6 +18,7 @@ package de.perdian.apps.tagtiger.business.framework;
 import de.perdian.apps.tagtiger.business.framework.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.messages.MessageDistributor;
+import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesLookup;
 import de.perdian.apps.tagtiger.business.framework.selection.Selection;
 import de.perdian.apps.tagtiger.business.impl.DirectorySelectJob;
 
@@ -31,13 +32,27 @@ import de.perdian.apps.tagtiger.business.impl.DirectorySelectJob;
 
 public class TagTiger {
 
-    private Localization localization = new Localization() {};
-    private Selection selection = new Selection();
-    private JobExecutor jobExecutor = new JobExecutor();
-    private MessageDistributor messageDistributor = new MessageDistributor();
+    private Localization localization = null;
+    private Selection selection = null;
+    private JobExecutor jobExecutor = null;
+    private MessageDistributor messageDistributor = null;
+    private PreferencesLookup preferences = null;
 
     public TagTiger() {
-        this.getSelection().getSelectedDirectory().addListener((observable, oldValue, newValue) -> this.getJobExecutor().executeJob(new DirectorySelectJob(newValue, this.getSelection(), this.getLocalization(), this.getMessageDistributor())));
+
+        JobExecutor jobExecutor = new JobExecutor();
+        MessageDistributor messageDistributor = new MessageDistributor();
+        PreferencesLookup preferences = new PreferencesLookup();
+        Localization localization = new Localization() {};
+        Selection selection = new Selection(preferences);
+        selection.getSelectedDirectory().addListener((observable, oldValue, newValue) -> this.getJobExecutor().executeJob(new DirectorySelectJob(newValue, this.getSelection(), this.getLocalization(), this.getMessageDistributor())));
+
+        this.setJobExecutor(jobExecutor);
+        this.setMessageDistributor(messageDistributor);
+        this.setPreferences(preferences);
+        this.setLocalization(localization);
+        this.setSelection(selection);
+
     }
 
     // -------------------------------------------------------------------------
@@ -70,6 +85,13 @@ public class TagTiger {
     }
     void setMessageDistributor(MessageDistributor messageDistributor) {
         this.messageDistributor = messageDistributor;
+    }
+
+    public PreferencesLookup getPreferences() {
+        return this.preferences;
+    }
+    void setPreferences(PreferencesLookup preferences) {
+        this.preferences = preferences;
     }
 
 }
