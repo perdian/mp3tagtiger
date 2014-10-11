@@ -71,4 +71,32 @@ public interface Localization {
         return "Cannot find directory: " + directory;
     }
 
+    default String fileName() {
+        return "Filename";
+    }
+
+    default String changed() {
+        return "Changed";
+    }
+
+    default String noFilesChanged() {
+        return "No files changed";
+    }
+
+    default String nFilesChanged(Number numberOfFiles) {
+        return numberOfFiles + " file(s) changed";
+    }
+
+    default String saveChangedFiles() {
+        return "Saved changed file(s)";
+    }
+
+    default String savingNFiles(Number numberOfFiles) {
+        return "Saving " + numberOfFiles + " file(s)";
+    }
+
+    default String savingFile(String fileName) {
+        return "Saving file: " + fileName;
+    }
+
 }

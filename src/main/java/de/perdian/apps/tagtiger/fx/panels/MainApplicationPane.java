@@ -38,18 +38,19 @@ public class MainApplicationPane extends VBox {
 
         SelectionPane selectionPane = new SelectionPane(tagTiger);
         selectionPane.setMinWidth(400d);
-        TitledPane fileSelectionWrapperPanel = new TitledPane(tagTiger.getLocalization().selectFiles(), selectionPane);
-        fileSelectionWrapperPanel.setMaxHeight(Double.MAX_VALUE);
-        fileSelectionWrapperPanel.setCollapsible(false);
-        fileSelectionWrapperPanel.setPadding(new Insets(5, 5, 5, 5));
-        VBox.setVgrow(fileSelectionWrapperPanel, Priority.ALWAYS);
+        TitledPane fileSelectionWrapperPane = new TitledPane(tagTiger.getLocalization().selectFiles(), selectionPane);
+        fileSelectionWrapperPane.setMaxHeight(Double.MAX_VALUE);
+        fileSelectionWrapperPane.setCollapsible(false);
+        fileSelectionWrapperPane.setPadding(new Insets(5, 5, 5, 5));
+        VBox.setVgrow(fileSelectionWrapperPane, Priority.ALWAYS);
 
         EditorPane editorPane = new EditorPane(tagTiger);
         editorPane.setMinWidth(400d);
+        editorPane.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(editorPane, Priority.ALWAYS);
 
         SplitPane splitPane = new SplitPane();
-        splitPane.getItems().add(fileSelectionWrapperPanel);
+        splitPane.getItems().add(fileSelectionWrapperPane);
         splitPane.getItems().add(editorPane);
         splitPane.setDividerPositions(0.3f);
         VBox.setVgrow(splitPane, Priority.ALWAYS);

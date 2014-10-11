@@ -15,11 +15,20 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.selection.files;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.ListChangeListener;
-import javafx.scene.control.ListView;
+import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
@@ -27,19 +36,55 @@ import de.perdian.apps.tagtiger.business.framework.jobs.Job;
 import de.perdian.apps.tagtiger.business.framework.jobs.JobListener;
 import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
 
-public class FileListPane extends BorderPane {
+public class FileListPane extends VBox {
 
     public FileListPane(TagTiger tagTiger) {
 
-        ListView<FileWithTags> selectedFilesList = new ListView<>();
-        selectedFilesList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        selectedFilesList.setBorder(null);
-        VBox.setVgrow(selectedFilesList, Priority.ALWAYS);
+        TableView<FileWithTags> selectedFilesTable = new TableView<>();
+        selectedFilesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        selectedFilesTable.setBorder(null);
+        selectedFilesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        VBox.setVgrow(selectedFilesTable, Priority.ALWAYS);
         tagTiger.getSelection().getAvailableFiles().addListener((ListChangeListener.Change<? extends FileWithTags> change) -> {
-            Platform.runLater(() -> selectedFilesList.getItems().setAll(change.getList()));
+            Platform.runLater(() -> selectedFilesTable.getItems().setAll(change.getList()));
+        });
+        tagTiger.getSelection().getSelectedFile().addListener((o, oldValue, newValue) -> {
+            if (newValue != null) {
+                int indexOfNewValue = selectedFilesTable.getItems().indexOf(newValue);
+                if (indexOfNewValue != selectedFilesTable.getSelectionModel().getSelectedIndex()) {
+                    List<Integer> removeIndices = new ArrayList<>(selectedFilesTable.getSelectionModel().getSelectedIndices());
+                    removeIndices.remove(Integer.valueOf(indexOfNewValue));
+                    selectedFilesTable.getSelectionModel().select(indexOfNewValue);
+                    removeIndices.forEach(index -> selectedFilesTable.getSelectionModel().clearSelection(index.intValue()));
+                }
+            }
+        });
+        selectedFilesTable.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends FileWithTags> change) -> {
+            tagTiger.getSelection().updateSelectedFiles(change.getList());
+            tagTiger.getSelection().updateSelectedFile(selectedFilesTable.getSelectionModel().getSelectedItem(), selectedFilesTable.getSelectionModel().getSelectedIndex());
         });
 
-        this.setCenter(selectedFilesList);
+        Image flagIconImage = new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/flag-red.png"));
+        TableColumn<FileWithTags, Boolean> changedColumn = new TableColumn<>();
+        changedColumn.setCellValueFactory(p -> p.getValue().getChanged());
+        changedColumn.setCellFactory(item -> {
+            TableCell<FileWithTags, Boolean> tableCell = new TableCell<FileWithTags, Boolean>() {
+                @Override protected void updateItem(Boolean item, boolean empty) {
+                    if (!empty) {
+                        this.setGraphic(item.booleanValue() ? new Label("", new ImageView(flagIconImage)) : null);
+                    }
+                }
+            };
+            return tableCell;
+        });
+        changedColumn.setMinWidth(24);
+        changedColumn.setMaxWidth(24);
+        selectedFilesTable.getColumns().add(changedColumn);
+
+        TableColumn<FileWithTags, String> fileNameColumn = new TableColumn<>(tagTiger.getLocalization().fileName());
+        fileNameColumn.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().getFile().getName()));
+        fileNameColumn.setMaxWidth(Double.MAX_VALUE);
+        selectedFilesTable.getColumns().add(fileNameColumn);
 
         tagTiger.getJobExecutor().addListener(new JobListener() {
 
@@ -56,6 +101,13 @@ public class FileListPane extends BorderPane {
             }
 
         });
+
+        VBox.setVgrow(selectedFilesTable, Priority.ALWAYS);
+
+        FileActionPane fileActionPane = new FileActionPane(tagTiger);
+        fileActionPane.setPadding(new Insets(5, 5, 5, 5));
+
+        this.getChildren().addAll(selectedFilesTable, fileActionPane);
 
     }
 

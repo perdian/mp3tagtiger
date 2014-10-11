@@ -78,7 +78,7 @@ public class DirectorySelectJob implements Job {
         log.debug("Collected {} files from directory: {}", sourceFiles.size(), this.getSelectedDirectory().getName());
         context.updateProgress(this.getLocalization().startProcessingOfFiles(sourceFiles.size()), -1, -1);
 
-        FileWithTagsFactory fileWithTagsFactory = new FileWithTagsFactory();
+        FileWithTagsFactory fileWithTagsFactory = new FileWithTagsFactory(this.getTargetSelection());
         List<FileWithTags> filesWithTags = new ArrayList<>(sourceFiles.size());
         for (int i = 0; i < sourceFiles.size() && context.isActive() && !context.isCancelled(); i++) {
             File sourceFile = sourceFiles.get(i);
@@ -88,7 +88,7 @@ public class DirectorySelectJob implements Job {
         log.debug("Processed {} files from directory: {}", filesWithTags.size(), this.getSelectedDirectory().getName());
 
         if (context.isActive() && !context.isCancelled()) {
-            this.getTargetSelection().updateFiles(filesWithTags);
+            this.getTargetSelection().updateAvailableFiles(filesWithTags);
         }
 
     }

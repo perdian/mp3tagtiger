@@ -15,6 +15,45 @@
  */
 package de.perdian.apps.tagtiger.business.framework.tagging;
 
+import java.io.File;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class FileWithTags {
+
+    private File file = null;
+    private StringProperty fileName = new SimpleStringProperty();
+    private StringProperty fileExtension = new SimpleStringProperty();
+    private BooleanProperty changed = new SimpleBooleanProperty(false);
+
+    FileWithTags(File file) {
+        this.setFile(file);
+    }
+
+    // -------------------------------------------------------------------------
+    // --- Property access methods ---------------------------------------------
+    // -------------------------------------------------------------------------
+
+    public File getFile() {
+        return this.file;
+    }
+    private void setFile(File file) {
+        this.file = file;
+    }
+
+    public StringProperty getFileName() {
+        return this.fileName;
+    }
+
+    public StringProperty getFileExtension() {
+        return this.fileExtension;
+    }
+
+    public BooleanProperty getChanged() {
+        return this.changed;
+    }
 
 }
