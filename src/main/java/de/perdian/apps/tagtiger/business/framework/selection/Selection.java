@@ -27,7 +27,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesKey;
 import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesLookup;
-import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 
 /**
  * Wrapper around a list of selected files
@@ -38,10 +38,10 @@ import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
 public class Selection {
 
     private ObjectProperty<File> selectedDirectory = null;
-    private ObservableList<FileWithTags> availableFiles = null;
-    private ObservableList<FileWithTags> selectedFiles = null;
-    private ObservableList<FileWithTags> changedFiles = null;
-    private ObjectProperty<FileWithTags> selectedFile = null;
+    private ObservableList<TaggableFile> availableFiles = null;
+    private ObservableList<TaggableFile> selectedFiles = null;
+    private ObservableList<TaggableFile> changedFiles = null;
+    private ObjectProperty<TaggableFile> selectedFile = null;
     private IntegerProperty selectedIndex = null;
     private PreferencesLookup preferences = null;
 
@@ -62,13 +62,13 @@ public class Selection {
         }
     }
 
-    public void updateAvailableFiles(List<FileWithTags> newList) {
+    public void updateAvailableFiles(List<TaggableFile> newList) {
         this.getAvailableFiles().setAll(newList);
         this.updateSelectedFiles(Collections.emptyList());
         this.updateSelectedFile(null, -1);
     }
 
-    public void updateSelectedFiles(List<? extends FileWithTags> list) {
+    public void updateSelectedFiles(List<? extends TaggableFile> list) {
         boolean listHasChanged = false;
         listHasChanged |= this.getSelectedFiles().size() != list.size();
         listHasChanged |= !this.getSelectedFiles().containsAll(list);
@@ -77,7 +77,7 @@ public class Selection {
         }
     }
 
-    public void updateSelectedFile(FileWithTags selectedItem, int selectedIndex) {
+    public void updateSelectedFile(TaggableFile selectedItem, int selectedIndex) {
         if (selectedItem == null && this.getSelectedFile() == null) {
             // Do nothing - no change in selection
         } else if (selectedItem != null && selectedItem.equals(this.getSelectedFile())) {
@@ -89,7 +89,7 @@ public class Selection {
     }
 
     public void updateSelectedFileToIndex(int index) {
-        List<FileWithTags> availableFiles = this.getAvailableFiles();
+        List<TaggableFile> availableFiles = this.getAvailableFiles();
         if (!availableFiles.isEmpty()) {
             int cleanIndex = Math.max(0, Math.min(index, availableFiles.size() - 1));
             this.updateSelectedFile(availableFiles.get(cleanIndex), cleanIndex);
@@ -100,17 +100,17 @@ public class Selection {
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
-    public ObservableList<FileWithTags> getAvailableFiles() {
+    public ObservableList<TaggableFile> getAvailableFiles() {
         return this.availableFiles;
     }
-    private void setAvailableFiles(ObservableList<FileWithTags> availableFiles) {
+    private void setAvailableFiles(ObservableList<TaggableFile> availableFiles) {
         this.availableFiles = availableFiles;
     }
 
-    public ObservableList<FileWithTags> getSelectedFiles() {
+    public ObservableList<TaggableFile> getSelectedFiles() {
         return this.selectedFiles;
     }
-    private void setSelectedFiles(ObservableList<FileWithTags> selectedFiles) {
+    private void setSelectedFiles(ObservableList<TaggableFile> selectedFiles) {
         this.selectedFiles = selectedFiles;
     }
 
@@ -135,17 +135,17 @@ public class Selection {
         this.selectedIndex = selectedIndex;
     }
 
-    public ObjectProperty<FileWithTags> getSelectedFile() {
+    public ObjectProperty<TaggableFile> getSelectedFile() {
         return this.selectedFile;
     }
-    private void setSelectedFile(ObjectProperty<FileWithTags> selectedFile) {
+    private void setSelectedFile(ObjectProperty<TaggableFile> selectedFile) {
         this.selectedFile = selectedFile;
     }
 
-    public ObservableList<FileWithTags> getChangedFiles() {
+    public ObservableList<TaggableFile> getChangedFiles() {
         return this.changedFiles;
     }
-    private void setChangedFiles(ObservableList<FileWithTags> changedFiles) {
+    private void setChangedFiles(ObservableList<TaggableFile> changedFiles) {
         this.changedFiles = changedFiles;
     }
 

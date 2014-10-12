@@ -20,21 +20,21 @@ import java.util.function.Supplier;
 
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
-import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 
 class EditorProperty {
 
-    private Function<FileWithTags, Property<String>> propertyFunction = null;
+    private Function<TaggableFile, Property<String>> propertyFunction = null;
     private Supplier<Property<String>> controlSupplier = null;
     private ChangeListener<String> propertyChangedListener = null;
     private ChangeListener<String> controlChangedListener = null;
 
-    void removeListeners(FileWithTags file) {
+    void removeListeners(TaggableFile file) {
         this.getPropertyFunction().apply(file).removeListener(this.getPropertyChangedListener());
         this.getControlSupplier().get().removeListener(this.getControlChangedListener());
     }
 
-    void addListeners(FileWithTags file) {
+    void addListeners(TaggableFile file) {
         this.getPropertyFunction().apply(file).addListener(this.getPropertyChangedListener());
         this.getControlSupplier().get().addListener(this.getControlChangedListener());
     }
@@ -43,10 +43,10 @@ class EditorProperty {
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
-    Function<FileWithTags, Property<String>> getPropertyFunction() {
+    Function<TaggableFile, Property<String>> getPropertyFunction() {
         return this.propertyFunction;
     }
-    void setPropertyFunction(Function<FileWithTags, Property<String>> propertyFunction) {
+    void setPropertyFunction(Function<TaggableFile, Property<String>> propertyFunction) {
         this.propertyFunction = propertyFunction;
     }
 

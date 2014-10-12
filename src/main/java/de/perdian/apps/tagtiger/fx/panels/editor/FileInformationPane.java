@@ -24,7 +24,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
-import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.panels.selection.SelectionKeyEventHandler;
 
 class FileInformationPane extends FileDataPanel {
@@ -49,12 +49,12 @@ class FileInformationPane extends FileDataPanel {
         availableFilesSizeField.setAlignment(Pos.CENTER);
         availableFilesSizeField.setEditable(true);
         availableFilesSizeField.setMaxWidth(40);
-        tagTiger.getSelection().getAvailableFiles().addListener((Change<? extends FileWithTags> change) -> Platform.runLater(() -> availableFilesSizeField.setText(String.valueOf(change.getList().size()))));
+        tagTiger.getSelection().getAvailableFiles().addListener((Change<? extends TaggableFile> change) -> Platform.runLater(() -> availableFilesSizeField.setText(String.valueOf(change.getList().size()))));
 
         Label availableFilesSeparatorLabel = new Label(":");
         availableFilesSeparatorLabel.setPadding(new Insets(0, 15, 0, 5));
 
-        TextField fileNameField = propertyFactory.createTextField(FileWithTags::getFileName);
+        TextField fileNameField = propertyFactory.createTextField(TaggableFile::getFileName);
         fileNameField.setMaxWidth(Double.MAX_VALUE);
         fileNameField.setOnKeyPressed(new SelectionKeyEventHandler(tagTiger.getSelection()));
         GridPane.setHgrow(fileNameField, Priority.ALWAYS);
@@ -64,7 +64,6 @@ class FileInformationPane extends FileDataPanel {
         this.add(availableFilesSizeField, 2, 0);
         this.add(availableFilesSeparatorLabel, 3, 0);
         this.add(fileNameField, 4, 0);
-        this.setDisable(true);
 
     }
 

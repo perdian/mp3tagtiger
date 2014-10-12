@@ -30,8 +30,8 @@ import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.messages.Message;
 import de.perdian.apps.tagtiger.business.framework.messages.MessageDistributor;
 import de.perdian.apps.tagtiger.business.framework.selection.Selection;
-import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
-import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTagsFactory;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileLoader;
 
 /**
  * The job that is responsible for handling a selection that has been made upon
@@ -78,17 +78,21 @@ public class DirectorySelectJob implements Job {
         log.debug("Collected {} files from directory: {}", sourceFiles.size(), this.getSelectedDirectory().getName());
         context.updateProgress(this.getLocalization().startProcessingOfFiles(sourceFiles.size()), -1, -1);
 
-        FileWithTagsFactory fileWithTagsFactory = new FileWithTagsFactory(this.getTargetSelection());
-        List<FileWithTags> filesWithTags = new ArrayList<>(sourceFiles.size());
+        TaggableFileLoader taggableFileLoader = new TaggableFileLoader(this.getTargetSelection());
+        List<TaggableFile> taggableFiles = new ArrayList<>(sourceFiles.size());
         for (int i = 0; i < sourceFiles.size() && context.isActive() && !context.isCancelled(); i++) {
             File sourceFile = sourceFiles.get(i);
             context.updateProgress(this.getLocalization().processingFile(sourceFile.getName()), i + 1, sourceFiles.size());
-            filesWithTags.add(fileWithTagsFactory.createFileWrapper(sourceFile));
+            try {
+                taggableFiles.add(taggableFileLoader.loadFile(sourceFile));
+            } catch(Exception e) {
+                log.warn("Cannot read file: {}", sourceFile.getAbsolutePath(), e);
+            }
         }
-        log.debug("Processed {} files from directory: {}", filesWithTags.size(), this.getSelectedDirectory().getName());
+        log.debug("Processed {} files from directory: {}", taggableFiles.size(), this.getSelectedDirectory().getName());
 
         if (context.isActive() && !context.isCancelled()) {
-            this.getTargetSelection().updateAvailableFiles(filesWithTags);
+            this.getTargetSelection().updateAvailableFiles(taggableFiles);
         }
 
     }

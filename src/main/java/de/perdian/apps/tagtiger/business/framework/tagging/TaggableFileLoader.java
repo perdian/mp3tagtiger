@@ -20,28 +20,53 @@ import java.io.File;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+
+import com.mpatric.mp3agic.Mp3File;
+
 import de.perdian.apps.tagtiger.business.framework.selection.Selection;
 
-public class FileWithTagsFactory {
+public class TaggableFileLoader {
 
     private Selection targetSelection = null;
 
-    public FileWithTagsFactory(Selection targetSelection) {
+    public TaggableFileLoader(Selection targetSelection) {
         this.setTargetSelection(targetSelection);
     }
 
-    public FileWithTags createFileWrapper(File file) {
+    public TaggableFile loadFile(File file) throws Exception {
 
         int extensionSeparator = file.getName().lastIndexOf(".");
 
-        FileWithTags fileWrapper = new FileWithTags(file);
+        TaggableFile fileWrapper = new TaggableFile(file);
         fileWrapper.getFileName().set(extensionSeparator < 0 ? file.getName() : file.getName().substring(0, extensionSeparator));
         fileWrapper.getFileExtension().set(extensionSeparator < 0 || extensionSeparator >= file.getName().length() - 1 ? null : file.getName().substring(extensionSeparator + 1));
 
+        // Load the actual MP3 tags
+        Mp3File mp3File = new Mp3File(file.getAbsolutePath());
+        for(Tag tag : Tag.values()) {
+            tag.updateWrapper(fileWrapper, mp3File);
+        }
+
         // Add listener to get notified when something has changed
-        fileWrapper.getFileExtension().addListener(new UpdateTargetPropertyWithNewValueListener<>(fileWrapper.getChanged()));
-        fileWrapper.getFileName().addListener(new UpdateTargetPropertyWithNewValueListener<>(fileWrapper.getChanged()));
         fileWrapper.getChanged().addListener(new UpdateChangedFilesInTargetSelectionListener(fileWrapper));
+
+        UpdateTargetPropertyWithNewValueListener<String> updateListener = new UpdateTargetPropertyWithNewValueListener<>(fileWrapper.getChanged());
+        fileWrapper.getFileExtension().addListener(updateListener);
+        fileWrapper.getFileName().addListener(updateListener);
+        fileWrapper.getTagAlbum().addListener(updateListener);
+        fileWrapper.getTagArtist().addListener(updateListener);
+        fileWrapper.getTagCd().addListener(updateListener);
+        fileWrapper.getTagCoder().addListener(updateListener);
+        fileWrapper.getTagComment().addListener(updateListener);
+        fileWrapper.getTagComposer().addListener(updateListener);
+        fileWrapper.getTagCopyright().addListener(updateListener);
+        fileWrapper.getTagGenre().addListener(updateListener);
+        fileWrapper.getTagOriginalArtist().addListener(updateListener);
+        fileWrapper.getTagTitle().addListener(updateListener);
+        fileWrapper.getTagTrackNumber().addListener(updateListener);
+        fileWrapper.getTagTracksTotal().addListener(updateListener);
+        fileWrapper.getTagUrl().addListener(updateListener);
+        fileWrapper.getTagYear().addListener(updateListener);
 
         return fileWrapper;
 
@@ -53,18 +78,18 @@ public class FileWithTagsFactory {
 
     class UpdateChangedFilesInTargetSelectionListener implements ChangeListener<Boolean> {
 
-        private FileWithTags file = null;
+        private TaggableFile file = null;
 
-        UpdateChangedFilesInTargetSelectionListener(FileWithTags file) {
+        UpdateChangedFilesInTargetSelectionListener(TaggableFile file) {
             this.setFile(file);
         }
 
         @Override
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
             if (newValue.booleanValue()) {
-                FileWithTagsFactory.this.getTargetSelection().getChangedFiles().add(this.getFile());
+                TaggableFileLoader.this.getTargetSelection().getChangedFiles().add(this.getFile());
             } else {
-                FileWithTagsFactory.this.getTargetSelection().getChangedFiles().remove(this.getFile());
+                TaggableFileLoader.this.getTargetSelection().getChangedFiles().remove(this.getFile());
             }
         }
 
@@ -72,10 +97,10 @@ public class FileWithTagsFactory {
         // --- Property access methods -----------------------------------------
         // ---------------------------------------------------------------------
 
-        private FileWithTags getFile() {
+        private TaggableFile getFile() {
             return this.file;
         }
-        private void setFile(FileWithTags file) {
+        private void setFile(TaggableFile file) {
             this.file = file;
         }
 

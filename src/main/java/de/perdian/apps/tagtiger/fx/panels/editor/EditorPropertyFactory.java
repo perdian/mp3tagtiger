@@ -17,33 +17,47 @@ package de.perdian.apps.tagtiger.fx.panels.editor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.scene.control.TextField;
-import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
+import de.perdian.apps.tagtiger.business.framework.selection.Selection;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.panels.selection.SelectionKeyEventHandler;
 
 public class EditorPropertyFactory {
 
     private List<EditorProperty> properties = null;
-    private Supplier<FileWithTags> fileSupplier = null;
+    private Supplier<TaggableFile> fileSupplier = null;
+    private Selection selection = null;
 
-    EditorPropertyFactory(Supplier<FileWithTags> fileSupplier) {
+    EditorPropertyFactory(Selection selection, Supplier<TaggableFile> fileSupplier) {
+        this.setSelection(selection);
         this.setProperties(new ArrayList<>());
         this.setFileSupplier(fileSupplier);
     }
 
-    TextField createTextField(Function<FileWithTags, Property<String>> propertyFunction) {
+    TextField createTextField(Function<TaggableFile, Property<String>> propertyFunction) {
 
         TextField textField = new TextField();
+        textField.setOnKeyPressed(new SelectionKeyEventHandler(this.getSelection()));
 
         EditorProperty editorProperty = new EditorProperty();
         editorProperty.setControlSupplier(() -> textField.textProperty());
-        editorProperty.setControlChangedListener((o, oldValue, newValue) -> Optional.ofNullable(this.getFileSupplier().get()).ifPresent(file -> propertyFunction.apply(file).setValue(newValue)));
+        editorProperty.setControlChangedListener((o, oldValue, newValue) -> {
+            if (this.getFileSupplier().get() != null) {
+                propertyFunction.apply(this.getFileSupplier().get()).setValue(newValue);
+            }
+        });
         editorProperty.setPropertyFunction(propertyFunction);
-        editorProperty.setPropertyChangedListener((o, oldValue, newValue) -> textField.setText(newValue));
+        editorProperty.setPropertyChangedListener((o, oldValue, newValue) -> {
+            if (!Objects.equals(textField.getText(), newValue)) {
+                Platform.runLater(() -> textField.setText(newValue));
+            }
+        });
         this.getProperties().add(editorProperty);
 
         return textField;
@@ -54,17 +68,24 @@ public class EditorPropertyFactory {
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
+    Selection getSelection() {
+        return this.selection;
+    }
+    private void setSelection(Selection selection) {
+        this.selection = selection;
+    }
+
     List<EditorProperty> getProperties() {
         return this.properties;
     }
-    void setProperties(List<EditorProperty> properties) {
+    private void setProperties(List<EditorProperty> properties) {
         this.properties = properties;
     }
 
-    Supplier<FileWithTags> getFileSupplier() {
+    Supplier<TaggableFile> getFileSupplier() {
         return this.fileSupplier;
     }
-    void setFileSupplier(Supplier<FileWithTags> fileSupplier) {
+    private void setFileSupplier(Supplier<TaggableFile> fileSupplier) {
         this.fileSupplier = fileSupplier;
     }
 

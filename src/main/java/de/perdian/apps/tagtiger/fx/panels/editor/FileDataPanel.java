@@ -17,10 +17,11 @@ package de.perdian.apps.tagtiger.fx.panels.editor;
 
 import java.util.List;
 
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.scene.layout.GridPane;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
-import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 
 /**
  * Abstract definition for any panel that displayed information about a single
@@ -31,20 +32,21 @@ import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
 
 abstract class FileDataPanel extends GridPane {
 
-    private FileWithTags currentFile = null;
+    private TaggableFile currentFile = null;
     private List<EditorProperty> editorProperties = null;
 
     FileDataPanel(TagTiger tagTiger) {
 
-        EditorPropertyFactory propertyFactory = new EditorPropertyFactory(this::getCurrentFile);
+        EditorPropertyFactory propertyFactory = new EditorPropertyFactory(tagTiger.getSelection(), this::getCurrentFile);
         this.initializePane(propertyFactory, tagTiger);
         this.setEditorProperties(propertyFactory.getProperties());
+        this.setDisable(true);
 
         tagTiger.getSelection().getSelectedFile().addListener((o, oldValue, newValue) -> this.updateCurrentFile(newValue));
 
     }
 
-    private synchronized void updateCurrentFile(FileWithTags file) {
+    private synchronized void updateCurrentFile(TaggableFile file) {
 
         // Make sure the currently active file has all listeners removed, so
         // that no further events will be sent if data from that file is updated
@@ -54,8 +56,8 @@ abstract class FileDataPanel extends GridPane {
 
         // Now that the old listeners have been removed, we add the new
         // listeners to the file that is to be displayed now
+        Platform.runLater(() -> this.setDisable(file == null));
         this.setCurrentFile(file);
-        this.setDisable(file == null);
         if (file != null) {
             this.getEditorProperties().forEach(property -> property.addListeners(file));
         }
@@ -63,7 +65,7 @@ abstract class FileDataPanel extends GridPane {
 
     }
 
-    private void updateCurrentFileProperty(FileWithTags file, EditorProperty editorProperty) {
+    private void updateCurrentFileProperty(TaggableFile file, EditorProperty editorProperty) {
         Property<String> property = file == null ? null : editorProperty.getPropertyFunction().apply(file);
         String propertyValue = property == null ? "" : property.getValue();
         editorProperty.getPropertyChangedListener().changed(property, null, propertyValue);
@@ -75,10 +77,10 @@ abstract class FileDataPanel extends GridPane {
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
-    private FileWithTags getCurrentFile() {
+    private TaggableFile getCurrentFile() {
         return this.currentFile;
     }
-    private void setCurrentFile(FileWithTags currentFile) {
+    private void setCurrentFile(TaggableFile currentFile) {
         this.currentFile = currentFile;
     }
 

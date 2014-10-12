@@ -22,7 +22,7 @@ import de.perdian.apps.tagtiger.business.framework.jobs.Job;
 import de.perdian.apps.tagtiger.business.framework.jobs.JobContext;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.selection.Selection;
-import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 
 public class SaveChangedFilesInSelectionJob implements Job {
 
@@ -36,7 +36,7 @@ public class SaveChangedFilesInSelectionJob implements Job {
 
     @Override
     public void execute(JobContext context) {
-        List<FileWithTags> changedFiles = this.getSelection().getChangedFiles();
+        List<TaggableFile> changedFiles = this.getSelection().getChangedFiles();
         if (!changedFiles.isEmpty()) {
 
             context.updateProgress(this.getLocalization().savingNFiles(changedFiles.size()));
@@ -44,7 +44,7 @@ public class SaveChangedFilesInSelectionJob implements Job {
             // Copy files into separate list, since they will be removed from
             // the original list by the listeners after the changed property is
             // updated
-            List<FileWithTags> changedFilesCopy = this.getSelection().getAvailableFiles().stream()
+            List<TaggableFile> changedFilesCopy = this.getSelection().getAvailableFiles().stream()
                     .filter(file -> changedFiles.contains(file))
                     .collect(Collectors.toList());
 
@@ -54,10 +54,10 @@ public class SaveChangedFilesInSelectionJob implements Job {
         }
     }
 
-    private void executeSaveFiles(List<FileWithTags> changedFiles, JobContext context) {
+    private void executeSaveFiles(List<TaggableFile> changedFiles, JobContext context) {
         for (int i = 0; i < changedFiles.size(); i++) {
 
-            FileWithTags file = changedFiles.get(i);
+            TaggableFile file = changedFiles.get(i);
             context.updateProgress(this.getLocalization().savingFile(file.getFile().getName()), i, changedFiles.size());
             file.getChanged().set(false);
 

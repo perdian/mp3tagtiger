@@ -99,4 +99,20 @@ public interface Localization {
         return "Saving file: " + fileName;
     }
 
+    default String title() {
+        return "Title";
+    }
+
+    default String artist() {
+        return "Artist";
+    }
+
+    default String album() {
+        return "Album";
+    }
+
+    default String year() {
+        return "Year";
+    }
+
 }

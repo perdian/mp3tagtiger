@@ -23,7 +23,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
-import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.business.impl.SaveChangedFilesInSelectionJob;
 
 class FileActionPane extends HBox {
@@ -31,7 +31,7 @@ class FileActionPane extends HBox {
     FileActionPane(TagTiger tagTiger) {
 
         Button saveChangedFilesButton = new Button(tagTiger.getLocalization().saveChangedFiles(), new ImageView(new Image(FileActionPane.class.getClassLoader().getResourceAsStream("icons/16/save.png"))));
-        tagTiger.getSelection().getChangedFiles().addListener((Change<? extends FileWithTags> change) -> {
+        tagTiger.getSelection().getChangedFiles().addListener((Change<? extends TaggableFile> change) -> {
             Platform.runLater(() -> saveChangedFilesButton.setDisable(change.getList().isEmpty()));
         });
         saveChangedFilesButton.setOnAction(event -> tagTiger.getJobExecutor().executeJob(new SaveChangedFilesInSelectionJob(tagTiger.getSelection(), tagTiger.getLocalization())));

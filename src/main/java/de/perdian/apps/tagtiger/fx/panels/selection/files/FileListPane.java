@@ -34,18 +34,18 @@ import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
 import de.perdian.apps.tagtiger.business.framework.jobs.Job;
 import de.perdian.apps.tagtiger.business.framework.jobs.JobListener;
-import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 
 public class FileListPane extends VBox {
 
     public FileListPane(TagTiger tagTiger) {
 
-        TableView<FileWithTags> selectedFilesTable = new TableView<>();
+        TableView<TaggableFile> selectedFilesTable = new TableView<>();
         selectedFilesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         selectedFilesTable.setBorder(null);
         selectedFilesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         VBox.setVgrow(selectedFilesTable, Priority.ALWAYS);
-        tagTiger.getSelection().getAvailableFiles().addListener((ListChangeListener.Change<? extends FileWithTags> change) -> {
+        tagTiger.getSelection().getAvailableFiles().addListener((ListChangeListener.Change<? extends TaggableFile> change) -> {
             Platform.runLater(() -> selectedFilesTable.getItems().setAll(change.getList()));
         });
         tagTiger.getSelection().getSelectedFile().addListener((o, oldValue, newValue) -> {
@@ -59,16 +59,23 @@ public class FileListPane extends VBox {
                 }
             }
         });
-        selectedFilesTable.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends FileWithTags> change) -> {
+        selectedFilesTable.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TaggableFile> change) -> {
+
+            TaggableFile selectedFile = selectedFilesTable.getSelectionModel().getSelectedItem();
+            if (selectedFile == null && selectedFilesTable.getSelectionModel().getSelectedIndex() > -1) {
+                selectedFile = change.getList().get(selectedFilesTable.getSelectionModel().getSelectedIndex());
+            }
+
             tagTiger.getSelection().updateSelectedFiles(change.getList());
-            tagTiger.getSelection().updateSelectedFile(selectedFilesTable.getSelectionModel().getSelectedItem(), selectedFilesTable.getSelectionModel().getSelectedIndex());
+            tagTiger.getSelection().updateSelectedFile(selectedFile, selectedFilesTable.getSelectionModel().getSelectedIndex());
+
         });
 
         Image flagIconImage = new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/flag-red.png"));
-        TableColumn<FileWithTags, Boolean> changedColumn = new TableColumn<>();
+        TableColumn<TaggableFile, Boolean> changedColumn = new TableColumn<>();
         changedColumn.setCellValueFactory(p -> p.getValue().getChanged());
         changedColumn.setCellFactory(item -> {
-            TableCell<FileWithTags, Boolean> tableCell = new TableCell<FileWithTags, Boolean>() {
+            TableCell<TaggableFile, Boolean> tableCell = new TableCell<TaggableFile, Boolean>() {
                 @Override protected void updateItem(Boolean item, boolean empty) {
                     if (!empty) {
                         this.setGraphic(item.booleanValue() ? new Label("", new ImageView(flagIconImage)) : null);
@@ -81,7 +88,7 @@ public class FileListPane extends VBox {
         changedColumn.setMaxWidth(24);
         selectedFilesTable.getColumns().add(changedColumn);
 
-        TableColumn<FileWithTags, String> fileNameColumn = new TableColumn<>(tagTiger.getLocalization().fileName());
+        TableColumn<TaggableFile, String> fileNameColumn = new TableColumn<>(tagTiger.getLocalization().fileName());
         fileNameColumn.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().getFile().getName()));
         fileNameColumn.setMaxWidth(Double.MAX_VALUE);
         selectedFilesTable.getColumns().add(fileNameColumn);
