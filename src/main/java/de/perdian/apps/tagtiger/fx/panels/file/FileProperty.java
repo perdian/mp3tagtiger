@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.editor;
+package de.perdian.apps.tagtiger.fx.panels.file;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -22,7 +22,7 @@ import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 
-class EditorProperty {
+class FileProperty {
 
     private Function<TaggableFile, Property<String>> propertyFunction = null;
     private Supplier<Property<String>> controlSupplier = null;

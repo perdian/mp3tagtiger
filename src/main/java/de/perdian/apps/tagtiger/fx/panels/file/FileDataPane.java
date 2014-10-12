@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.editor;
+package de.perdian.apps.tagtiger.fx.panels.file;
 
 import java.util.List;
 
@@ -30,16 +30,16 @@ import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
  * @author Christian Robert
  */
 
-abstract class FileDataPanel extends GridPane {
+public abstract class FileDataPane extends GridPane {
 
     private TaggableFile currentFile = null;
-    private List<EditorProperty> editorProperties = null;
+    private List<FileProperty> fileProperties = null;
 
-    FileDataPanel(TagTiger tagTiger) {
+    protected FileDataPane(TagTiger tagTiger) {
 
-        EditorPropertyFactory propertyFactory = new EditorPropertyFactory(tagTiger.getSelection(), this::getCurrentFile);
-        this.initializePane(propertyFactory, tagTiger);
-        this.setEditorProperties(propertyFactory.getProperties());
+        FilePropertyControlFactory controlFactory = new FilePropertyControlFactory(tagTiger.getSelection(), this::getCurrentFile);
+        this.initializePane(controlFactory, tagTiger);
+        this.setFileProperties(controlFactory.getProperties());
         this.setDisable(true);
 
         tagTiger.getSelection().getSelectedFile().addListener((o, oldValue, newValue) -> this.updateCurrentFile(newValue));
@@ -51,7 +51,7 @@ abstract class FileDataPanel extends GridPane {
         // Make sure the currently active file has all listeners removed, so
         // that no further events will be sent if data from that file is updated
         if (this.getCurrentFile() != null) {
-            this.getEditorProperties().forEach(property -> property.removeListeners(this.getCurrentFile()));
+            this.getFileProperties().forEach(property -> property.removeListeners(this.getCurrentFile()));
         }
 
         // Now that the old listeners have been removed, we add the new
@@ -59,19 +59,19 @@ abstract class FileDataPanel extends GridPane {
         Platform.runLater(() -> this.setDisable(file == null));
         this.setCurrentFile(file);
         if (file != null) {
-            this.getEditorProperties().forEach(property -> property.addListeners(file));
+            this.getFileProperties().forEach(property -> property.addListeners(file));
         }
-        this.getEditorProperties().forEach(property -> this.updateCurrentFileProperty(file, property));
+        this.getFileProperties().forEach(property -> this.updateCurrentFileProperty(file, property));
 
     }
 
-    private void updateCurrentFileProperty(TaggableFile file, EditorProperty editorProperty) {
+    private void updateCurrentFileProperty(TaggableFile file, FileProperty editorProperty) {
         Property<String> property = file == null ? null : editorProperty.getPropertyFunction().apply(file);
         String propertyValue = property == null ? "" : property.getValue();
         editorProperty.getPropertyChangedListener().changed(property, null, propertyValue);
     }
 
-    protected abstract void initializePane(EditorPropertyFactory propertyFactory, TagTiger tagTiger);
+    protected abstract void initializePane(FilePropertyControlFactory propertyFactory, TagTiger tagTiger);
 
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
@@ -84,11 +84,11 @@ abstract class FileDataPanel extends GridPane {
         this.currentFile = currentFile;
     }
 
-    private List<EditorProperty> getEditorProperties() {
-        return this.editorProperties;
+    private List<FileProperty> getFileProperties() {
+        return this.fileProperties;
     }
-    private void setEditorProperties(List<EditorProperty> editorProperties) {
-        this.editorProperties = editorProperties;
+    private void setFileProperties(List<FileProperty> fileProperties) {
+        this.fileProperties = fileProperties;
     }
 
 }

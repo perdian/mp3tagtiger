@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.editor;
+package de.perdian.apps.tagtiger.fx.panels.file;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,24 +28,24 @@ import de.perdian.apps.tagtiger.business.framework.selection.Selection;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.panels.selection.SelectionKeyEventHandler;
 
-public class EditorPropertyFactory {
+public class FilePropertyControlFactory {
 
-    private List<EditorProperty> properties = null;
+    private List<FileProperty> properties = null;
     private Supplier<TaggableFile> fileSupplier = null;
     private Selection selection = null;
 
-    EditorPropertyFactory(Selection selection, Supplier<TaggableFile> fileSupplier) {
-        this.setSelection(selection);
+    FilePropertyControlFactory(Selection selection, Supplier<TaggableFile> fileSupplier) {
         this.setProperties(new ArrayList<>());
+        this.setSelection(selection);
         this.setFileSupplier(fileSupplier);
     }
 
-    TextField createTextField(Function<TaggableFile, Property<String>> propertyFunction) {
+    public TextField createTextField(Function<TaggableFile, Property<String>> propertyFunction) {
 
         TextField textField = new TextField();
         textField.setOnKeyPressed(new SelectionKeyEventHandler(this.getSelection()));
 
-        EditorProperty editorProperty = new EditorProperty();
+        FileProperty editorProperty = new FileProperty();
         editorProperty.setControlSupplier(() -> textField.textProperty());
         editorProperty.setControlChangedListener((o, oldValue, newValue) -> {
             if (this.getFileSupplier().get() != null) {
@@ -68,21 +68,21 @@ public class EditorPropertyFactory {
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
-    Selection getSelection() {
+    List<FileProperty> getProperties() {
+        return this.properties;
+    }
+    private void setProperties(List<FileProperty> properties) {
+        this.properties = properties;
+    }
+
+    private Selection getSelection() {
         return this.selection;
     }
     private void setSelection(Selection selection) {
         this.selection = selection;
     }
 
-    List<EditorProperty> getProperties() {
-        return this.properties;
-    }
-    private void setProperties(List<EditorProperty> properties) {
-        this.properties = properties;
-    }
-
-    Supplier<TaggableFile> getFileSupplier() {
+    private Supplier<TaggableFile> getFileSupplier() {
         return this.fileSupplier;
     }
     private void setFileSupplier(Supplier<TaggableFile> fileSupplier) {

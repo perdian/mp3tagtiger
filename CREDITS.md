@@ -6,15 +6,15 @@ ControlsFX
 http://fxexperience.com/controlsfx/
 BSD license
 
+jaudiotagger
+------------
+http://www.jthink.net/jaudiotagger/
+LGPL license
+
 Log4J
 -----
 http://logging.apache.org/log4j/
 Apache license
-
-mp3agic
--------
-https://github.com/mpatric/mp3agic
-MIT license
 
 SLF4J
 -----

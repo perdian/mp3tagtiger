@@ -16,12 +16,21 @@
 package de.perdian.apps.tagtiger.business.framework.tagging;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 
-import com.mpatric.mp3agic.Mp3File;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
 
 import de.perdian.apps.tagtiger.business.framework.selection.Selection;
 
@@ -34,108 +43,50 @@ public class TaggableFileLoader {
     }
 
     public TaggableFile loadFile(File file) throws Exception {
-
         int extensionSeparator = file.getName().lastIndexOf(".");
-
-        TaggableFile fileWrapper = new TaggableFile(file);
-        fileWrapper.getFileName().set(extensionSeparator < 0 ? file.getName() : file.getName().substring(0, extensionSeparator));
-        fileWrapper.getFileExtension().set(extensionSeparator < 0 || extensionSeparator >= file.getName().length() - 1 ? null : file.getName().substring(extensionSeparator + 1));
-
-        // Load the actual MP3 tags
-        Mp3File mp3File = new Mp3File(file.getAbsolutePath());
-        for(Tag tag : Tag.values()) {
-            tag.updateWrapper(fileWrapper, mp3File);
-        }
-
-        // Add listener to get notified when something has changed
-        fileWrapper.getChanged().addListener(new UpdateChangedFilesInTargetSelectionListener(fileWrapper));
-
-        UpdateTargetPropertyWithNewValueListener<String> updateListener = new UpdateTargetPropertyWithNewValueListener<>(fileWrapper.getChanged());
-        fileWrapper.getFileExtension().addListener(updateListener);
-        fileWrapper.getFileName().addListener(updateListener);
-        fileWrapper.getTagAlbum().addListener(updateListener);
-        fileWrapper.getTagArtist().addListener(updateListener);
-        fileWrapper.getTagCd().addListener(updateListener);
-        fileWrapper.getTagCoder().addListener(updateListener);
-        fileWrapper.getTagComment().addListener(updateListener);
-        fileWrapper.getTagComposer().addListener(updateListener);
-        fileWrapper.getTagCopyright().addListener(updateListener);
-        fileWrapper.getTagGenre().addListener(updateListener);
-        fileWrapper.getTagOriginalArtist().addListener(updateListener);
-        fileWrapper.getTagTitle().addListener(updateListener);
-        fileWrapper.getTagTrackNumber().addListener(updateListener);
-        fileWrapper.getTagTracksTotal().addListener(updateListener);
-        fileWrapper.getTagUrl().addListener(updateListener);
-        fileWrapper.getTagYear().addListener(updateListener);
-
-        return fileWrapper;
-
+        TaggableFile taggableFile = new TaggableFile(file);
+        taggableFile.setChanged(this.loadFileChangedProperty(taggableFile));
+        taggableFile.setFileName(this.loadStringProperty(extensionSeparator < 0 ? file.getName() : file.getName().substring(0, extensionSeparator), taggableFile.createUpdateChangePropertyListener()));
+        taggableFile.setFileExtension(this.loadStringProperty(extensionSeparator < 0 || extensionSeparator >= file.getName().length() - 1 ? null : file.getName().substring(extensionSeparator + 1), taggableFile.createUpdateChangePropertyListener()));
+        taggableFile.setTags(this.loadFileTags(file, taggableFile.createUpdateChangePropertyListener()));
+        return taggableFile;
     }
 
-    // -------------------------------------------------------------------------
-    // --- Inner classes -------------------------------------------------------
-    // -------------------------------------------------------------------------
-
-    class UpdateChangedFilesInTargetSelectionListener implements ChangeListener<Boolean> {
-
-        private TaggableFile file = null;
-
-        UpdateChangedFilesInTargetSelectionListener(TaggableFile file) {
-            this.setFile(file);
+    private Map<FieldKey, StringProperty> loadFileTags(File file, ChangeListener<String> changeListener) throws Exception {
+        AudioFile audioFile = AudioFileIO.read(file);
+        Tag audioTag = audioFile.getTagOrCreateDefault();
+        Map<FieldKey, StringProperty> fileWrapperTags = new HashMap<>();
+        for (FieldKey fieldKey : FieldKey.values()) {
+            String fieldKeyValue = audioTag.getFirst(fieldKey);
+            StringProperty fieldKeyProperty = new SimpleStringProperty(fieldKeyValue);
+            fieldKeyProperty.addListener(changeListener);
+            fileWrapperTags.put(fieldKey, fieldKeyProperty);
         }
-
-        @Override
-        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-            if (newValue.booleanValue()) {
-                TaggableFileLoader.this.getTargetSelection().getChangedFiles().add(this.getFile());
-            } else {
-                TaggableFileLoader.this.getTargetSelection().getChangedFiles().remove(this.getFile());
-            }
-        }
-
-        // ---------------------------------------------------------------------
-        // --- Property access methods -----------------------------------------
-        // ---------------------------------------------------------------------
-
-        private TaggableFile getFile() {
-            return this.file;
-        }
-        private void setFile(TaggableFile file) {
-            this.file = file;
-        }
-
+        return fileWrapperTags;
     }
 
-    class UpdateTargetPropertyWithNewValueListener<T> implements ChangeListener<T> {
-
-        private BooleanProperty targetProperty = null;
-
-        UpdateTargetPropertyWithNewValueListener(BooleanProperty targetProperty) {
-            this.setTargetProperty(targetProperty);
-        }
-
-        @Override
-        public void changed(ObservableValue<? extends T> observable, T oldValue, T newValue) {
-            if (oldValue == null && newValue == null) {
-                // Do nothing - no change
-            } else if (oldValue == newValue) {
-                // Do nothing - no change
-            } else if (oldValue == null || !oldValue.equals(newValue)) {
-                this.getTargetProperty().set(true);
+    private BooleanProperty loadFileChangedProperty(TaggableFile file) {
+        BooleanProperty changedProperty = new SimpleBooleanProperty(false);
+        changedProperty.addListener((o, oldValue, newValue) -> {
+            Selection targetSelection = TaggableFileLoader.this.getTargetSelection();
+            List<TaggableFile> targetList = targetSelection == null ? null : targetSelection.getChangedFiles();
+            if (targetList != null && file != null) {
+                Platform.runLater(() -> {
+                    if (newValue != null && newValue.booleanValue()) {
+                        targetList.add(file);
+                    } else {
+                        targetList.remove(file);
+                    }
+                });
             }
-        }
+        });
+        return changedProperty;
+    }
 
-        // -------------------------------------------------------------------------
-        // --- Property access methods ---------------------------------------------
-        // -------------------------------------------------------------------------
-
-        private BooleanProperty getTargetProperty() {
-            return this.targetProperty;
-        }
-        private void setTargetProperty(BooleanProperty targetProperty) {
-            this.targetProperty = targetProperty;
-        }
-
+    private StringProperty loadStringProperty(String value, ChangeListener<String> changeListener) {
+        StringProperty property = new SimpleStringProperty(value);
+        property.addListener(changeListener);
+        return property;
     }
 
     // -------------------------------------------------------------------------

@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.tagtiger.business.framework.localization;
 
+
 /**
  * Interface to provide methods for accessing localized values
  *
@@ -28,7 +29,7 @@ public interface Localization {
     }
 
     default String id3Tag() {
-        return "ID3-Tag";
+        return "ID3-TagType";
     }
 
     default String mp3File() {
@@ -113,6 +114,50 @@ public interface Localization {
 
     default String year() {
         return "Year";
+    }
+
+    default String copyToAllOtherSelectedFiles() {
+        return "Copy to all other selected files";
+    }
+
+    default String comment() {
+        return "Comment";
+    }
+
+    default String composer() {
+        return "Composer";
+    }
+
+    default String originalArtist() {
+        return "Original artist";
+    }
+
+    default String copyright() {
+        return "Copyright";
+    }
+
+    default String url() {
+        return "URL";
+    }
+
+    default String coder() {
+        return "Coder";
+    }
+
+    default String disc() {
+        return "Disc";
+    }
+
+    default String track() {
+        return "Track";
+    }
+
+    default String tracks() {
+        return "Tracks";
+    }
+
+    default String enumerateTracks() {
+        return "Enumerate tracks";
     }
 
 }

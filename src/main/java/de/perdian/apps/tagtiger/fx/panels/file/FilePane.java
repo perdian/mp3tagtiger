@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.editor;
+package de.perdian.apps.tagtiger.fx.panels.file;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
+import de.perdian.apps.tagtiger.fx.panels.file.information.InformationPane;
+import de.perdian.apps.tagtiger.fx.panels.file.tagging.TaggingPane;
 
-public class EditorPane extends VBox {
+public class FilePane extends VBox {
 
-    public EditorPane(TagTiger tagTiger) {
+    public FilePane(TagTiger tagTiger) {
 
-        FileInformationPane informationPane = new FileInformationPane(tagTiger);
+        InformationPane informationPane = new InformationPane(tagTiger);
         informationPane.setPadding(new Insets(5, 5, 5, 5));
         TitledPane informationWrapperPane = new TitledPane(tagTiger.getLocalization().mp3File(), informationPane);
         informationWrapperPane.setExpanded(true);
 
-        FileTagsPane tagsPane = new FileTagsPane(tagTiger);
+        TaggingPane tagsPane = new TaggingPane(tagTiger);
         tagsPane.setPadding(new Insets(5, 5, 5, 5));
         TitledPane taggingWrapperPane = new TitledPane(tagTiger.getLocalization().id3Tag(), tagsPane);
         taggingWrapperPane.setMaxHeight(Double.MAX_VALUE);

@@ -21,7 +21,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
-import de.perdian.apps.tagtiger.fx.panels.editor.EditorPane;
+import de.perdian.apps.tagtiger.fx.panels.file.FilePane;
 import de.perdian.apps.tagtiger.fx.panels.selection.SelectionPane;
 import de.perdian.apps.tagtiger.fx.panels.status.StatusPane;
 
@@ -44,7 +44,7 @@ public class MainApplicationPane extends VBox {
         fileSelectionWrapperPane.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(fileSelectionWrapperPane, Priority.ALWAYS);
 
-        EditorPane editorPane = new EditorPane(tagTiger);
+        FilePane editorPane = new FilePane(tagTiger);
         editorPane.setMinWidth(400d);
         editorPane.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(editorPane, Priority.ALWAYS);

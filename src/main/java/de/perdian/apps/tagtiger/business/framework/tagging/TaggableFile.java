@@ -16,35 +16,38 @@
 package de.perdian.apps.tagtiger.business.framework.tagging;
 
 import java.io.File;
+import java.util.Map;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+
+import org.jaudiotagger.tag.FieldKey;
 
 public class TaggableFile {
 
     private File file = null;
-    private final StringProperty fileName = new SimpleStringProperty();
-    private final StringProperty fileExtension = new SimpleStringProperty();
-    private final BooleanProperty changed = new SimpleBooleanProperty(false);
-    private final StringProperty tagArtist = new SimpleStringProperty();
-    private final StringProperty tagTitle = new SimpleStringProperty();
-    private final StringProperty tagAlbum = new SimpleStringProperty();
-    private final StringProperty tagCd = new SimpleStringProperty();
-    private final StringProperty tagYear = new SimpleStringProperty();
-    private final StringProperty tagTrackNumber = new SimpleStringProperty();
-    private final StringProperty tagTracksTotal = new SimpleStringProperty();
-    private final StringProperty tagGenre = new SimpleStringProperty();
-    private final StringProperty tagComment = new SimpleStringProperty();
-    private final StringProperty tagComposer = new SimpleStringProperty();
-    private final StringProperty tagOriginalArtist = new SimpleStringProperty();
-    private final StringProperty tagCopyright = new SimpleStringProperty();
-    private final StringProperty tagUrl = new SimpleStringProperty();
-    private final StringProperty tagCoder = new SimpleStringProperty();
+    private Map<FieldKey, StringProperty> tags = null;
+    private StringProperty fileName = new SimpleStringProperty();
+    private StringProperty fileExtension = new SimpleStringProperty();
+    private BooleanProperty changed = new SimpleBooleanProperty(false);
 
     TaggableFile(File file) {
         this.setFile(file);
+    }
+
+    <T> ChangeListener<T> createUpdateChangePropertyListener() {
+        return (o, oldValue, newValue) -> {
+            if (oldValue == null && newValue == null) {
+                // Do nothing - no change
+            } else if (oldValue == newValue) {
+                // Do nothing - no change
+            } else if (oldValue == null || !oldValue.equals(newValue)) {
+                new Thread(() -> TaggableFile.this.getChanged().set(true)).start();;
+            }
+        };
     }
 
     // -------------------------------------------------------------------------
@@ -61,69 +64,32 @@ public class TaggableFile {
     public StringProperty getFileName() {
         return this.fileName;
     }
+    void setFileName(StringProperty fileName) {
+        this.fileName = fileName;
+    }
 
     public StringProperty getFileExtension() {
         return this.fileExtension;
+    }
+    void setFileExtension(StringProperty fileExtension) {
+        this.fileExtension = fileExtension;
     }
 
     public BooleanProperty getChanged() {
         return this.changed;
     }
-
-    public StringProperty getTagTitle() {
-        return this.tagTitle;
+    void setChanged(BooleanProperty changed) {
+        this.changed = changed;
     }
 
-    public StringProperty getTagArtist() {
-        return this.tagArtist;
+    public StringProperty getTag(FieldKey fieldKey) {
+        return this.getTags().get(fieldKey);
     }
-
-    public StringProperty getTagAlbum() {
-        return this.tagAlbum;
+    Map<FieldKey, StringProperty> getTags() {
+        return this.tags;
     }
-
-    public StringProperty getTagCd() {
-        return this.tagCd;
-    }
-
-    public StringProperty getTagYear() {
-        return this.tagYear;
-    }
-
-    public StringProperty getTagTrackNumber() {
-        return this.tagTrackNumber;
-    }
-
-    public StringProperty getTagTracksTotal() {
-        return this.tagTracksTotal;
-    }
-
-    public StringProperty getTagGenre() {
-        return this.tagGenre;
-    }
-
-    public StringProperty getTagComment() {
-        return this.tagComment;
-    }
-
-    public StringProperty getTagComposer() {
-        return this.tagComposer;
-    }
-
-    public StringProperty getTagOriginalArtist() {
-        return this.tagOriginalArtist;
-    }
-
-    public StringProperty getTagCopyright() {
-        return this.tagCopyright;
-    }
-
-    public StringProperty getTagUrl() {
-        return this.tagUrl;
-    }
-
-    public StringProperty getTagCoder() {
-        return this.tagCoder;
+    void setTags(Map<FieldKey, StringProperty> tags) {
+        this.tags = tags;
     }
 
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.editor;
+package de.perdian.apps.tagtiger.fx.panels.file.information;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener.Change;
@@ -25,16 +25,18 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.panels.file.FilePropertyControlFactory;
+import de.perdian.apps.tagtiger.fx.panels.file.FileDataPane;
 import de.perdian.apps.tagtiger.fx.panels.selection.SelectionKeyEventHandler;
 
-class FileInformationPane extends FileDataPanel {
+public class InformationPane extends FileDataPane {
 
-    FileInformationPane(TagTiger tagTiger) {
+    public InformationPane(TagTiger tagTiger) {
         super(tagTiger);
     }
 
     @Override
-    protected void initializePane(EditorPropertyFactory propertyFactory, TagTiger tagTiger) {
+    protected void initializePane(FilePropertyControlFactory propertyFactory, TagTiger tagTiger) {
 
         TextField selectedIndexField = new TextField();
         selectedIndexField.setAlignment(Pos.CENTER);
