@@ -16,6 +16,7 @@
 package de.perdian.apps.tagtiger.business.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.perdian.apps.tagtiger.business.framework.jobs.Job;
 import de.perdian.apps.tagtiger.business.framework.jobs.JobContext;
@@ -39,7 +40,16 @@ public class SaveChangedFilesInSelectionJob implements Job {
         if (!changedFiles.isEmpty()) {
 
             context.updateProgress(this.getLocalization().savingNFiles(changedFiles.size()));
-            this.executeSaveFiles(changedFiles, context);
+
+            // Copy files into separate list, since they will be removed from
+            // the original list by the listeners after the changed property is
+            // updated
+            List<FileWithTags> changedFilesCopy = this.getSelection().getAvailableFiles().stream()
+                    .filter(file -> changedFiles.contains(file))
+                    .collect(Collectors.toList());
+
+            // Finally save the changed files
+            this.executeSaveFiles(changedFilesCopy, context);
 
         }
     }

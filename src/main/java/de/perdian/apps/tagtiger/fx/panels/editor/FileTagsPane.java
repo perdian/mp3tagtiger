@@ -17,17 +17,16 @@ package de.perdian.apps.tagtiger.fx.panels.editor;
 
 import javafx.scene.control.Label;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
-import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
 
-class TaggingPane extends AbstractFileDataPanel {
+class FileTagsPane extends FileDataPanel {
 
-    TaggingPane(TagTiger tagTiger) {
+    FileTagsPane(TagTiger tagTiger) {
         super(tagTiger);
         this.add(new Label("FILE EDITOR"), 0, 0);
     }
 
     @Override
-    protected void updateSelectedFileInternal(FileWithTags file) {
+    protected void initializePane(EditorPropertyFactory propertyFactory, TagTiger tagTiger) {
     }
 
 }

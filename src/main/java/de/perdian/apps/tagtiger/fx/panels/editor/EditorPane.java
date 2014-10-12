@@ -25,14 +25,14 @@ public class EditorPane extends VBox {
 
     public EditorPane(TagTiger tagTiger) {
 
-        InformationPane informationPane = new InformationPane(tagTiger);
+        FileInformationPane informationPane = new FileInformationPane(tagTiger);
         informationPane.setPadding(new Insets(5, 5, 5, 5));
         TitledPane informationWrapperPane = new TitledPane(tagTiger.getLocalization().mp3File(), informationPane);
         informationWrapperPane.setExpanded(true);
 
-        TaggingPane taggingPane = new TaggingPane(tagTiger);
-        taggingPane.setPadding(new Insets(5, 5, 5, 5));
-        TitledPane taggingWrapperPane = new TitledPane(tagTiger.getLocalization().id3Tag(), taggingPane);
+        FileTagsPane tagsPane = new FileTagsPane(tagTiger);
+        tagsPane.setPadding(new Insets(5, 5, 5, 5));
+        TitledPane taggingWrapperPane = new TitledPane(tagTiger.getLocalization().id3Tag(), tagsPane);
         taggingWrapperPane.setMaxHeight(Double.MAX_VALUE);
         taggingWrapperPane.setCollapsible(false);
         VBox.setVgrow(taggingWrapperPane, Priority.ALWAYS);

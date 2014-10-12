@@ -27,12 +27,14 @@ import de.perdian.apps.tagtiger.business.framework.TagTiger;
 import de.perdian.apps.tagtiger.business.framework.tagging.FileWithTags;
 import de.perdian.apps.tagtiger.fx.panels.selection.SelectionKeyEventHandler;
 
-class InformationPane extends AbstractFileDataPanel {
+class FileInformationPane extends FileDataPanel {
 
-    private TextField fileNameField = null;
-
-    InformationPane(TagTiger tagTiger) {
+    FileInformationPane(TagTiger tagTiger) {
         super(tagTiger);
+    }
+
+    @Override
+    protected void initializePane(EditorPropertyFactory propertyFactory, TagTiger tagTiger) {
 
         TextField selectedIndexField = new TextField();
         selectedIndexField.setAlignment(Pos.CENTER);
@@ -52,16 +54,10 @@ class InformationPane extends AbstractFileDataPanel {
         Label availableFilesSeparatorLabel = new Label(":");
         availableFilesSeparatorLabel.setPadding(new Insets(0, 15, 0, 5));
 
-        TextField fileNameField = new TextField();
-        fileNameField.textProperty().addListener((o, oldValue, newValue) -> {
-            if (tagTiger.getSelection().getSelectedFile().get() != null ) {
-                tagTiger.getSelection().getSelectedFile().get().getFileName().set(newValue);
-            }
-        });
+        TextField fileNameField = propertyFactory.createTextField(FileWithTags::getFileName);
         fileNameField.setMaxWidth(Double.MAX_VALUE);
         fileNameField.setOnKeyPressed(new SelectionKeyEventHandler(tagTiger.getSelection()));
         GridPane.setHgrow(fileNameField, Priority.ALWAYS);
-        this.setFileNameField(fileNameField);
 
         this.add(selectedIndexField, 0, 0);
         this.add(selectedIndexSeparatorLabel, 1, 0);
@@ -70,23 +66,6 @@ class InformationPane extends AbstractFileDataPanel {
         this.add(fileNameField, 4, 0);
         this.setDisable(true);
 
-    }
-
-    @Override
-    protected void updateSelectedFileInternal(FileWithTags file) {
-        this.getFileNameField().setText(file == null ? "" : file.getFileName().get());
-        this.setDisable(file == null);
-    }
-
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
-    private TextField getFileNameField() {
-        return this.fileNameField;
-    }
-    private void setFileNameField(TextField fileNameField) {
-        this.fileNameField = fileNameField;
     }
 
 }
