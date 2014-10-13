@@ -44,16 +44,16 @@ public class TaggableFileLoader {
 
     public TaggableFile loadFile(File file) throws Exception {
         int extensionSeparator = file.getName().lastIndexOf(".");
-        TaggableFile taggableFile = new TaggableFile(file);
+        AudioFile audioFile = AudioFileIO.read(file);
+        TaggableFile taggableFile = new TaggableFile(file, audioFile);
         taggableFile.setChanged(this.loadFileChangedProperty(taggableFile));
         taggableFile.setFileName(this.loadStringProperty(extensionSeparator < 0 ? file.getName() : file.getName().substring(0, extensionSeparator), taggableFile.createUpdateChangePropertyListener()));
         taggableFile.setFileExtension(this.loadStringProperty(extensionSeparator < 0 || extensionSeparator >= file.getName().length() - 1 ? null : file.getName().substring(extensionSeparator + 1), taggableFile.createUpdateChangePropertyListener()));
-        taggableFile.setTags(this.loadFileTags(file, taggableFile.createUpdateChangePropertyListener()));
+        taggableFile.setTags(this.loadFileTags(audioFile, taggableFile.createUpdateChangePropertyListener()));
         return taggableFile;
     }
 
-    private Map<FieldKey, StringProperty> loadFileTags(File file, ChangeListener<String> changeListener) throws Exception {
-        AudioFile audioFile = AudioFileIO.read(file);
+    private Map<FieldKey, StringProperty> loadFileTags(AudioFile audioFile, ChangeListener<String> changeListener) throws Exception {
         Tag audioTag = audioFile.getTagOrCreateDefault();
         Map<FieldKey, StringProperty> fileWrapperTags = new HashMap<>();
         for (FieldKey fieldKey : FieldKey.values()) {

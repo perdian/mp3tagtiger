@@ -67,6 +67,7 @@ public class SelectionPane extends BorderPane {
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().add(directoryTreePane);
         splitPane.getItems().add(fileListPane);
+        splitPane.setDividerPositions(0.4d);
 
         this.setTop(directoryFieldWrapper);
         this.setCenter(splitPane);

@@ -20,7 +20,7 @@ import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.messages.MessageDistributor;
 import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesLookup;
 import de.perdian.apps.tagtiger.business.framework.selection.Selection;
-import de.perdian.apps.tagtiger.business.impl.DirectorySelectJob;
+import de.perdian.apps.tagtiger.business.impl.jobs.DirectorySelectJob;
 
 /**
  * Central accessor class for all non-ui specific functions. This call is

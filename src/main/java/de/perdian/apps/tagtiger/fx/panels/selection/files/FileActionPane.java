@@ -24,7 +24,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.business.impl.SaveChangedFilesInSelectionJob;
+import de.perdian.apps.tagtiger.business.impl.jobs.SaveChangedFilesInSelectionJob;
 
 class FileActionPane extends HBox {
 
@@ -34,7 +34,7 @@ class FileActionPane extends HBox {
         tagTiger.getSelection().getChangedFiles().addListener((Change<? extends TaggableFile> change) -> {
             Platform.runLater(() -> saveChangedFilesButton.setDisable(change.getList().isEmpty()));
         });
-        saveChangedFilesButton.setOnAction(event -> tagTiger.getJobExecutor().executeJob(new SaveChangedFilesInSelectionJob(tagTiger.getSelection(), tagTiger.getLocalization())));
+        saveChangedFilesButton.setOnAction(event -> tagTiger.getJobExecutor().executeJob(new SaveChangedFilesInSelectionJob(tagTiger.getSelection().getAvailableFiles(), tagTiger.getSelection().getChangedFiles(), tagTiger.getLocalization())));
         saveChangedFilesButton.setDisable(true);
         saveChangedFilesButton.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(saveChangedFilesButton, Priority.ALWAYS);

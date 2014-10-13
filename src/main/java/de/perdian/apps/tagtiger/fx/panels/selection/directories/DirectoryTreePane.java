@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
@@ -54,7 +55,7 @@ public class DirectoryTreePane extends BorderPane {
         directoryTree.getSelectionModel().select(rootTreeItem);
 
         MenuItem reloadMenuItem = new MenuItem(tagTiger.getLocalization().reload(), new ImageView(new Image(DirectoryTreePane.class.getClassLoader().getResourceAsStream("icons/16/refresh.png"))));
-        reloadMenuItem.setOnAction(event -> this.reloadSelectedNode(directoryTree));
+        reloadMenuItem.setOnAction(event -> this.reloadSelectedNode(event, directoryTree));
         ContextMenu directoryTreeContextMenu = new ContextMenu();
         directoryTreeContextMenu.getItems().add(reloadMenuItem);
         directoryTree.setContextMenu(directoryTreeContextMenu);
@@ -100,7 +101,7 @@ public class DirectoryTreePane extends BorderPane {
         return null;
     }
 
-    private void reloadSelectedNode(TreeView<DirectoryTreeFile> directoryTree) {
+    private void reloadSelectedNode(ActionEvent event, TreeView<DirectoryTreeFile> directoryTree) {
         DirectoryTreeFileItem item = (DirectoryTreeFileItem)directoryTree.getSelectionModel().getSelectedItem();
         if (item != null) {
             item.reloadChildren();

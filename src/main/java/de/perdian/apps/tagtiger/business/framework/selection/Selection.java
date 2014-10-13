@@ -64,6 +64,7 @@ public class Selection {
 
     public void updateAvailableFiles(List<TaggableFile> newList) {
         this.getAvailableFiles().setAll(newList);
+        this.getChangedFiles().clear();
         this.updateSelectedFiles(Collections.emptyList());
         this.updateSelectedFile(null, -1);
     }
@@ -94,6 +95,10 @@ public class Selection {
             int cleanIndex = Math.max(0, Math.min(index, availableFiles.size() - 1));
             this.updateSelectedFile(availableFiles.get(cleanIndex), cleanIndex);
         }
+    }
+
+    public boolean hasChangedFiles() {
+        return !this.getChangedFiles().isEmpty();
     }
 
     // -------------------------------------------------------------------------

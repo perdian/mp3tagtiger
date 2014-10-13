@@ -37,7 +37,8 @@ public class MainApplicationPane extends VBox {
     public MainApplicationPane(TagTiger tagTiger) {
 
         SelectionPane selectionPane = new SelectionPane(tagTiger);
-        selectionPane.setMinWidth(400d);
+        selectionPane.setMinWidth(250d);
+        selectionPane.setPrefWidth(250d);
         TitledPane fileSelectionWrapperPane = new TitledPane(tagTiger.getLocalization().selectFiles(), selectionPane);
         fileSelectionWrapperPane.setMaxHeight(Double.MAX_VALUE);
         fileSelectionWrapperPane.setCollapsible(false);
@@ -52,7 +53,7 @@ public class MainApplicationPane extends VBox {
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().add(fileSelectionWrapperPane);
         splitPane.getItems().add(editorPane);
-        splitPane.setDividerPositions(0.3f);
+        splitPane.setDividerPositions(0.25d);
         VBox.setVgrow(splitPane, Priority.ALWAYS);
 
         StatusPane statusPane = new StatusPane(tagTiger);

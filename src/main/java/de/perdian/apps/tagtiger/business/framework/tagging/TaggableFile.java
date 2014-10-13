@@ -24,18 +24,21 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 
+import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.tag.FieldKey;
 
 public class TaggableFile {
 
     private File file = null;
+    private AudioFile audioFile = null;
     private Map<FieldKey, StringProperty> tags = null;
     private StringProperty fileName = new SimpleStringProperty();
     private StringProperty fileExtension = new SimpleStringProperty();
     private BooleanProperty changed = new SimpleBooleanProperty(false);
 
-    TaggableFile(File file) {
+    TaggableFile(File file, AudioFile audioFile) {
         this.setFile(file);
+        this.setAudioFile(audioFile);
     }
 
     <T> ChangeListener<T> createUpdateChangePropertyListener() {
@@ -90,6 +93,13 @@ public class TaggableFile {
     }
     void setTags(Map<FieldKey, StringProperty> tags) {
         this.tags = tags;
+    }
+
+    AudioFile getAudioFile() {
+        return this.audioFile;
+    }
+    void setAudioFile(AudioFile audioFile) {
+        this.audioFile = audioFile;
     }
 
 }

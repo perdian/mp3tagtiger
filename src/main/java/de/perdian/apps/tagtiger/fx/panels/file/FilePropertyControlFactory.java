@@ -44,6 +44,11 @@ public class FilePropertyControlFactory {
 
         TextField textField = new TextField();
         textField.setOnKeyPressed(new SelectionKeyEventHandler(this.getSelection()));
+        textField.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if (newValue) {
+                Platform.runLater(() -> textField.selectAll());
+            }
+        });
 
         FileProperty editorProperty = new FileProperty();
         editorProperty.setControlSupplier(() -> textField.textProperty());

@@ -69,6 +69,8 @@ public class TaggingGuiBuilder {
         int controlIndex = controls.size();
 
         TextField textField = this.getPropertyFactory().createTextField(file -> file.getTag(fieldKey));
+        textField.setPrefWidth(0d);
+        textField.setMinWidth(0d);
         textField.addEventHandler(KeyEvent.KEY_PRESSED, event -> this.handleTextFieldKeyPress(event, controlIndex, controls));
         controls.add(textField);
 

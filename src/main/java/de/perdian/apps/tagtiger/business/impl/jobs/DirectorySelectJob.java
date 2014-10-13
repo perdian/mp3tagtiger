@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.business.impl;
+package de.perdian.apps.tagtiger.business.impl.jobs;
 
 import java.io.File;
 import java.io.FileFilter;
