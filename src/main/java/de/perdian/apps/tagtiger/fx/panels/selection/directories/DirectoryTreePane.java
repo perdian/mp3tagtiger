@@ -21,8 +21,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javafx.application.Platform;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
 
@@ -43,11 +47,17 @@ public class DirectoryTreePane extends BorderPane {
         directoryTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             File selectedFile = newValue == null || newValue.getValue() == null ? null : newValue.getValue().getFile();
             if (selectedFile != null && !Arrays.asList(File.listRoots()).contains(selectedFile)) {
-                tagTiger.getSelection().updateDirectory(selectedFile);
+                new Thread(() -> tagTiger.getSelection().updateDirectory(selectedFile)).start();
             }
         });
         directoryTree.setShowRoot(false);
         directoryTree.getSelectionModel().select(rootTreeItem);
+
+        MenuItem reloadMenuItem = new MenuItem(tagTiger.getLocalization().reload(), new ImageView(new Image(DirectoryTreePane.class.getClassLoader().getResourceAsStream("icons/16/refresh.png"))));
+        reloadMenuItem.setOnAction(event -> this.reloadSelectedNode(directoryTree));
+        ContextMenu directoryTreeContextMenu = new ContextMenu();
+        directoryTreeContextMenu.getItems().add(reloadMenuItem);
+        directoryTree.setContextMenu(directoryTreeContextMenu);
 
         tagTiger.getSelection().getSelectedDirectory().addListener((observable, oldValue, newValue) -> this.selectNodeForDirectory(directoryTree, newValue));
 
@@ -78,7 +88,7 @@ public class DirectoryTreePane extends BorderPane {
     private TreeItem<DirectoryTreeFile> findChildItem(TreeItem<DirectoryTreeFile> parentItem, File file) {
         if (parentItem instanceof DirectoryTreeFileItem) {
             DirectoryTreeFileItem parentFileItem = (DirectoryTreeFileItem)parentItem;
-            parentFileItem.ensureChildrenInternalIfNotLoaded(0);
+            parentFileItem.ensureChildren();
         }
         if (parentItem != null && parentItem.getChildren() != null) {
             for (TreeItem<DirectoryTreeFile> directoryItem : parentItem.getChildren()) {
@@ -88,6 +98,13 @@ public class DirectoryTreePane extends BorderPane {
             }
         }
         return null;
+    }
+
+    private void reloadSelectedNode(TreeView<DirectoryTreeFile> directoryTree) {
+        DirectoryTreeFileItem item = (DirectoryTreeFileItem)directoryTree.getSelectionModel().getSelectedItem();
+        if (item != null) {
+            item.reloadChildren();
+        }
     }
 
 }

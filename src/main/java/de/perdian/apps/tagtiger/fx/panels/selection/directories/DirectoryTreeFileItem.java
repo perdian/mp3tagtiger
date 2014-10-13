@@ -15,12 +15,11 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.selection.directories;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
+import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -29,85 +28,55 @@ class DirectoryTreeFileItem extends TreeItem<DirectoryTreeFile> {
 
     private boolean childrenLoaded = false;
 
-    private DirectoryTreeFileItem(DirectoryTreeFile path) {
+    private DirectoryTreeFileItem(DirectoryTreeFile path, boolean virtualItem) {
         super(path, new ImageView(new Image(DirectoryTreeFileItem.class.getClassLoader().getResourceAsStream("icons/16/folder.png"))));
-        this.addEventHandler(TreeItem.branchExpandedEvent(), new ChangeIconHandler(new Image(DirectoryTreeFileItem.class.getClassLoader().getResourceAsStream("icons/16/folder-open.png"))));
-        this.addEventHandler(TreeItem.branchCollapsedEvent(), new ChangeIconHandler(new Image(DirectoryTreeFileItem.class.getClassLoader().getResourceAsStream("icons/16/folder.png"))));
+        if (!virtualItem) {
+            this.addEventHandler(TreeItem.branchExpandedEvent(), event -> this.handleBranchExpandedEvent(event));
+            this.addEventHandler(TreeItem.branchExpandedEvent(), event -> this.setGraphic(new ImageView(new Image(DirectoryTreeFileItem.class.getClassLoader().getResourceAsStream("icons/16/folder-open.png")))));
+            this.addEventHandler(TreeItem.branchCollapsedEvent(), event -> this.setGraphic(new ImageView(new Image(DirectoryTreeFileItem.class.getClassLoader().getResourceAsStream("icons/16/folder.png")))));
+            this.getChildren().add(new DirectoryTreeFileItem(new DirectoryTreeFile(null, "..."), true));
+        }
     }
 
     static List<DirectoryTreeFileItem> listRoots() {
         return DirectoryTreeFile.listRoots().stream()
-                .map(DirectoryTreeFileItem::new)
-                .peek(item -> item.ensureChildrenInternal(0))
-                .collect(Collectors.toList());
+            .map(path -> new DirectoryTreeFileItem(path, false))
+            .peek(item -> item.populateChildrenToDepth(1))
+            .collect(Collectors.toList());
     }
 
-    @Override
-    public ObservableList<TreeItem<DirectoryTreeFile>> getChildren() {
-        this.ensureChildren(1);
-        return super.getChildren();
+    void ensureChildren() {
+        this.populateChildrenToDepth(1);
     }
 
-    @Override
-    public boolean isLeaf() {
-        this.ensureChildren(1);
-        return super.isLeaf();
+    void reloadChildren() {
+        List<DirectoryTreeFileItem> loadingChildren = new ArrayList<>();
+        loadingChildren.add(new DirectoryTreeFileItem(new DirectoryTreeFile(null, "..."), true));
+        this.getChildren().setAll(loadingChildren);
+        new Thread(() -> {
+            List<DirectoryTreeFileItem> children = this.createChildrenList();
+            children.forEach(child -> child.populateChildrenToDepth(0));
+            Platform.runLater(() -> this.getChildren().setAll(children));
+        }).start();
     }
 
-    synchronized void ensureChildren(int level) {
-        if(!this.isChildrenLoaded()) {
+    private void handleBranchExpandedEvent(TreeModificationEvent<Object> event) {
+        new Thread(() -> this.populateChildrenToDepth(2)).start();;
+    }
+
+    private void populateChildrenToDepth(int depth) {
+        if (!this.isChildrenLoaded()) {
             this.setChildrenLoaded(true);
-            super.getChildren().setAll(Arrays.asList(new TreeItem<>(new DirectoryTreeFile(null, "..."))));
-            new Thread(() -> this.ensureChildrenInternal(level)).start();
+            this.getChildren().setAll(this.createChildrenList());
+        }
+        if (depth > 0) {
+            this.getChildren().forEach(child -> ((DirectoryTreeFileItem)child).populateChildrenToDepth(depth - 1));
         }
     }
 
-    void ensureChildrenInternalIfNotLoaded(int level) {
-        if(!this.isChildrenLoaded()) {
-            this.setChildrenLoaded(true);
-            this.ensureChildrenInternal(level);
-        }
+    private List<DirectoryTreeFileItem> createChildrenList() {
+        return this.getValue().listChildren().stream().map(path -> new DirectoryTreeFileItem(path, false)).collect(Collectors.toList());
     }
-
-    void ensureChildrenInternal(int level) {
-        this.setChildrenLoaded(true);
-        List<DirectoryTreeFileItem> items = this.getValue().listChildren().stream().map(DirectoryTreeFileItem::new).collect(Collectors.toList());
-        if (level > 0) {
-            items.stream().forEach(item -> item.ensureChildrenInternal(level - 1));
-        }
-        super.getChildren().setAll(items);
-    }
-
-    // -------------------------------------------------------------------------
-    // --- Inner classes -------------------------------------------------------
-    // -------------------------------------------------------------------------
-
-    static class ChangeIconHandler implements EventHandler<TreeModificationEvent<DirectoryTreeFileItem>> {
-
-        private Image image = null;
-
-        ChangeIconHandler(Image image) {
-            this.setImage(image);
-        }
-
-        @Override
-        public void handle(TreeModificationEvent<DirectoryTreeFileItem> event) {
-            event.getSource().setGraphic(new ImageView(this.getImage()));
-        }
-
-        // ---------------------------------------------------------------------
-        // --- Property access methods -----------------------------------------
-        // ---------------------------------------------------------------------
-
-        private Image getImage() {
-            return this.image;
-        }
-        private void setImage(Image image) {
-            this.image = image;
-        }
-
-    }
-
 
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------

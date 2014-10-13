@@ -37,7 +37,7 @@ class DirectoryTreeFile {
     }
 
     List<DirectoryTreeFile> listChildren() {
-        File[] childrenArray = this.getFile().listFiles(new DirectoryFileFilter());
+        File[] childrenArray = this.getFile() == null ? null : this.getFile().listFiles(new DirectoryFileFilter());
         if (childrenArray == null) {
             return Collections.emptyList();
         } else {

@@ -160,4 +160,8 @@ public interface Localization {
         return "Enumerate tracks";
     }
 
+    default String reload() {
+        return "Reload";
+    }
+
 }
