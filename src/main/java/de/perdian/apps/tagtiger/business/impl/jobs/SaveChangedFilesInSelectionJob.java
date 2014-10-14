@@ -27,25 +27,24 @@ import org.slf4j.LoggerFactory;
 import de.perdian.apps.tagtiger.business.framework.jobs.Job;
 import de.perdian.apps.tagtiger.business.framework.jobs.JobContext;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
+import de.perdian.apps.tagtiger.business.framework.selection.Selection;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileWriter;
 
 public class SaveChangedFilesInSelectionJob implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(SaveChangedFilesInSelectionJob.class);
-    private List<TaggableFile> availableFiles = null;
-    private List<TaggableFile> changedFiles = null;
+    private Selection selection = null;
     private Localization localization = null;
 
-    public SaveChangedFilesInSelectionJob(List<TaggableFile> availableFiles, List<TaggableFile> changedFiles, Localization localization) {
-        this.setAvailableFiles(availableFiles);
-        this.setChangedFiles(changedFiles);
+    public SaveChangedFilesInSelectionJob(Selection selection, Localization localization) {
+        this.setSelection(selection);
         this.setLocalization(localization);
     }
 
     @Override
     public void execute(JobContext context) {
-        List<TaggableFile> changedFiles = this.getChangedFiles();
+        List<TaggableFile> changedFiles = this.getSelection().changedFilesProperty();
         if (!changedFiles.isEmpty()) {
 
             context.updateProgress(this.getLocalization().savingNFiles(changedFiles.size()));
@@ -53,7 +52,7 @@ public class SaveChangedFilesInSelectionJob implements Job {
             // Copy files into separate list, since they will be removed from
             // the original list by the listeners after the changed property is
             // updated
-            List<TaggableFile> changedFilesCopy = this.getAvailableFiles().stream()
+            List<TaggableFile> changedFilesCopy = this.getSelection().availableFilesProperty().stream()
                 .filter(file -> changedFiles.contains(file))
                 .collect(Collectors.toList());
 
@@ -114,18 +113,11 @@ public class SaveChangedFilesInSelectionJob implements Job {
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
-    private List<TaggableFile> getAvailableFiles() {
-        return this.availableFiles;
+    private Selection getSelection() {
+        return this.selection;
     }
-    private void setAvailableFiles(List<TaggableFile> availableFiles) {
-        this.availableFiles = availableFiles;
-    }
-
-    private List<TaggableFile> getChangedFiles() {
-        return this.changedFiles;
-    }
-    private void setChangedFiles(List<TaggableFile> changedFiles) {
-        this.changedFiles = changedFiles;
+    private void setSelection(Selection selection) {
+        this.selection = selection;
     }
 
     private Localization getLocalization() {

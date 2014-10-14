@@ -85,6 +85,8 @@ public class DirectorySelectionPane extends BorderPane {
         if (selectedItem != null && selectedItem instanceof DirectorySelectionTreeItem) {
             ((DirectorySelectionTreeItem)selectedItem).reloadChildren();
         }
+        this.setSelectedDirectory(null);
+        this.handleSelectedItemChange(null, selectedItem);
     }
 
     private void handleSelectedDirectoryChange(TreeView<DirectorySelectionBean> treeView, File directory) {

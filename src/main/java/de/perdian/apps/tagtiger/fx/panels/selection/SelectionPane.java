@@ -16,8 +16,14 @@
 package de.perdian.apps.tagtiger.fx.panels.selection;
 
 import java.io.File;
+import java.util.Optional;
 
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener.Change;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
@@ -28,7 +34,9 @@ import javafx.scene.layout.Priority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.tagtiger.business.framework.TagTiger;
+import de.perdian.apps.tagtiger.business.framework.localization.Localization;
+import de.perdian.apps.tagtiger.business.framework.selection.Selection;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.components.directories.DirectorySelectionPane;
 import de.perdian.apps.tagtiger.fx.components.files.FileSelectionPane;
 
@@ -36,17 +44,23 @@ public class SelectionPane extends BorderPane {
 
     static final Logger log = LoggerFactory.getLogger(SelectionPane.class);
 
-    public SelectionPane(TagTiger tagTiger) {
+    private final ObjectProperty<EventHandler<ActionEvent>> onSaveAction = new SimpleObjectProperty<>();
+
+    public SelectionPane(Selection selection, Localization localization) {
 
         TextField directoryField = new TextField();
         HBox.setHgrow(directoryField, Priority.ALWAYS);
         HBox directoryFieldWrapper = new HBox(directoryField);
         directoryFieldWrapper.setPadding(new Insets(0, 0, 5, 0));
 
-        DirectorySelectionPane directorySelectionPane = new DirectorySelectionPane(tagTiger.getLocalization());
-        directorySelectionPane.selectedDirectoryProperty().bindBidirectional(tagTiger.getSelection().getSelectedDirectory());
+        DirectorySelectionPane directorySelectionPane = new DirectorySelectionPane(localization);
+        directorySelectionPane.selectedDirectoryProperty().bindBidirectional(selection.selectedDirectoryProperty());
 
-        FileSelectionPane fileSelectionPane = new FileSelectionPane();
+        FileSelectionPane fileSelectionPane = new FileSelectionPane(localization);
+        fileSelectionPane.availableFilesProperty().bindBidirectional(selection.availableFilesProperty());
+        fileSelectionPane.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> selection.selectedFilesProperty().setAll(change.getList()));
+        fileSelectionPane.selectedFileProperty().addListener((o, oldValue, newValue) -> selection.selectedFileProperty().set(newValue));
+        fileSelectionPane.setOnSaveAction(event -> Optional.ofNullable(this.onSaveActionProperty().get()).ifPresent(handler -> handler.handle(event)));
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().add(directorySelectionPane);
@@ -56,6 +70,8 @@ public class SelectionPane extends BorderPane {
         this.setTop(directoryFieldWrapper);
         this.setCenter(splitPane);
         this.setPadding(new Insets(5, 5, 5, 5));
+
+        selection.changedFilesProperty().addListener((o, oldValue, newValue) -> fileSelectionPane.saveEnabledProperty().set(newValue != null && !newValue.isEmpty()));
 
         // Add listeners to connect the GUI components with the underlying
         // data structures
@@ -77,6 +93,20 @@ public class SelectionPane extends BorderPane {
             });
         });
 
+    }
+
+    // -------------------------------------------------------------------------
+    // --- Property access methods ---------------------------------------------
+    // -------------------------------------------------------------------------
+
+    public ObjectProperty<EventHandler<ActionEvent>> onSaveActionProperty() {
+        return this.onSaveAction;
+    }
+    public EventHandler<ActionEvent> getOnSaveAction() {
+        return this.onSaveAction.get();
+    }
+    public void setOnSaveAction(EventHandler<ActionEvent> eventHandler) {
+        this.onSaveAction.set(eventHandler);
     }
 
 }

@@ -21,7 +21,8 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
-import de.perdian.apps.tagtiger.fx.panels.file.FilePane;
+import de.perdian.apps.tagtiger.business.impl.jobs.SaveChangedFilesInSelectionJob;
+import de.perdian.apps.tagtiger.fx.panels.editor.EditorPane;
 import de.perdian.apps.tagtiger.fx.panels.selection.SelectionPane;
 import de.perdian.apps.tagtiger.fx.panels.status.StatusPane;
 
@@ -36,18 +37,20 @@ public class MainApplicationPane extends VBox {
 
     public MainApplicationPane(TagTiger tagTiger) {
 
-        SelectionPane selectionPane = new SelectionPane(tagTiger);
+        SelectionPane selectionPane = new SelectionPane(tagTiger.getSelection(), tagTiger.getLocalization());
         selectionPane.setMinWidth(250d);
         selectionPane.setPrefWidth(250d);
+        selectionPane.setOnSaveAction(event -> tagTiger.getJobExecutor().executeJob(new SaveChangedFilesInSelectionJob(tagTiger.getSelection(), tagTiger.getLocalization())));
         TitledPane fileSelectionWrapperPane = new TitledPane(tagTiger.getLocalization().selectFiles(), selectionPane);
         fileSelectionWrapperPane.setMaxHeight(Double.MAX_VALUE);
         fileSelectionWrapperPane.setCollapsible(false);
         fileSelectionWrapperPane.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(fileSelectionWrapperPane, Priority.ALWAYS);
 
-        FilePane editorPane = new FilePane(tagTiger);
+        EditorPane editorPane = new EditorPane(tagTiger.getLocalization());
         editorPane.setMinWidth(400d);
         editorPane.setPadding(new Insets(5, 5, 5, 5));
+        editorPane.currentFileProperty().bind(tagTiger.getSelection().selectedFileProperty());
         VBox.setVgrow(editorPane, Priority.ALWAYS);
 
         SplitPane splitPane = new SplitPane();

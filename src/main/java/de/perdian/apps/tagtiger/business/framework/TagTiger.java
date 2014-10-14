@@ -54,8 +54,9 @@ public class TagTiger {
         this.setSelection(selection);
 
         // Add listeners
-        selection.getSelectedDirectory().addListener((o, oldValue, newValue) -> jobExecutor.executeJob(new DirectorySelectJob(newValue, this.getSelection(), this.getLocalization(), this.getMessageDistributor())));
-        selection.getSelectedDirectory().addListener((o, oldValue, newValue) -> preferences.setString(PreferencesKey.CURRENT_DIRECTORY, newValue == null ? null : newValue.getAbsolutePath()));
+        selection.availableFilesProperty().addListener((o, oldValue, newValue) -> selection.changedFilesProperty().clear());
+        selection.selectedDirectoryProperty().addListener((o, oldValue, newValue) -> jobExecutor.executeJob(new DirectorySelectJob(newValue, selection, localization, messageDistributor)));
+        selection.selectedDirectoryProperty().addListener((o, oldValue, newValue) -> preferences.setString(PreferencesKey.CURRENT_DIRECTORY, newValue == null ? null : newValue.getAbsolutePath()));
 
     }
 

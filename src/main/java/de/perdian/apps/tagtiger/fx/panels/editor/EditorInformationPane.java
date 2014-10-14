@@ -13,36 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.file.information;
+package de.perdian.apps.tagtiger.fx.panels.editor;
 
-import javafx.application.Platform;
-import javafx.collections.ListChangeListener.Change;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import de.perdian.apps.tagtiger.business.framework.TagTiger;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.panels.file.FilePropertyControlFactory;
-import de.perdian.apps.tagtiger.fx.panels.file.FileDataPane;
-import de.perdian.apps.tagtiger.fx.panels.selection.SelectionKeyEventHandler;
+import de.perdian.apps.tagtiger.fx.components.EditorComponentFactory;
 
-public class InformationPane extends FileDataPane {
+class EditorInformationPane extends GridPane {
 
-    public InformationPane(TagTiger tagTiger) {
-        super(tagTiger);
-    }
-
-    @Override
-    protected void initializePane(FilePropertyControlFactory propertyFactory, TagTiger tagTiger) {
+    EditorInformationPane(EditorComponentFactory<TaggableFile> componentFactory) {
 
         TextField selectedIndexField = new TextField();
         selectedIndexField.setAlignment(Pos.CENTER);
         selectedIndexField.setEditable(true);
         selectedIndexField.setMaxWidth(40);
-        tagTiger.getSelection().getSelectedIndex().addListener((o, oldValue, newValue) -> Platform.runLater(() -> selectedIndexField.setText(newValue.intValue() < 0 ? "" : String.valueOf(newValue.intValue() + 1))));
 
         Label selectedIndexSeparatorLabel = new Label("/");
         selectedIndexSeparatorLabel.setPadding(new Insets(0, 5, 0, 5));
@@ -51,21 +40,26 @@ public class InformationPane extends FileDataPane {
         availableFilesSizeField.setAlignment(Pos.CENTER);
         availableFilesSizeField.setEditable(true);
         availableFilesSizeField.setMaxWidth(40);
-        tagTiger.getSelection().getAvailableFiles().addListener((Change<? extends TaggableFile> change) -> Platform.runLater(() -> availableFilesSizeField.setText(String.valueOf(change.getList().size()))));
 
         Label availableFilesSeparatorLabel = new Label(":");
         availableFilesSeparatorLabel.setPadding(new Insets(0, 15, 0, 5));
 
-        TextField fileNameField = propertyFactory.createTextField(TaggableFile::getFileName);
+        TextField fileNameField = componentFactory.createTextField(TaggableFile::getFileName);
         fileNameField.setMaxWidth(Double.MAX_VALUE);
-        fileNameField.setOnKeyPressed(new SelectionKeyEventHandler(tagTiger.getSelection()));
         GridPane.setHgrow(fileNameField, Priority.ALWAYS);
+
+        Label fileExtensionLabel = new Label(".");
+        fileExtensionLabel.setPadding(new Insets(0, 2, 0, 2));
+        TextField fileExtensionField = componentFactory.createTextField(TaggableFile::getFileExtension);
+        fileExtensionField.setPrefWidth(50);
 
         this.add(selectedIndexField, 0, 0);
         this.add(selectedIndexSeparatorLabel, 1, 0);
         this.add(availableFilesSizeField, 2, 0);
         this.add(availableFilesSeparatorLabel, 3, 0);
         this.add(fileNameField, 4, 0);
+        this.add(fileExtensionLabel, 5, 0);
+        this.add(fileExtensionField, 6, 0);
 
     }
 

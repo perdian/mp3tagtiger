@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javafx.application.Platform;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,14 +60,18 @@ public class DirectorySelectJob implements Job {
 
     @Override
     public void execute(JobContext context) {
-        if (!this.getSelectedDirectory().exists() || !this.getSelectedDirectory().isDirectory()) {
-            Message message = new Message();
-            message.setTitle(this.getLocalization().directoryNotFound());
-            message.setHeaderText(this.getLocalization().directoryNotFound());
-            message.setContentText(this.getLocalization().cannotFindDirectory(this.getSelectedDirectory().getAbsolutePath()));
-            this.getMessageDistributor().distributeMessage(message);
+        if (this.getSelectedDirectory() == null) {
+            Platform.runLater(() -> this.getTargetSelection().availableFilesProperty().clear());
         } else {
-            this.executeInternal(context);
+            if (!this.getSelectedDirectory().exists() || !this.getSelectedDirectory().isDirectory()) {
+                Message message = new Message();
+                message.setTitle(this.getLocalization().directoryNotFound());
+                message.setHeaderText(this.getLocalization().directoryNotFound());
+                message.setContentText(this.getLocalization().cannotFindDirectory(this.getSelectedDirectory().getAbsolutePath()));
+                this.getMessageDistributor().distributeMessage(message);
+            } else {
+                this.executeInternal(context);
+            }
         }
     }
 
@@ -78,21 +84,32 @@ public class DirectorySelectJob implements Job {
         log.debug("Collected {} files from directory: {}", sourceFiles.size(), this.getSelectedDirectory().getName());
         context.updateProgress(this.getLocalization().startProcessingOfFiles(sourceFiles.size()), -1, -1);
 
-        TaggableFileLoader taggableFileLoader = new TaggableFileLoader(this.getTargetSelection());
+        TaggableFileLoader taggableFileLoader = new TaggableFileLoader();
         List<TaggableFile> taggableFiles = new ArrayList<>(sourceFiles.size());
         for (int i = 0; i < sourceFiles.size() && context.isActive() && !context.isCancelled(); i++) {
             File sourceFile = sourceFiles.get(i);
             context.updateProgress(this.getLocalization().processingFile(sourceFile.getName()), i + 1, sourceFiles.size());
             try {
-                taggableFiles.add(taggableFileLoader.loadFile(sourceFile));
-            } catch(Exception e) {
+                TaggableFile taggableFile = taggableFileLoader.loadFile(sourceFile);
+                taggableFile.getChanged().addListener((o, oldValue, newValue) -> {
+                    List<TaggableFile> targetList = this.getTargetSelection().changedFilesProperty();
+                    Platform.runLater(() -> {
+                        if (newValue != null && newValue.booleanValue()) {
+                            targetList.add(taggableFile);
+                        } else {
+                            targetList.remove(taggableFile);
+                        }
+                    });
+                });
+                taggableFiles.add(taggableFile);
+            } catch (Exception e) {
                 log.warn("Cannot read file: {}", sourceFile.getAbsolutePath(), e);
             }
         }
         log.debug("Processed {} files from directory: {}", taggableFiles.size(), this.getSelectedDirectory().getName());
 
         if (context.isActive() && !context.isCancelled()) {
-            this.getTargetSelection().updateAvailableFiles(taggableFiles);
+            Platform.runLater(() -> this.getTargetSelection().availableFilesProperty().setAll(taggableFiles));
         }
 
     }
@@ -104,7 +121,7 @@ public class DirectorySelectJob implements Job {
     }
 
     private void appendSourceFilesFromDirectory(File sourceDirectory, List<File> targetFiles, boolean recursive, JobContext context) {
-        File[] sourceFiles = sourceDirectory.listFiles(new Mp3FileFilter());
+        File[] sourceFiles = sourceDirectory == null ? null : sourceDirectory.listFiles(new Mp3FileFilter());
         if (sourceFiles != null && context.isActive()) {
             Arrays.stream(sourceFiles).filter(file -> file.isFile()).forEach(file -> targetFiles.add(file));
             Arrays.stream(sourceFiles).filter(file -> file.isDirectory()).forEach(file -> this.appendSourceFilesFromDirectory(file, targetFiles, recursive, context));
@@ -140,13 +157,6 @@ public class DirectorySelectJob implements Job {
         this.selectedDirectory = selectedDirectory;
     }
 
-    private Selection getTargetSelection() {
-        return this.targetSelection;
-    }
-    private void setTargetSelection(Selection targetSelection) {
-        this.targetSelection = targetSelection;
-    }
-
     private Localization getLocalization() {
         return this.localization;
     }
@@ -159,6 +169,13 @@ public class DirectorySelectJob implements Job {
     }
     private void setMessageDistributor(MessageDistributor messageDistributor) {
         this.messageDistributor = messageDistributor;
+    }
+
+    private Selection getTargetSelection() {
+        return this.targetSelection;
+    }
+    private void setTargetSelection(Selection targetSelection) {
+        this.targetSelection = targetSelection;
     }
 
 }

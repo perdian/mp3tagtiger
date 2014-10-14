@@ -31,9 +31,9 @@ public class SelectionKeyEventHandler implements EventHandler<KeyEvent> {
     @Override
     public void handle(KeyEvent event) {
         if (event.getCode() == KeyCode.PAGE_UP) {
-            this.getSelection().updateSelectedFileToIndex(event.isShiftDown() ? Integer.MIN_VALUE : this.getSelection().getSelectedIndex().get() - 1);
+            this.getSelection().selectedIndexProperty().set(event.isShiftDown() ? Integer.MIN_VALUE : this.getSelection().selectedIndexProperty().get() - 1);
         } else if (event.getCode() == KeyCode.PAGE_DOWN) {
-            this.getSelection().updateSelectedFileToIndex(event.isShiftDown() ? Integer.MAX_VALUE : this.getSelection().getSelectedIndex().get() + 1);
+            this.getSelection().selectedIndexProperty().set(event.isShiftDown() ? Integer.MAX_VALUE : this.getSelection().selectedIndexProperty().get() + 1);
         }
     }
 
