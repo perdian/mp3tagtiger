@@ -75,7 +75,7 @@ public class TagTigerApplication extends Application {
         String currentDirectoryValue = this.getTagTiger().getPreferences().getString(PreferencesKey.CURRENT_DIRECTORY, null);
         File currentDirectory = currentDirectoryValue == null ? null : new File(currentDirectoryValue);
         if (currentDirectory != null && currentDirectory.exists() && currentDirectory.isDirectory()) {
-            this.getTagTiger().getSelection().updateDirectory(currentDirectory);
+            this.getTagTiger().getSelection().getSelectedDirectory().setValue(currentDirectory);
         }
 
         log.info("Application start completed");

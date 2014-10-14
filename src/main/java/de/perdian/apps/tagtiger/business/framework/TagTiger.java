@@ -18,6 +18,7 @@ package de.perdian.apps.tagtiger.business.framework;
 import de.perdian.apps.tagtiger.business.framework.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.messages.MessageDistributor;
+import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesKey;
 import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesLookup;
 import de.perdian.apps.tagtiger.business.framework.selection.Selection;
 import de.perdian.apps.tagtiger.business.impl.jobs.DirectorySelectJob;
@@ -44,14 +45,17 @@ public class TagTiger {
         MessageDistributor messageDistributor = new MessageDistributor();
         PreferencesLookup preferences = new PreferencesLookup();
         Localization localization = new Localization() {};
-        Selection selection = new Selection(preferences);
-        selection.getSelectedDirectory().addListener((observable, oldValue, newValue) -> this.getJobExecutor().executeJob(new DirectorySelectJob(newValue, this.getSelection(), this.getLocalization(), this.getMessageDistributor())));
+        Selection selection = new Selection();
 
         this.setJobExecutor(jobExecutor);
         this.setMessageDistributor(messageDistributor);
         this.setPreferences(preferences);
         this.setLocalization(localization);
         this.setSelection(selection);
+
+        // Add listeners
+        selection.getSelectedDirectory().addListener((o, oldValue, newValue) -> jobExecutor.executeJob(new DirectorySelectJob(newValue, this.getSelection(), this.getLocalization(), this.getMessageDistributor())));
+        selection.getSelectedDirectory().addListener((o, oldValue, newValue) -> preferences.setString(PreferencesKey.CURRENT_DIRECTORY, newValue == null ? null : newValue.getAbsolutePath()));
 
     }
 

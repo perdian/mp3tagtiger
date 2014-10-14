@@ -25,8 +25,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesKey;
-import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesLookup;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 
 /**
@@ -37,30 +35,12 @@ import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 
 public class Selection {
 
-    private ObjectProperty<File> selectedDirectory = null;
-    private ObservableList<TaggableFile> availableFiles = null;
-    private ObservableList<TaggableFile> selectedFiles = null;
-    private ObservableList<TaggableFile> changedFiles = null;
-    private ObjectProperty<TaggableFile> selectedFile = null;
-    private IntegerProperty selectedIndex = null;
-    private PreferencesLookup preferences = null;
-
-    public Selection(PreferencesLookup preferences) {
-        this.setPreferences(preferences);
-        this.setAvailableFiles(FXCollections.observableArrayList());
-        this.setSelectedFile(new SimpleObjectProperty<>());
-        this.setSelectedFiles(FXCollections.observableArrayList());
-        this.setChangedFiles(FXCollections.observableArrayList());
-        this.setSelectedDirectory(new SimpleObjectProperty<>());
-        this.setSelectedIndex(new SimpleIntegerProperty(-1));
-    }
-
-    public void updateDirectory(File directory) {
-        if (this.getSelectedDirectory().get() == null || !this.getSelectedDirectory().getValue().equals(directory)) {
-            this.getSelectedDirectory().setValue(directory);
-            this.getPreferences().setString(PreferencesKey.CURRENT_DIRECTORY, directory.getAbsolutePath());
-        }
-    }
+    private final ObjectProperty<File> selectedDirectory = new SimpleObjectProperty<>();
+    private final ObservableList<TaggableFile> availableFiles = FXCollections.observableArrayList();
+    private final ObservableList<TaggableFile> selectedFiles = FXCollections.observableArrayList();
+    private final ObservableList<TaggableFile> changedFiles = FXCollections.observableArrayList();
+    private final ObjectProperty<TaggableFile> selectedFile = new SimpleObjectProperty<>();
+    private final IntegerProperty selectedIndex = new SimpleIntegerProperty(-1);
 
     public void updateAvailableFiles(List<TaggableFile> newList) {
         this.getAvailableFiles().setAll(newList);
@@ -108,50 +88,25 @@ public class Selection {
     public ObservableList<TaggableFile> getAvailableFiles() {
         return this.availableFiles;
     }
-    private void setAvailableFiles(ObservableList<TaggableFile> availableFiles) {
-        this.availableFiles = availableFiles;
-    }
 
     public ObservableList<TaggableFile> getSelectedFiles() {
         return this.selectedFiles;
-    }
-    private void setSelectedFiles(ObservableList<TaggableFile> selectedFiles) {
-        this.selectedFiles = selectedFiles;
     }
 
     public ObjectProperty<File> getSelectedDirectory() {
         return this.selectedDirectory;
     }
-    private void setSelectedDirectory(ObjectProperty<File> selectedDirectory) {
-        this.selectedDirectory = selectedDirectory;
-    }
-
-    private PreferencesLookup getPreferences() {
-        return this.preferences;
-    }
-    private void setPreferences(PreferencesLookup preferences) {
-        this.preferences = preferences;
-    }
 
     public IntegerProperty getSelectedIndex() {
         return this.selectedIndex;
-    }
-    private void setSelectedIndex(IntegerProperty selectedIndex) {
-        this.selectedIndex = selectedIndex;
     }
 
     public ObjectProperty<TaggableFile> getSelectedFile() {
         return this.selectedFile;
     }
-    private void setSelectedFile(ObjectProperty<TaggableFile> selectedFile) {
-        this.selectedFile = selectedFile;
-    }
 
     public ObservableList<TaggableFile> getChangedFiles() {
         return this.changedFiles;
-    }
-    private void setChangedFiles(ObservableList<TaggableFile> changedFiles) {
-        this.changedFiles = changedFiles;
     }
 
 }

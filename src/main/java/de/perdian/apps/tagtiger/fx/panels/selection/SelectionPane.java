@@ -29,8 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
-import de.perdian.apps.tagtiger.fx.panels.selection.directories.DirectoryTreePane;
-import de.perdian.apps.tagtiger.fx.panels.selection.files.FileListPane;
+import de.perdian.apps.tagtiger.fx.components.directories.DirectorySelectionPane;
+import de.perdian.apps.tagtiger.fx.components.files.FileSelectionPane;
 
 public class SelectionPane extends BorderPane {
 
@@ -42,7 +42,33 @@ public class SelectionPane extends BorderPane {
         HBox.setHgrow(directoryField, Priority.ALWAYS);
         HBox directoryFieldWrapper = new HBox(directoryField);
         directoryFieldWrapper.setPadding(new Insets(0, 0, 5, 0));
-        tagTiger.getSelection().getSelectedDirectory().addListener((observable, oldValue, newValue) -> {
+
+        DirectorySelectionPane directorySelectionPane = new DirectorySelectionPane(tagTiger.getLocalization());
+        directorySelectionPane.selectedDirectoryProperty().bindBidirectional(tagTiger.getSelection().getSelectedDirectory());
+
+        FileSelectionPane fileSelectionPane = new FileSelectionPane();
+
+        SplitPane splitPane = new SplitPane();
+        splitPane.getItems().add(directorySelectionPane);
+        splitPane.getItems().add(fileSelectionPane);
+        splitPane.setDividerPositions(0.4d);
+
+        this.setTop(directoryFieldWrapper);
+        this.setCenter(splitPane);
+        this.setPadding(new Insets(5, 5, 5, 5));
+
+        // Add listeners to connect the GUI components with the underlying
+        // data structures
+        directoryField.setOnAction(event -> {
+            String directoryValue = ((TextField)event.getSource()).getText();
+            directorySelectionPane.selectedDirectoryProperty().set(new File(directoryValue));
+        });
+        directoryField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                Platform.runLater(() -> directoryField.selectAll());
+            }
+        });
+        directorySelectionPane.selectedDirectoryProperty().addListener((observable, oldValue, newValue) -> {
             Platform.runLater(() -> {
                 directoryField.setText(newValue == null ? "" : newValue.getAbsolutePath());
                 if (directoryField.isFocused()) {
@@ -50,28 +76,6 @@ public class SelectionPane extends BorderPane {
                 }
             });
         });
-
-        DirectoryTreePane directoryTreePane = new DirectoryTreePane(tagTiger);
-        directoryField.setOnAction(event -> {
-            String directoryValue = ((TextField)event.getSource()).getText();
-            tagTiger.getSelection().updateDirectory(new File(directoryValue));
-        });
-        directoryField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                Platform.runLater(() -> directoryField.selectAll());
-            }
-        });
-
-        FileListPane fileListPane = new FileListPane(tagTiger);
-
-        SplitPane splitPane = new SplitPane();
-        splitPane.getItems().add(directoryTreePane);
-        splitPane.getItems().add(fileListPane);
-        splitPane.setDividerPositions(0.4d);
-
-        this.setTop(directoryFieldWrapper);
-        this.setCenter(splitPane);
-        this.setPadding(new Insets(5, 5, 5, 5));
 
     }
 

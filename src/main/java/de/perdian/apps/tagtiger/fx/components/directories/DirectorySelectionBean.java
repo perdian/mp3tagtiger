@@ -13,41 +13,78 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.selection.directories;
+package de.perdian.apps.tagtiger.fx.components.directories;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-class DirectoryTreeFile {
+/**
+ * Represents a single file that is to be displayed in the
+ * {@link DirectorySelectionPane}
+ *
+ * @author Christian Robert
+ */
+
+public class DirectorySelectionBean {
 
     private String title = null;
     private File file = null;
 
-    DirectoryTreeFile(File file, String title) {
+    DirectorySelectionBean(File file) {
+        this(file, file.getName());
+    }
+
+    DirectorySelectionBean(File file, String title) {
         this.setFile(file);
         this.setTitle(title);
     }
 
-    static List<DirectoryTreeFile> listRoots() {
-        return Arrays.stream(File.listRoots()).map(file -> new DirectoryTreeFile(file, file.getAbsolutePath())).collect(Collectors.toList());
+    /**
+     * List all the root directories that are available in the current file
+     * system
+     */
+    public static List<DirectorySelectionBean> listRoots() {
+        return Arrays.stream(File.listRoots()).map(file -> new DirectorySelectionBean(file, file.getAbsolutePath())).collect(Collectors.toList());
     }
 
-    List<DirectoryTreeFile> listChildren() {
+    /**
+     * List the direct children of the current directory
+     */
+    public List<DirectorySelectionBean> listChildren() {
         File[] childrenArray = this.getFile() == null ? null : this.getFile().listFiles(new DirectoryFileFilter());
         if (childrenArray == null) {
             return Collections.emptyList();
         } else {
-            return Arrays.stream(childrenArray).map(file -> new DirectoryTreeFile(file, file.getName())).collect(Collectors.toList());
+            return Arrays.stream(childrenArray).map(DirectorySelectionBean::new).collect(Collectors.toList());
         }
     }
 
     @Override
     public String toString() {
         return this.getTitle();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else {
+            try {
+                return (that instanceof DirectorySelectionBean) && Objects.equals(this.getFile().getCanonicalFile(), ((DirectorySelectionBean)that).getFile().getCanonicalFile());
+            } catch(Exception e) {
+                return (that instanceof DirectorySelectionBean) && Objects.equals(this.getFile(), ((DirectorySelectionBean)that).getFile());
+            }
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getFile() == null ? 0 : this.getFile().hashCode();
     }
 
     // -------------------------------------------------------------------------
@@ -67,18 +104,24 @@ class DirectoryTreeFile {
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
+    /**
+     * Gets the underlying file that is represented by this bean
+     */
+    public File getFile() {
+        return this.file;
+    }
+    private void setFile(File file) {
+        this.file = file;
+    }
+
+    /**
+     * Gets the title under which the bean should be displayed
+     */
     String getTitle() {
         return this.title;
     }
     private void setTitle(String title) {
         this.title = title;
-    }
-
-    File getFile() {
-        return this.file;
-    }
-    private void setFile(File file) {
-        this.file = file;
     }
 
 }
