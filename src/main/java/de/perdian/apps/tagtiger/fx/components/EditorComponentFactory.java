@@ -18,11 +18,13 @@ package de.perdian.apps.tagtiger.fx.components;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 
 /**
@@ -36,6 +38,7 @@ public class EditorComponentFactory<T> {
 
     private ObjectProperty<T> beanProperty = null;
     private List<EditorComponentWrapper<T>> componentWrappers = new ArrayList<>();
+    private List<Consumer<Control>> controlCustomizers = new ArrayList<>();
 
     public EditorComponentFactory(ObjectProperty<T> beanProperty) {
 
@@ -54,6 +57,7 @@ public class EditorComponentFactory<T> {
                 Platform.runLater(() -> textField.selectAll());
             }
         });
+        this.getControlCustomizers().forEach(consumer -> consumer.accept(textField));
 
         EditorComponentWrapper<T> componentWrapper = new EditorComponentWrapper<>();
         componentWrapper.setBeanPropertySupplier(propertyFunction);
@@ -98,6 +102,16 @@ public class EditorComponentFactory<T> {
     }
     private void setComponentWrappers(List<EditorComponentWrapper<T>> componentWrappers) {
         this.componentWrappers = componentWrappers;
+    }
+
+    public void addControlCustomizer(Consumer<Control> customizer) {
+        this.getControlCustomizers().add(customizer);
+    }
+    public List<Consumer<Control>> getControlCustomizers() {
+        return this.controlCustomizers;
+    }
+    public void setControlCustomizers(List<Consumer<Control>> controlCustomizers) {
+        this.controlCustomizers = controlCustomizers;
     }
 
 }

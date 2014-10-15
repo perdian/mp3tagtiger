@@ -54,12 +54,12 @@ public class SelectionPane extends BorderPane {
         directoryFieldWrapper.setPadding(new Insets(0, 0, 5, 0));
 
         DirectorySelectionPane directorySelectionPane = new DirectorySelectionPane(localization);
-        directorySelectionPane.selectedDirectoryProperty().bindBidirectional(selection.selectedDirectoryProperty());
+        directorySelectionPane.selectedDirectoryProperty().bindBidirectional(selection.currentDirectoryProperty());
 
         FileSelectionPane fileSelectionPane = new FileSelectionPane(localization);
         fileSelectionPane.availableFilesProperty().bindBidirectional(selection.availableFilesProperty());
         fileSelectionPane.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> selection.selectedFilesProperty().setAll(change.getList()));
-        fileSelectionPane.selectedFileProperty().addListener((o, oldValue, newValue) -> selection.selectedFileProperty().set(newValue));
+        fileSelectionPane.selectedFileProperty().addListener((o, oldValue, newValue) -> selection.currentFileProperty().set(newValue));
         fileSelectionPane.setOnSaveAction(event -> Optional.ofNullable(this.onSaveActionProperty().get()).ifPresent(handler -> handler.handle(event)));
 
         SplitPane splitPane = new SplitPane();
@@ -72,6 +72,7 @@ public class SelectionPane extends BorderPane {
         this.setPadding(new Insets(5, 5, 5, 5));
 
         selection.changedFilesProperty().addListener((o, oldValue, newValue) -> fileSelectionPane.saveEnabledProperty().set(newValue != null && !newValue.isEmpty()));
+        selection.currentFileProperty().addListener((o, oldValue, newValue) -> fileSelectionPane.selectedFileProperty().set(newValue));
 
         // Add listeners to connect the GUI components with the underlying
         // data structures

@@ -15,34 +15,35 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.editor;
 
+import java.util.List;
+
+import javafx.application.Platform;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.components.EditorComponentFactory;
 
 class EditorInformationPane extends GridPane {
 
-    EditorInformationPane(EditorComponentFactory<TaggableFile> componentFactory) {
+    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
+    private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-        TextField selectedIndexField = new TextField();
-        selectedIndexField.setAlignment(Pos.CENTER);
-        selectedIndexField.setEditable(true);
-        selectedIndexField.setMaxWidth(40);
+    EditorInformationPane(EditorComponentFactory<TaggableFile> componentFactory, Localization localization) {
 
-        Label selectedIndexSeparatorLabel = new Label("/");
-        selectedIndexSeparatorLabel.setPadding(new Insets(0, 5, 0, 5));
+        Label indexLabel = new Label();
+        indexLabel.setPrefWidth(50);
 
-        TextField availableFilesSizeField = new TextField();
-        availableFilesSizeField.setAlignment(Pos.CENTER);
-        availableFilesSizeField.setEditable(true);
-        availableFilesSizeField.setMaxWidth(40);
-
-        Label availableFilesSeparatorLabel = new Label(":");
-        availableFilesSeparatorLabel.setPadding(new Insets(0, 15, 0, 5));
+        this.currentFileProperty().addListener((o, oldValue, newValue) -> this.handleIndexLabelChange(indexLabel, newValue, this.availableFilesProperty().get()));
+        this.availableFilesProperty().addListener((o, oldValue, newValue) -> this.handleIndexLabelChange(indexLabel, this.currentFileProperty().get(), newValue));
 
         TextField fileNameField = componentFactory.createTextField(TaggableFile::getFileName);
         fileNameField.setMaxWidth(Double.MAX_VALUE);
@@ -53,14 +54,34 @@ class EditorInformationPane extends GridPane {
         TextField fileExtensionField = componentFactory.createTextField(TaggableFile::getFileExtension);
         fileExtensionField.setPrefWidth(50);
 
-        this.add(selectedIndexField, 0, 0);
-        this.add(selectedIndexSeparatorLabel, 1, 0);
-        this.add(availableFilesSizeField, 2, 0);
-        this.add(availableFilesSeparatorLabel, 3, 0);
-        this.add(fileNameField, 4, 0);
-        this.add(fileExtensionLabel, 5, 0);
-        this.add(fileExtensionField, 6, 0);
+        this.add(indexLabel, 0, 1);
+        this.add(new Label(localization.fileName()), 4, 0);
+        this.add(fileNameField, 4, 1);
+        this.add(fileExtensionLabel, 5, 1);
+        this.add(new Label(localization.fileExtension()), 6, 0);
+        this.add(fileExtensionField, 6, 1);
 
+    }
+
+    private void handleIndexLabelChange(Label targetLabel, TaggableFile currentFile, List<TaggableFile> availableFiles) {
+        StringBuilder targetLabelContent = new StringBuilder();
+        int selectedIndex = currentFile == null || availableFiles == null ? -1 : availableFiles.indexOf(currentFile);
+        if (selectedIndex > -1 && availableFiles != null) {
+            targetLabelContent.append(selectedIndex + 1).append(" / ").append(availableFiles.size()).append(":");
+        }
+        Platform.runLater(() -> targetLabel.setText(targetLabelContent.toString()));
+    }
+
+    // -------------------------------------------------------------------------
+    // --- Property access methods ---------------------------------------------
+    // -------------------------------------------------------------------------
+
+    ObjectProperty<TaggableFile> currentFileProperty() {
+        return this.currentFile;
+    }
+
+    ListProperty<TaggableFile> availableFilesProperty() {
+        return this.availableFiles;
     }
 
 }

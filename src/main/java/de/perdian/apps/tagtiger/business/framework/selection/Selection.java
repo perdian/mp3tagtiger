@@ -17,10 +17,8 @@ package de.perdian.apps.tagtiger.business.framework.selection;
 
 import java.io.File;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -34,16 +32,19 @@ import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 
 public class Selection {
 
-    private final ObjectProperty<File> selectedDirectory = new SimpleObjectProperty<>();
+    private final ObjectProperty<File> currentDirectory = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> changedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
-    private final ObjectProperty<TaggableFile> selectedFile = new SimpleObjectProperty<>();
-    private final IntegerProperty selectedIndex = new SimpleIntegerProperty(-1);
+    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
 
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
+
+    public ObjectProperty<File> currentDirectoryProperty() {
+        return this.currentDirectory;
+    }
 
     public ListProperty<TaggableFile> availableFilesProperty() {
         return this.availableFiles;
@@ -57,16 +58,8 @@ public class Selection {
         return this.changedFiles;
     }
 
-    public ObjectProperty<File> selectedDirectoryProperty() {
-        return this.selectedDirectory;
-    }
-
-    public IntegerProperty selectedIndexProperty() {
-        return this.selectedIndex;
-    }
-
-    public ObjectProperty<TaggableFile> selectedFileProperty() {
-        return this.selectedFile;
+    public ObjectProperty<TaggableFile> currentFileProperty() {
+        return this.currentFile;
     }
 
 }

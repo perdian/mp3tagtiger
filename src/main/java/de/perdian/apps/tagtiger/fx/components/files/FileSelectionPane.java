@@ -52,7 +52,7 @@ public class FileSelectionPane extends VBox {
         FileSelectionTableView filesTable = new FileSelectionTableView(localization);
         filesTable.itemsProperty().bind(this.availableFilesProperty());
         filesTable.getSelectionModel().getSelectedItems().addListener((Change<? extends TaggableFile> change) -> this.selectedFilesProperty().setAll(change.getList()));
-        this.selectedFileProperty().bind(filesTable.getSelectionModel().selectedItemProperty());
+        filesTable.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.selectedFileProperty().set(newValue));
         VBox.setVgrow(filesTable, Priority.ALWAYS);
 
         FileSelectionActionPane actionPane = new FileSelectionActionPane(localization, this::handleOnSaveActionEvent);
@@ -60,6 +60,16 @@ public class FileSelectionPane extends VBox {
         actionPane.disableProperty().bind(this.saveEnabledProperty().not());
 
         this.getChildren().addAll(filesTable, actionPane);
+
+        this.selectedFileProperty().addListener((o, oldValue, newValue) -> {
+            if (!this.selectedFilesProperty().contains(newValue)) {
+                if (newValue == null) {
+                    filesTable.getSelectionModel().clearSelection();
+                } else {
+                    filesTable.getSelectionModel().clearAndSelect(this.availableFilesProperty().indexOf(newValue));
+                }
+            }
+        });
 
     }
 

@@ -164,4 +164,8 @@ public interface Localization {
         return "Reload";
     }
 
+    default String fileExtension() {
+        return "Extension";
+    }
+
 }

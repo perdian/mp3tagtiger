@@ -50,7 +50,10 @@ public class MainApplicationPane extends VBox {
         EditorPane editorPane = new EditorPane(tagTiger.getLocalization());
         editorPane.setMinWidth(400d);
         editorPane.setPadding(new Insets(5, 5, 5, 5));
-        editorPane.currentFileProperty().bind(tagTiger.getSelection().selectedFileProperty());
+        editorPane.setUpdateFileConsumer(newFile -> tagTiger.getSelection().currentFileProperty().setValue(newFile));
+        editorPane.currentFileProperty().bind(tagTiger.getSelection().currentFileProperty());
+        editorPane.availableFilesProperty().bind(tagTiger.getSelection().availableFilesProperty());
+        editorPane.selectedFilesProperty().bind(tagTiger.getSelection().selectedFilesProperty());
         VBox.setVgrow(editorPane, Priority.ALWAYS);
 
         SplitPane splitPane = new SplitPane();

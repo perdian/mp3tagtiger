@@ -15,10 +15,20 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.editor;
 
+import java.util.List;
+import java.util.function.Consumer;
+
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.scene.control.Control;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
@@ -26,14 +36,20 @@ import de.perdian.apps.tagtiger.fx.components.EditorComponentFactory;
 
 public class EditorPane extends VBox {
 
-    private final ObjectProperty<TaggableFile> currentFileProperty = new SimpleObjectProperty<>();
+    private Consumer<TaggableFile> updateFileConsumer = file -> {};
+    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
+    private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public EditorPane(Localization localization) {
 
         EditorComponentFactory<TaggableFile> componentFactory = new EditorComponentFactory<>(this.currentFileProperty());
+        componentFactory.addControlCustomizer(this::customizeTextFieldControl);
 
-        EditorInformationPane informationPane = new EditorInformationPane(componentFactory);
+        EditorInformationPane informationPane = new EditorInformationPane(componentFactory, localization);
         informationPane.setPadding(new Insets(5, 5, 5, 5));
+        informationPane.availableFilesProperty().bind(this.availableFilesProperty());
+        informationPane.currentFileProperty().bind(this.currentFileProperty());
         TitledPane informationWrapperPane = new TitledPane(localization.mp3File(), informationPane);
         informationWrapperPane.setExpanded(true);
 
@@ -45,18 +61,46 @@ public class EditorPane extends VBox {
 
     }
 
+    private void customizeTextFieldControl(Control control) {
+        if (control instanceof TextField) {
+            TextField textField = (TextField)control;
+            textField.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+                List<TaggableFile> currentFiles = this.availableFilesProperty().get();
+                int currentFileIndex = this.availableFilesProperty().indexOf(this.currentFileProperty().get());
+                int newFileIndex = 0;
+                if (event.getCode() == KeyCode.PAGE_UP) {
+                    newFileIndex = event.isShiftDown() ? 0 : Math.max(0, currentFileIndex - 1);
+                } else if (event.getCode() == KeyCode.PAGE_DOWN) {
+                    newFileIndex = event.isShiftDown() ? currentFiles.size() - 1 : Math.min(currentFiles.size(), currentFileIndex + 1);
+                }
+                if (newFileIndex >= 0 && newFileIndex < currentFiles.size()) {
+                    this.getUpdateFileConsumer().accept(currentFiles.get(newFileIndex));
+                }
+            });
+        }
+    }
+
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
     public ObjectProperty<TaggableFile> currentFileProperty() {
-        return this.currentFileProperty;
+        return this.currentFile;
     }
-    public TaggableFile getCurrentFile() {
-        return this.currentFileProperty.get();
+
+    public ListProperty<TaggableFile> availableFilesProperty() {
+        return this.availableFiles;
     }
-    public void setCurrentFile(TaggableFile file) {
-        this.currentFileProperty.set(file);
+
+    public ListProperty<TaggableFile> selectedFilesProperty() {
+        return this.selectedFiles;
+    }
+
+    public Consumer<TaggableFile> getUpdateFileConsumer() {
+        return this.updateFileConsumer;
+    }
+    public void setUpdateFileConsumer(Consumer<TaggableFile> updateFileConsumer) {
+        this.updateFileConsumer = updateFileConsumer;
     }
 
 }

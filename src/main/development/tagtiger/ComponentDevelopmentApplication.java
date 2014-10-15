@@ -15,15 +15,9 @@
  */
 package tagtiger;
 
-import java.io.File;
-
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
-import de.perdian.apps.tagtiger.fx.components.directories.DirectorySelectionPane;
-import de.perdian.apps.tagtiger.fx.components.directories.DirectoryTreeItem;
 
 public class ComponentDevelopmentApplication extends Application {
 
@@ -36,19 +30,19 @@ public class ComponentDevelopmentApplication extends Application {
 
         Localization localization = new Localization() {};
 
-        TreeView<File> tree = new TreeView<>(new DirectoryTreeItem(new File))
-        
-        Scene scene = new Scene(selectionPane);
-
-        primaryStage.setScene(scene);
-        primaryStage.setOnCloseRequest(event -> System.exit(0));
-        primaryStage.setTitle("DEV");
-        primaryStage.setWidth(600);
-        primaryStage.setHeight(700);
-        primaryStage.show();
-
-        selectionPane.setSelectedDirectory(new File("C:/Temp/1/2/"));
-        selectionPane.setSelectedDirectory(new File("C:/Temp/1/2/3/4/5/"));
+//        TreeView<File> tree = new TreeView<>(new DirectoryTreeItem(new File))
+//
+//        Scene scene = new Scene(selectionPane);
+//
+//        primaryStage.setScene(scene);
+//        primaryStage.setOnCloseRequest(event -> System.exit(0));
+//        primaryStage.setTitle("DEV");
+//        primaryStage.setWidth(600);
+//        primaryStage.setHeight(700);
+//        primaryStage.show();
+//
+//        selectionPane.setSelectedDirectory(new File("C:/Temp/1/2/"));
+//        selectionPane.setSelectedDirectory(new File("C:/Temp/1/2/3/4/5/"));
 
     }
 
