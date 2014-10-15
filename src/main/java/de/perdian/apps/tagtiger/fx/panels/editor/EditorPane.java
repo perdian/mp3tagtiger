@@ -29,6 +29,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
@@ -53,9 +54,18 @@ public class EditorPane extends VBox {
         TitledPane informationWrapperPane = new TitledPane(localization.mp3File(), informationPane);
         informationWrapperPane.setExpanded(true);
 
+        EditorTaggingPane taggingPane = new EditorTaggingPane(componentFactory, localization);
+        taggingPane.setPadding(new Insets(5, 5, 5, 5));
+        taggingPane.currentFileProperty().bind(this.currentFileProperty());
+        taggingPane.selectedFilesProperty().bind(this.selectedFilesProperty());
+        TitledPane taggingWrapperPane = new TitledPane(localization.tags(), taggingPane);
+        taggingWrapperPane.setCollapsible(false);
+        taggingWrapperPane.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(taggingWrapperPane, Priority.ALWAYS);
+
         this.setSpacing(5);
         this.setDisable(true);
-        this.getChildren().addAll(informationWrapperPane);
+        this.getChildren().addAll(informationWrapperPane, taggingWrapperPane);
 
         this.currentFileProperty().addListener((c, oldValue, newValue) -> this.setDisable(newValue == null));
 
@@ -65,18 +75,26 @@ public class EditorPane extends VBox {
         if (control instanceof TextField) {
             TextField textField = (TextField)control;
             textField.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-                List<TaggableFile> currentFiles = this.availableFilesProperty().get();
-                int currentFileIndex = this.availableFilesProperty().indexOf(this.currentFileProperty().get());
-                int newFileIndex = 0;
                 if (event.getCode() == KeyCode.PAGE_UP) {
-                    newFileIndex = event.isShiftDown() ? 0 : Math.max(0, currentFileIndex - 1);
+                    this.handleTextFieldUpOrDown(-1, event.isShiftDown());
                 } else if (event.getCode() == KeyCode.PAGE_DOWN) {
-                    newFileIndex = event.isShiftDown() ? currentFiles.size() - 1 : Math.min(currentFiles.size(), currentFileIndex + 1);
-                }
-                if (newFileIndex >= 0 && newFileIndex < currentFiles.size()) {
-                    this.getUpdateFileConsumer().accept(currentFiles.get(newFileIndex));
+                    this.handleTextFieldUpOrDown(1, event.isShiftDown());
                 }
             });
+        }
+    }
+
+    private void handleTextFieldUpOrDown(int direction, boolean absolute) {
+        List<TaggableFile> currentFiles = this.availableFilesProperty().get();
+        int currentFileIndex = this.availableFilesProperty().indexOf(this.currentFileProperty().get());
+        int newFileIndex = 0;
+        if (direction < 0) {
+            newFileIndex = absolute ? 0 : Math.max(0, currentFileIndex - 1);
+        } else if (direction > 0) {
+            newFileIndex = absolute ? currentFiles.size() - 1 : Math.min(currentFiles.size(), currentFileIndex + 1);
+        }
+        if (newFileIndex >= 0 && newFileIndex < currentFiles.size()) {
+            this.getUpdateFileConsumer().accept(currentFiles.get(newFileIndex));
         }
     }
 

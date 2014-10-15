@@ -23,9 +23,12 @@ import java.util.function.Function;
 
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.Property;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 /**
  * Abstraction for creating components that are used to edit the content of
@@ -39,17 +42,21 @@ public class EditorComponentFactory<T> {
     private ObjectProperty<T> beanProperty = null;
     private List<EditorComponentWrapper<T>> componentWrappers = new ArrayList<>();
     private List<Consumer<Control>> controlCustomizers = new ArrayList<>();
+    private List<Control> createdControls = new ArrayList<>();
 
     public EditorComponentFactory(ObjectProperty<T> beanProperty) {
 
         this.setBeanProperty(beanProperty);
         this.setComponentWrappers(new ArrayList<>());
+        this.setCreatedControls(new ArrayList<>());
+        this.getControlCustomizers().add(this::customizeControlForUpAndDown);
 
         beanProperty.addListener((o, oldValue, newValue) -> this.handleCurrentBeanUpdate(oldValue, newValue));
 
     }
 
-    public TextField createTextField(Function<T, StringProperty> propertyFunction) {
+    @SuppressWarnings("unchecked")
+    public TextField createTextField(Function<T, Property<?>> propertyFunction) {
 
         TextField textField = new TextField();
         textField.focusedProperty().addListener((o, oldValue, newValue) -> {
@@ -57,31 +64,64 @@ public class EditorComponentFactory<T> {
                 Platform.runLater(() -> textField.selectAll());
             }
         });
+        textField.textProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().get()).ifPresent(bean -> ((Property<Object>)propertyFunction.apply(bean)).setValue(newValue)));
         this.getControlCustomizers().forEach(consumer -> consumer.accept(textField));
 
         EditorComponentWrapper<T> componentWrapper = new EditorComponentWrapper<>();
         componentWrapper.setBeanPropertySupplier(propertyFunction);
-        componentWrapper.setBeanPropertyChangeListener((o, oldValue, newValue) -> textField.setText(newValue));
-        componentWrapper.setControlValueSupplier(() -> textField.textProperty());
-        componentWrapper.setControlValueChangeListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().get()).ifPresent(bean -> propertyFunction.apply(bean).set(newValue)));
+        componentWrapper.setBeanPropertyChangeListener((o, oldValue, newValue) -> {
+            textField.setText(newValue == null ? null : newValue.toString());
+            if (textField.focusedProperty().get()) {
+                textField.selectAll();
+            }
+        });
         this.getComponentWrappers().add(componentWrapper);
 
+        this.getCreatedControls().add(textField);
         return textField;
 
     }
 
+    @SuppressWarnings("unchecked")
     private void handleCurrentBeanUpdate(T oldValue, T newValue) {
-        for (EditorComponentWrapper<T> componentWrapper : this.getComponentWrappers()) {
+        for (EditorComponentWrapper<T> wrapper : this.getComponentWrappers()) {
             if (oldValue != null) {
-                componentWrapper.getBeanPropertySupplier().apply(oldValue).removeListener(componentWrapper.getBeanPropertyChangeListener());
-                componentWrapper.getControlValueSupplier().get().removeListener(componentWrapper.getControlValueChangeListener());
+                ((Property<Object>)wrapper.getBeanPropertySupplier().apply(oldValue)).removeListener((ChangeListener<Object>)wrapper.getBeanPropertyChangeListener());
             }
             if (newValue != null) {
-                componentWrapper.getBeanPropertySupplier().apply(newValue).addListener(componentWrapper.getBeanPropertyChangeListener());
-                componentWrapper.getControlValueSupplier().get().addListener(componentWrapper.getControlValueChangeListener());
-                componentWrapper.getBeanPropertyChangeListener().changed(null, null, componentWrapper.getBeanPropertySupplier().apply(newValue).get());
+                ((Property<Object>)wrapper.getBeanPropertySupplier().apply(newValue)).addListener((ChangeListener<Object>)wrapper.getBeanPropertyChangeListener());
+                ((ChangeListener<Object>)wrapper.getBeanPropertyChangeListener()).changed(null, null, wrapper.getBeanPropertySupplier().apply(newValue).getValue());
             } else {
-                componentWrapper.getBeanPropertyChangeListener().changed(null, null, "");
+                ((ChangeListener<Object>)wrapper.getBeanPropertyChangeListener()).changed(null, null, null);
+            }
+        }
+    }
+
+    private void customizeControlForUpAndDown(Control control) {
+        control.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.UP) {
+                this.handleControlUpOrDown(control, -1, event.isShiftDown());
+            } else if (event.getCode() == KeyCode.DOWN) {
+                this.handleControlUpOrDown(control, 1, event.isShiftDown());
+            } else if (event.getCode() == KeyCode.ENTER && event.isShiftDown()) {
+                this.handleControlUpOrDown(control, -1, false);
+            } else if (event.getCode() == KeyCode.ENTER && !event.isShiftDown()) {
+                this.handleControlUpOrDown(control, 1, false);
+            }
+        });
+    }
+
+    private void handleControlUpOrDown(Control control, int direction, boolean absolute) {
+        if (absolute) {
+            this.getCreatedControls().get(direction < 0 ? 0 : this.getCreatedControls().size() - 1).requestFocus();
+        } else {
+            int currentIndex = this.getCreatedControls().indexOf(control);
+            if (currentIndex > -1) {
+                if (direction < 0) {
+                    this.getCreatedControls().get(Math.max(0, currentIndex - 1)).requestFocus();
+                } else {
+                    this.getCreatedControls().get(Math.min(this.getCreatedControls().size() - 1, currentIndex + 1)).requestFocus();
+                }
             }
         }
     }
@@ -112,6 +152,13 @@ public class EditorComponentFactory<T> {
     }
     public void setControlCustomizers(List<Consumer<Control>> controlCustomizers) {
         this.controlCustomizers = controlCustomizers;
+    }
+
+    private List<Control> getCreatedControls() {
+        return this.createdControls;
+    }
+    private void setCreatedControls(List<Control> createdControls) {
+        this.createdControls = createdControls;
     }
 
 }

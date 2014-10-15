@@ -168,4 +168,16 @@ public interface Localization {
         return "Extension";
     }
 
+    default String tags() {
+        return "Tags";
+    }
+
+    default String common() {
+        return "Common";
+    }
+
+    default String images() {
+        return "Images";
+    }
+
 }

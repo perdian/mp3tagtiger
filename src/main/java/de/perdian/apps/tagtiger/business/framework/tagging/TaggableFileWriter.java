@@ -17,15 +17,13 @@ package de.perdian.apps.tagtiger.business.framework.tagging;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.Property;
 
 import org.apache.log4j.Logger;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotWriteException;
-import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 
@@ -50,21 +48,9 @@ public class TaggableFileWriter {
     }
 
     private Tag populateTag(Tag tag, TaggableFile file) throws TagException {
-        for (FieldKey fieldKey : FieldKey.values()) {
-
-            StringProperty fieldKeyProperty = file.getTag(fieldKey);
-            String fieldKeyValue = fieldKeyProperty == null ? null : fieldKeyProperty.get();
-            String existingValue = tag.getFirst(fieldKey);
-            if (!Objects.equals(fieldKeyValue, existingValue)) {
-                try {
-                    tag.setField(fieldKey, fieldKeyValue);
-                } catch (UnsupportedOperationException e) {
-                    // The value cannot be saved the way we'd like it to
-                } catch (Exception e) {
-                    log.debug("Cannot update tag " + fieldKey + " with value: " + fieldKeyValue, e);
-                }
-            }
-
+        for (TaggableFileTag fileTag : TaggableFileTag.values()) {
+            Property<Object> fileProperty = file.getTag(fileTag);
+            fileTag.getDelegate().propertyToTag(fileProperty, tag, fileTag.getFieldKey());
         }
         return tag;
     }

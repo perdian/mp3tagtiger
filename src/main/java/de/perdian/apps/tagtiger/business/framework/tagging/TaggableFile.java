@@ -19,19 +19,19 @@ import java.io.File;
 import java.util.Map;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 
 import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.tag.FieldKey;
 
 public class TaggableFile {
 
     private File file = null;
     private AudioFile audioFile = null;
-    private Map<FieldKey, StringProperty> tags = null;
+    private Map<TaggableFileTag, Property<Object>> tags = null;
     private StringProperty fileName = new SimpleStringProperty();
     private StringProperty fileExtension = new SimpleStringProperty();
     private BooleanProperty changed = new SimpleBooleanProperty(false);
@@ -90,13 +90,13 @@ public class TaggableFile {
         this.changed = changed;
     }
 
-    public StringProperty getTag(FieldKey fieldKey) {
+    public Property<Object> getTag(TaggableFileTag fieldKey) {
         return this.getTags().get(fieldKey);
     }
-    Map<FieldKey, StringProperty> getTags() {
+    Map<TaggableFileTag, Property<Object>> getTags() {
         return this.tags;
     }
-    void setTags(Map<FieldKey, StringProperty> tags) {
+    void setTags(Map<TaggableFileTag, Property<Object>> tags) {
         this.tags = tags;
     }
 

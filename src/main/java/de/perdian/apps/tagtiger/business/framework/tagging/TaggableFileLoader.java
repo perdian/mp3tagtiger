@@ -19,14 +19,16 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 
 public class TaggableFileLoader {
@@ -42,14 +44,14 @@ public class TaggableFileLoader {
         return taggableFile;
     }
 
-    private Map<FieldKey, StringProperty> loadFileTags(AudioFile audioFile, ChangeListener<String> changeListener) throws Exception {
+    private Map<TaggableFileTag, Property<Object>> loadFileTags(AudioFile audioFile, ChangeListener<Object> changeListener) throws Exception {
         Tag audioTag = audioFile.getTagOrCreateDefault();
-        Map<FieldKey, StringProperty> fileWrapperTags = new HashMap<>();
-        for (FieldKey fieldKey : FieldKey.values()) {
-            String fieldKeyValue = audioTag.getFirst(fieldKey);
-            StringProperty fieldKeyProperty = new SimpleStringProperty(fieldKeyValue);
-            fieldKeyProperty.addListener(changeListener);
-            fileWrapperTags.put(fieldKey, fieldKeyProperty);
+        Map<TaggableFileTag, Property<Object>> fileWrapperTags = new HashMap<>();
+        for (TaggableFileTag fileTag : TaggableFileTag.values()) {
+            ObjectProperty<Object> fileTagProperty = new SimpleObjectProperty<>();
+            fileTag.getDelegate().tagToProperty(audioTag, fileTagProperty, fileTag.getFieldKey());
+            fileTagProperty.addListener(changeListener);
+            fileWrapperTags.put(fileTag, fileTagProperty);
         }
         return fileWrapperTags;
     }

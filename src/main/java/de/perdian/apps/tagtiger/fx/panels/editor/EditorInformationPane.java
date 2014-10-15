@@ -28,6 +28,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.components.EditorComponentFactory;
@@ -40,7 +41,9 @@ class EditorInformationPane extends GridPane {
     EditorInformationPane(EditorComponentFactory<TaggableFile> componentFactory, Localization localization) {
 
         Label indexLabel = new Label();
-        indexLabel.setPrefWidth(50);
+        indexLabel.setMinWidth(50);
+        indexLabel.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        indexLabel.setPadding(new Insets(0, 5, 0, 0));
 
         this.currentFileProperty().addListener((o, oldValue, newValue) -> this.handleIndexLabelChange(indexLabel, newValue, this.availableFilesProperty().get()));
         this.availableFilesProperty().addListener((o, oldValue, newValue) -> this.handleIndexLabelChange(indexLabel, this.currentFileProperty().get(), newValue));

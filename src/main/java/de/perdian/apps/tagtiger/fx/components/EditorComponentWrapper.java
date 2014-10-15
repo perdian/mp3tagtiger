@@ -16,9 +16,8 @@
 package de.perdian.apps.tagtiger.fx.components;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 
 /**
@@ -29,41 +28,25 @@ import javafx.beans.value.ChangeListener;
 
 class EditorComponentWrapper<T> {
 
-    private ChangeListener<String> beanPropertyChangeListener = null;
-    private ChangeListener<String> controlValueChangeListener = null;
-    private Function<T, StringProperty> beanPropertySupplier = null;
-    private Supplier<StringProperty> controlValueSupplier = null;
+    private ChangeListener<?> beanPropertyChangeListener = null;
+    private Function<T, Property<?>> beanPropertySupplier = null;
 
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
-    ChangeListener<String> getBeanPropertyChangeListener() {
+    ChangeListener<?> getBeanPropertyChangeListener() {
         return this.beanPropertyChangeListener;
     }
-    void setBeanPropertyChangeListener(ChangeListener<String> beanPropertyChangeListener) {
+    void setBeanPropertyChangeListener(ChangeListener<?> beanPropertyChangeListener) {
         this.beanPropertyChangeListener = beanPropertyChangeListener;
     }
 
-    ChangeListener<String> getControlValueChangeListener() {
-        return this.controlValueChangeListener;
-    }
-    void setControlValueChangeListener(ChangeListener<String> controlValueChangeListener) {
-        this.controlValueChangeListener = controlValueChangeListener;
-    }
-
-    Function<T, StringProperty> getBeanPropertySupplier() {
+    Function<T, Property<?>> getBeanPropertySupplier() {
         return this.beanPropertySupplier;
     }
-    void setBeanPropertySupplier(Function<T, StringProperty> beanPropertySupplier) {
+    void setBeanPropertySupplier(Function<T, Property<?>> beanPropertySupplier) {
         this.beanPropertySupplier = beanPropertySupplier;
-    }
-
-    Supplier<StringProperty> getControlValueSupplier() {
-        return this.controlValueSupplier;
-    }
-    void setControlValueSupplier(Supplier<StringProperty> controlValueSupplier) {
-        this.controlValueSupplier = controlValueSupplier;
     }
 
 }

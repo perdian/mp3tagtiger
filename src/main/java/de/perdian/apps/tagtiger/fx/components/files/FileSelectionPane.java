@@ -63,11 +63,7 @@ public class FileSelectionPane extends VBox {
 
         this.selectedFileProperty().addListener((o, oldValue, newValue) -> {
             if (!this.selectedFilesProperty().contains(newValue)) {
-                if (newValue == null) {
-                    filesTable.getSelectionModel().clearSelection();
-                } else {
-                    filesTable.getSelectionModel().clearAndSelect(this.availableFilesProperty().indexOf(newValue));
-                }
+                filesTable.getSelectionModel().clearAndSelect(this.availableFilesProperty().indexOf(newValue));
             }
         });
 
