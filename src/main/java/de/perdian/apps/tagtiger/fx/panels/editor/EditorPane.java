@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.editor;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -25,7 +26,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.control.Control;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -53,6 +53,7 @@ public class EditorPane extends VBox {
         informationPane.currentFileProperty().bind(this.currentFileProperty());
         TitledPane informationWrapperPane = new TitledPane(localization.mp3File(), informationPane);
         informationWrapperPane.setExpanded(true);
+        informationWrapperPane.setDisable(true);
 
         EditorTaggingPane taggingPane = new EditorTaggingPane(componentFactory, localization);
         taggingPane.setPadding(new Insets(5, 5, 5, 5));
@@ -61,27 +62,24 @@ public class EditorPane extends VBox {
         TitledPane taggingWrapperPane = new TitledPane(localization.tags(), taggingPane);
         taggingWrapperPane.setCollapsible(false);
         taggingWrapperPane.setMaxHeight(Double.MAX_VALUE);
+        taggingWrapperPane.setDisable(true);
         VBox.setVgrow(taggingWrapperPane, Priority.ALWAYS);
 
         this.setSpacing(5);
-        this.setDisable(true);
         this.getChildren().addAll(informationWrapperPane, taggingWrapperPane);
 
-        this.currentFileProperty().addListener((c, oldValue, newValue) -> this.setDisable(newValue == null));
+        this.currentFileProperty().addListener((c, oldValue, newValue) -> Arrays.asList(informationWrapperPane, taggingWrapperPane).forEach(pane -> pane.setDisable(newValue == null)));
 
     }
 
     private void customizeTextFieldControl(Control control) {
-        if (control instanceof TextField) {
-            TextField textField = (TextField)control;
-            textField.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-                if (event.getCode() == KeyCode.PAGE_UP) {
-                    this.handleTextFieldUpOrDown(-1, event.isShiftDown());
-                } else if (event.getCode() == KeyCode.PAGE_DOWN) {
-                    this.handleTextFieldUpOrDown(1, event.isShiftDown());
-                }
-            });
-        }
+        control.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.PAGE_UP) {
+                this.handleTextFieldUpOrDown(-1, event.isShiftDown());
+            } else if (event.getCode() == KeyCode.PAGE_DOWN) {
+                this.handleTextFieldUpOrDown(1, event.isShiftDown());
+            }
+        });
     }
 
     private void handleTextFieldUpOrDown(int direction, boolean absolute) {

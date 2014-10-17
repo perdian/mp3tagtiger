@@ -17,6 +17,8 @@ package de.perdian.apps.tagtiger.business.framework.tagging;
 
 import org.jaudiotagger.tag.FieldKey;
 
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTagDelegate.GenreTypeDelegate;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTagDelegate.IntegerDelegate;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTagDelegate.StringDelegate;
 
 public enum TaggableFileTag {
@@ -24,11 +26,14 @@ public enum TaggableFileTag {
     TITLE(FieldKey.TITLE, new StringDelegate(), TaggableFileTagGroupAction.COPY),
     ARTIST(FieldKey.ARTIST, new StringDelegate(), TaggableFileTagGroupAction.COPY),
     ALBUM(FieldKey.ALBUM, new StringDelegate(), TaggableFileTagGroupAction.COPY),
-    DISC_NO(FieldKey.DISC_NO, new StringDelegate(), TaggableFileTagGroupAction.COPY),
-    DISCS_TOTAL(FieldKey.DISC_TOTAL, new StringDelegate(), TaggableFileTagGroupAction.COPY),
+    DISC_NO(FieldKey.DISC_NO, new IntegerDelegate(), TaggableFileTagGroupAction.COPY),
+    DISCS_TOTAL(FieldKey.DISC_TOTAL, new IntegerDelegate(), TaggableFileTagGroupAction.COPY),
     YEAR(FieldKey.YEAR, new StringDelegate(), TaggableFileTagGroupAction.COPY),
-    TRACK_NO(FieldKey.TRACK, new StringDelegate(), TaggableFileTagGroupAction.GENERATE_FROM_POSITION),
-    TRACKS_TOTAL(FieldKey.TRACK_TOTAL, new StringDelegate(), TaggableFileTagGroupAction.COPY);
+    TRACK_NO(FieldKey.TRACK, new IntegerDelegate(), TaggableFileTagGroupAction.GENERATE_FROM_POSITION),
+    TRACKS_TOTAL(FieldKey.TRACK_TOTAL, new IntegerDelegate(), TaggableFileTagGroupAction.COPY),
+    GENRE(FieldKey.GENRE, new GenreTypeDelegate(), TaggableFileTagGroupAction.COPY),
+    COMMENT(FieldKey.COMMENT, new StringDelegate(), TaggableFileTagGroupAction.COPY),
+    COMPOSER(FieldKey.COMPOSER, new StringDelegate(), TaggableFileTagGroupAction.COPY);
 
     private FieldKey fieldKey = null;
     private TaggableFileTagDelegate delegate = null;

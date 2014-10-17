@@ -15,16 +15,20 @@
  */
 package de.perdian.apps.tagtiger.fx.panels;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.TagTiger;
+import de.perdian.apps.tagtiger.business.framework.jobs.Job;
+import de.perdian.apps.tagtiger.business.framework.jobs.JobListener;
 import de.perdian.apps.tagtiger.business.impl.jobs.SaveChangedFilesInSelectionJob;
+import de.perdian.apps.tagtiger.fx.components.status.StatusPane;
 import de.perdian.apps.tagtiger.fx.panels.editor.EditorPane;
 import de.perdian.apps.tagtiger.fx.panels.selection.SelectionPane;
-import de.perdian.apps.tagtiger.fx.panels.status.StatusPane;
 
 /**
  * The central pane in which the main components of the application are being
@@ -55,6 +59,7 @@ public class MainApplicationPane extends VBox {
         editorPane.availableFilesProperty().bind(tagTiger.getSelection().availableFilesProperty());
         editorPane.selectedFilesProperty().bind(tagTiger.getSelection().selectedFilesProperty());
         VBox.setVgrow(editorPane, Priority.ALWAYS);
+        tagTiger.getJobExecutor().addListener(new EnableDisableJobListener(editorPane));
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().add(fileSelectionWrapperPane);
@@ -67,6 +72,43 @@ public class MainApplicationPane extends VBox {
 
         this.getChildren().add(splitPane);
         this.getChildren().add(statusPane);
+
+    }
+
+    // -------------------------------------------------------------------------
+    // --- Inner classes -------------------------------------------------------
+    // -------------------------------------------------------------------------
+
+    static class EnableDisableJobListener implements JobListener {
+
+        private Node node = null;
+
+        EnableDisableJobListener(Node node) {
+            this.setNode(node);
+        }
+
+        @Override
+        public void jobStarted(Job job) {
+            Platform.runLater(() -> this.getNode().setDisable(true));
+        }
+
+        @Override
+        public void jobCompleted(Job job, boolean otherJobsActive) {
+            if (!otherJobsActive) {
+                Platform.runLater(() -> this.getNode().setDisable(false));
+            }
+        }
+
+        // ---------------------------------------------------------------------
+        // --- Property access methods -----------------------------------------
+        // ---------------------------------------------------------------------
+
+        private Node getNode() {
+            return this.node;
+        }
+        private void setNode(Node node) {
+            this.node = node;
+        }
 
     }
 

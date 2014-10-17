@@ -25,6 +25,8 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -64,6 +66,7 @@ public class EditorComponentFactory<T> {
                 Platform.runLater(() -> textField.selectAll());
             }
         });
+        textField.setPrefWidth(0);
         textField.textProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().get()).ifPresent(bean -> ((Property<Object>)propertyFunction.apply(bean)).setValue(newValue)));
         this.getControlCustomizers().forEach(consumer -> consumer.accept(textField));
 
@@ -79,6 +82,28 @@ public class EditorComponentFactory<T> {
 
         this.getCreatedControls().add(textField);
         return textField;
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public ComboBox<String> createSelectBox(Function<T, Property<?>> propertyFunction, List<String> values) {
+
+        ComboBox<String> comboBox = new ComboBox<>(FXCollections.observableArrayList(values));
+        comboBox.setPrefWidth(0);
+        comboBox.setMaxWidth(Double.MAX_VALUE);
+        comboBox.setEditable(true);
+        comboBox.valueProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().get()).ifPresent(bean -> ((Property<Object>)propertyFunction.apply(bean)).setValue(newValue)));
+        this.getControlCustomizers().forEach(consumer -> consumer.accept(comboBox));
+
+        EditorComponentWrapper<T> componentWrapper = new EditorComponentWrapper<>();
+        componentWrapper.setBeanPropertySupplier(propertyFunction);
+        componentWrapper.setBeanPropertyChangeListener((o, oldValue, newValue) -> {
+            comboBox.setValue(newValue == null ? null : newValue.toString());
+        });
+        this.getComponentWrappers().add(componentWrapper);
+
+        this.getCreatedControls().add(comboBox);
+        return comboBox;
 
     }
 

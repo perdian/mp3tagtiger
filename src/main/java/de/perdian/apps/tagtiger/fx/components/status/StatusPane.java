@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.status;
+package de.perdian.apps.tagtiger.fx.components.status;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;

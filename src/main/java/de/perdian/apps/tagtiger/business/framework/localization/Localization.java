@@ -148,6 +148,10 @@ public interface Localization {
         return "Disc";
     }
 
+    default String discs() {
+        return "Discs";
+    }
+
     default String track() {
         return "Track";
     }
@@ -178,6 +182,10 @@ public interface Localization {
 
     default String images() {
         return "Images";
+    }
+
+    default String genre() {
+        return "Genre";
     }
 
 }

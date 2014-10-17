@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.editor;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -31,12 +32,17 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+
+import org.jaudiotagger.tag.reference.GenreTypes;
+
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTag;
@@ -52,16 +58,28 @@ class EditorTaggingPane extends TabPane {
         GridPane commonPane = new GridPane();
         commonPane.setHgap(5);
         commonPane.setPadding(new Insets(5, 5, 5, 5));
-        commonPane.add(new Label(localization.title()), 0, 0, 6, 1);
-        commonPane.add(this.createTextFieldControl(componentFactory, TaggableFileTag.TITLE, localization), 0, 1, 6, 1);
-        commonPane.add(new Label(localization.artist()), 0, 2, 6, 1);
-        commonPane.add(this.createTextFieldControl(componentFactory, TaggableFileTag.ARTIST, localization), 0, 3, 6, 1);
-        commonPane.add(new Label(localization.album()), 0, 4, 5, 1);
-        commonPane.add(this.createTextFieldControl(componentFactory, TaggableFileTag.ALBUM, localization), 0, 5, 5, 1);
-        commonPane.add(new Label(localization.year()), 5, 4, 1, 1);
-        commonPane.add(this.createTextFieldControl(componentFactory, TaggableFileTag.YEAR, localization), 5, 5, 1, 1);
-        commonPane.add(new Label(localization.track()), 5, 6, 1, 1);
-        commonPane.add(this.createTextFieldControl(componentFactory, TaggableFileTag.TRACK_NO, localization), 5, 7, 1, 1);
+        commonPane.add(new Label(localization.title()), 0, 0, 4, 1);
+        commonPane.add(this.createTextFieldControl(componentFactory, TaggableFileTag.TITLE, localization), 0, 1, 4, 1);
+        commonPane.add(new Label(localization.artist()), 0, 2, 4, 1);
+        commonPane.add(this.createTextFieldControl(componentFactory, TaggableFileTag.ARTIST, localization), 0, 3, 4, 1);
+        commonPane.add(new Label(localization.album()), 0, 4, 3, 1);
+        commonPane.add(new Label(localization.year()), 3, 4, 1, 1);
+        commonPane.add(this.createTextFieldControl(componentFactory, TaggableFileTag.ALBUM, localization), 0, 5, 3, 1);
+        commonPane.add(this.createNumericTextFieldControl(componentFactory, TaggableFileTag.YEAR, localization), 3, 5, 1, 1);
+        commonPane.add(new Label(localization.track()), 0, 6, 1, 1);
+        commonPane.add(new Label(localization.tracks()), 1, 6, 1, 1);
+        commonPane.add(new Label(localization.disc()), 2, 6, 1, 1);
+        commonPane.add(new Label(localization.discs()), 3, 6, 1, 1);
+        commonPane.add(this.createNumericTextFieldControl(componentFactory, TaggableFileTag.TRACK_NO, localization), 0, 7, 1, 1);
+        commonPane.add(this.createNumericTextFieldControl(componentFactory, TaggableFileTag.TRACKS_TOTAL, localization), 1, 7, 1, 1);
+        commonPane.add(this.createNumericTextFieldControl(componentFactory, TaggableFileTag.DISC_NO, localization), 2, 7, 1, 1);
+        commonPane.add(this.createNumericTextFieldControl(componentFactory, TaggableFileTag.DISCS_TOTAL, localization), 3, 7, 1, 1);
+        commonPane.add(new Label(localization.genre()), 0, 8, 4, 1);
+        commonPane.add(this.createSelectBoxControl(componentFactory, TaggableFileTag.GENRE, GenreTypes.getInstanceOf().getAlphabeticalValueList(), localization), 0, 9, 4, 1);
+        commonPane.add(new Label(localization.comment()), 0, 10, 4, 1);
+        commonPane.add(this.createTextFieldControl(componentFactory, TaggableFileTag.COMMENT, localization), 0, 11, 4, 1);
+        commonPane.add(new Label(localization.composer()), 0, 12, 4, 1);
+        commonPane.add(this.createTextFieldControl(componentFactory, TaggableFileTag.COMPOSER, localization), 0, 13, 4, 1);
 
         Tab commonTab = new Tab(localization.common());
         commonTab.setContent(commonPane);
@@ -74,6 +92,20 @@ class EditorTaggingPane extends TabPane {
 
         this.getTabs().addAll(commonTab, imagesTab);
 
+    }
+
+    private Node createSelectBoxControl(EditorComponentFactory<TaggableFile> componentFactory, TaggableFileTag tag, List<String> values, Localization localization) {
+        return this.createEnhancedControl(componentFactory.createSelectBox(file -> file.getTag(tag), values), tag, localization);
+    }
+
+    private Node createNumericTextFieldControl(EditorComponentFactory<TaggableFile> componentFactory, TaggableFileTag tag, Localization localization) {
+        TextField textField = componentFactory.createTextField(file -> file.getTag(tag));
+        textField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            if (!event.getCharacter().matches("\\d+")) {
+                event.consume();
+            }
+        });
+        return this.createEnhancedControl(textField, tag, localization);
     }
 
     private Node createTextFieldControl(EditorComponentFactory<TaggableFile> componentFactory, TaggableFileTag tag, Localization localization) {
