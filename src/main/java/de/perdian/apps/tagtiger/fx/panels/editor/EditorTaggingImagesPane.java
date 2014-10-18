@@ -15,30 +15,71 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.editor;
 
+import java.io.File;
+
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TagImage;
-import de.perdian.apps.tagtiger.business.framework.tagging.TagImageList;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 
 class EditorTaggingImagesPane extends BorderPane {
 
-    private final ObjectProperty<TagImageList> images = new SimpleObjectProperty<>();
+    private static final Logger log = LoggerFactory.getLogger(EditorTaggingImagesPane.class);
+
+    private final ListProperty<TagImage> images = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
 
     EditorTaggingImagesPane(Localization localization) {
 
         ListView<TagImage> listView = new ListView<>();
         listView.setCellFactory(e -> new ImageListCell(localization));
-        this.imagesProperty().addListener((o, oldValue, newValue) -> listView.setItems(newValue == null ? null : newValue.getTagImages()));
+        this.imagesProperty().addListener((Change<? extends TagImage> change) -> listView.itemsProperty().get().setAll(change.getList()));
 
-        HBox buttonPane = new HBox(new Button("DUMMY"));
+        Button removeImagesButton = new Button(localization.clearImages());
+        removeImagesButton.setDisable(true);
+        removeImagesButton.setGraphic(new ImageView(new Image(EditorTaggingImagesPane.class.getClassLoader().getResourceAsStream("icons/16/delete.png"))));
+        removeImagesButton.setOnAction(event -> this.imagesProperty().get().clear() );
+        this.imagesProperty().addListener((Change<? extends TagImage> change) -> removeImagesButton.setDisable(change.getList() == null || change.getList().isEmpty()));
+
+        Button addImageButton = new Button(localization.addImage());
+        addImageButton.setGraphic(new ImageView(new Image(EditorTaggingImagesPane.class.getClassLoader().getResourceAsStream("icons/16/add.png"))));
+        addImageButton.setOnAction(event -> {
+            File tagFile = this.currentFileProperty().get().getFile();
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle(localization.openImage());
+            fileChooser.setInitialDirectory(tagFile.getParentFile());
+            File selectedFile = fileChooser.showOpenDialog(this.getScene().getWindow());
+            if (selectedFile != null) {
+                try {
+                    TagImage newTagImage = new TagImage(selectedFile);
+                    this.imagesProperty().add(newTagImage);
+                } catch (Exception e) {
+                    log.warn("Cannot read image from file: {}", selectedFile, e);
+                }
+            }
+        });
+
+        HBox buttonPane = new HBox(removeImagesButton, addImageButton);
+        buttonPane.setSpacing(5);
         buttonPane.setAlignment(Pos.CENTER_RIGHT);
         buttonPane.setPadding(new Insets(5, 0, 0, 0));
 
@@ -64,7 +105,7 @@ class EditorTaggingImagesPane extends BorderPane {
             super.updateItem(item, empty);
             if (item != null) {
                 EditorTaggingImagePane imagePane = new EditorTaggingImagePane(item, this.getLocalization());
-                imagePane.setOnDeleteActionHandler(event -> EditorTaggingImagesPane.this.imagesProperty().get().getTagImages().remove(item));
+                imagePane.setOnDeleteActionHandler(event -> EditorTaggingImagesPane.this.imagesProperty().get().remove(item));
                 imagePane.changedProperty().addListener((o, oldValue, newValue) -> {
                     if (newValue) {
                         item.changedProperty().set(true);
@@ -93,8 +134,12 @@ class EditorTaggingImagesPane extends BorderPane {
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
-    ObjectProperty<TagImageList> imagesProperty() {
+    ListProperty<TagImage> imagesProperty() {
         return this.images;
+    }
+
+    ObjectProperty<TaggableFile> currentFileProperty() {
+        return this.currentFile;
     }
 
 }

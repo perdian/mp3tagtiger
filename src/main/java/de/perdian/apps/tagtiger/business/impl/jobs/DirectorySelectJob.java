@@ -78,6 +78,7 @@ public class DirectorySelectJob implements Job {
     private void executeInternal(JobContext context) {
 
         context.updateProgress(this.getLocalization().analyzingFilesFromDirectory(this.getSelectedDirectory().getName()), -1, -1);
+        Platform.runLater(() -> this.getTargetSelection().availableFilesProperty().clear());
 
         List<File> sourceFiles = this.resolveSourceFiles(context);
 

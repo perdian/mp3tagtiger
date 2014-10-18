@@ -27,12 +27,16 @@ import javafx.beans.value.ChangeListener;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.datatype.Artwork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.tagtiger.business.framework.tagging.TagImage;
 import de.perdian.apps.tagtiger.business.framework.tagging.TagImageList;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTagDelegate;
 
 public class TagImageListDelegate implements TaggableFileTagDelegate {
+
+    static final Logger log = LoggerFactory.getLogger(TagImageListDelegate.class);
 
     @Override
     public Property<Object> createPropertyForTag(Tag tag, FieldKey fieldKey, ChangeListener<Object> changeListener) {
@@ -69,7 +73,7 @@ public class TagImageListDelegate implements TaggableFileTagDelegate {
                         tag.addField(artwork);
                     }
                 } catch (Exception e) {
-                    log.warn("Cannot update field '" + fieldKey + "' with image value: " + property.getValue(), e);
+                    log.warn("Cannot update artwork with image value: " + property.getValue(), e);
                 }
             });
 

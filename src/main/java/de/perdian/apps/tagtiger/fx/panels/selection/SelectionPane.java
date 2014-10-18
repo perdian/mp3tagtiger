@@ -45,6 +45,7 @@ public class SelectionPane extends BorderPane {
     static final Logger log = LoggerFactory.getLogger(SelectionPane.class);
 
     private final ObjectProperty<EventHandler<ActionEvent>> onSaveAction = new SimpleObjectProperty<>();
+    private FileSelectionPane selectionPane = null;
 
     public SelectionPane(Selection selection, Localization localization) {
 
@@ -61,6 +62,7 @@ public class SelectionPane extends BorderPane {
         fileSelectionPane.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> selection.selectedFilesProperty().setAll(change.getList()));
         fileSelectionPane.selectedFileProperty().addListener((o, oldValue, newValue) -> selection.currentFileProperty().set(newValue));
         fileSelectionPane.setOnSaveAction(event -> Optional.ofNullable(this.onSaveActionProperty().get()).ifPresent(handler -> handler.handle(event)));
+        this.setSelectionPane(fileSelectionPane);
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().add(directorySelectionPane);
@@ -97,6 +99,17 @@ public class SelectionPane extends BorderPane {
     }
 
     // -------------------------------------------------------------------------
+    // --- Virtual property access methods -------------------------------------
+    // -------------------------------------------------------------------------
+
+    public void setListDisable(boolean disable) {
+        this.getSelectionPane().setDisable(disable);
+    }
+    public boolean isListDisable() {
+        return this.getSelectionPane().isDisable();
+    }
+
+    // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
@@ -108,6 +121,13 @@ public class SelectionPane extends BorderPane {
     }
     public void setOnSaveAction(EventHandler<ActionEvent> eventHandler) {
         this.onSaveAction.set(eventHandler);
+    }
+
+    private FileSelectionPane getSelectionPane() {
+        return this.selectionPane;
+    }
+    private void setSelectionPane(FileSelectionPane selectionPane) {
+        this.selectionPane = selectionPane;
     }
 
 }

@@ -15,9 +15,10 @@
  */
 package de.perdian.apps.tagtiger.fx.panels;
 
+import java.util.function.Consumer;
+
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Priority;
@@ -50,6 +51,7 @@ public class MainApplicationPane extends VBox {
         fileSelectionWrapperPane.setCollapsible(false);
         fileSelectionWrapperPane.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(fileSelectionWrapperPane, Priority.ALWAYS);
+        tagTiger.getJobExecutor().addListener(new EnableDisableJobListener(selectionPane::setListDisable));
 
         EditorPane editorPane = new EditorPane(tagTiger.getLocalization());
         editorPane.setMinWidth(400d);
@@ -59,7 +61,7 @@ public class MainApplicationPane extends VBox {
         editorPane.availableFilesProperty().bind(tagTiger.getSelection().availableFilesProperty());
         editorPane.selectedFilesProperty().bind(tagTiger.getSelection().selectedFilesProperty());
         VBox.setVgrow(editorPane, Priority.ALWAYS);
-        tagTiger.getJobExecutor().addListener(new EnableDisableJobListener(editorPane));
+        tagTiger.getJobExecutor().addListener(new EnableDisableJobListener(editorPane::setDisable));
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().add(fileSelectionWrapperPane);
@@ -81,21 +83,21 @@ public class MainApplicationPane extends VBox {
 
     static class EnableDisableJobListener implements JobListener {
 
-        private Node node = null;
+        private Consumer<Boolean> consumer = null;
 
-        EnableDisableJobListener(Node node) {
-            this.setNode(node);
+        EnableDisableJobListener(Consumer<Boolean> consumer) {
+            this.setConsumer(consumer);
         }
 
         @Override
         public void jobStarted(Job job) {
-            Platform.runLater(() -> this.getNode().setDisable(true));
+            Platform.runLater(() -> this.getConsumer().accept(Boolean.TRUE));
         }
 
         @Override
         public void jobCompleted(Job job, boolean otherJobsActive) {
             if (!otherJobsActive) {
-                Platform.runLater(() -> this.getNode().setDisable(false));
+                Platform.runLater(() -> this.getConsumer().accept(Boolean.FALSE));
             }
         }
 
@@ -103,11 +105,11 @@ public class MainApplicationPane extends VBox {
         // --- Property access methods -----------------------------------------
         // ---------------------------------------------------------------------
 
-        private Node getNode() {
-            return this.node;
+        private Consumer<Boolean> getConsumer() {
+            return this.consumer;
         }
-        private void setNode(Node node) {
-            this.node = node;
+        private void setConsumer(Consumer<Boolean> consumer) {
+            this.consumer = consumer;
         }
 
     }

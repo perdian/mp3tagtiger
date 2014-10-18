@@ -200,8 +200,20 @@ public interface Localization {
         return "Picture type";
     }
 
-    default String deleteImage() {
-        return "Delete image";
+    default String removeImage() {
+        return "Remove image";
+    }
+
+    default String addImage() {
+        return "Add image";
+    }
+
+    default String clearImages() {
+        return "Clear images";
+    }
+
+    default String openImage() {
+        return "Open image";
     }
 
 }

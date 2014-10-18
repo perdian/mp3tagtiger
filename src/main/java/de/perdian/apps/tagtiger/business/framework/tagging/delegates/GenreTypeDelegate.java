@@ -25,10 +25,14 @@ import javafx.beans.value.ChangeListener;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.reference.GenreTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTagDelegate;
 
 public class GenreTypeDelegate implements TaggableFileTagDelegate {
+
+    static final Logger log = LoggerFactory.getLogger(GenreTypeDelegate.class);
 
     @Override
     public Property<Object> createPropertyForTag(Tag tag, FieldKey fieldKey, ChangeListener<Object> changeListener) {

@@ -69,6 +69,7 @@ public class EditorPane extends VBox {
 
         EditorTaggingImagesPane taggingImagesPane = new EditorTaggingImagesPane(localization);
         taggingImagesPane.setPadding(new Insets(5, 5, 5, 5));
+        taggingImagesPane.currentFileProperty().bind(this.currentFileProperty());
         Tab imagesTab = new Tab(localization.images());
         imagesTab.setContent(taggingImagesPane);
         imagesTab.setClosable(false);
@@ -86,7 +87,7 @@ public class EditorPane extends VBox {
         this.getChildren().addAll(informationWrapperPane, taggingWrapperPane);
 
         this.currentFileProperty().addListener((o, oldValue, newValue) -> Arrays.asList(informationWrapperPane, taggingWrapperPane).forEach(pane -> pane.setDisable(newValue == null)));
-        this.currentFileProperty().addListener((o, oldValue, newValue) -> taggingImagesPane.imagesProperty().set(newValue == null ? null : (TagImageList)newValue.getTagProperty(TaggableFileTag.IMAGES).getValue()));
+        this.currentFileProperty().addListener((o, oldValue, newValue) -> taggingImagesPane.imagesProperty().set(newValue == null ? null : ((TagImageList)newValue.getTagProperty(TaggableFileTag.IMAGES).getValue()).getTagImages()));
 
     }
 

@@ -20,12 +20,8 @@ import javafx.beans.value.ChangeListener;
 
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public interface TaggableFileTagDelegate {
-
-    static final Logger log = LoggerFactory.getLogger(TaggableFileTagDelegate.class);
 
     void updateTagFromProperty(Tag tag, Property<Object> property, FieldKey fieldKey) throws Exception;
 
@@ -34,10 +30,5 @@ public interface TaggableFileTagDelegate {
     default void copyPropertyValue(Property<Object> sourceProperty, Property<Object> targetProperty) {
         targetProperty.setValue(sourceProperty.getValue());
     }
-
-    // -------------------------------------------------------------------------
-    // --- Inner classes -------------------------------------------------------
-    // -------------------------------------------------------------------------
-
 
 }

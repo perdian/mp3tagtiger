@@ -16,9 +16,13 @@
 package de.perdian.apps.tagtiger.business.framework.tagging;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -48,7 +52,6 @@ public class TagImage {
     private final ObjectProperty<Image> image = new SimpleObjectProperty<>();
     private final IntegerProperty imageSize = new SimpleIntegerProperty();
     private final StringProperty pictureType = new SimpleStringProperty();
-    private final StringProperty mimeType = new SimpleStringProperty();
     private final StringProperty description = new SimpleStringProperty();
     private final BooleanProperty changed = new SimpleBooleanProperty();
 
@@ -56,19 +59,27 @@ public class TagImage {
     }
 
     public TagImage(Artwork artwork) throws IOException {
-
         this.setArtwork(artwork);
         this.imageProperty().set(new Image(new ByteArrayInputStream(artwork.getBinaryData())));
         this.imageSizeProperty().set(artwork.getBinaryData().length);
         this.pictureTypeProperty().set(PictureTypes.getInstanceOf().getValueForId(artwork.getPictureType()));
-        this.mimeTypeProperty().set(artwork.getMimeType());
         this.descriptionProperty().set(artwork.getDescription());
+        this.registerListeners();
+    }
 
+    public TagImage(File imageFile) throws Exception {
+        try (InputStream imageFileStream = new BufferedInputStream(new FileInputStream(imageFile))) {
+            Image image = new Image(imageFileStream);
+            this.imageProperty().set(image);
+            this.imageSizeProperty().set((int)imageFile.length());
+            this.descriptionProperty().set(imageFile.getName());
+            this.registerListeners();
+        }
+    }
+    private void registerListeners() {
         this.imageProperty().addListener((o, oldValue, newValue) -> this.changedProperty().set(true));
         this.pictureTypeProperty().addListener((o, oldValue, newValue) -> this.changedProperty().set(true));
-        this.mimeTypeProperty().addListener((o, oldValue, newValue) -> this.changedProperty().set(true));
         this.descriptionProperty().addListener((o, oldValue, newValue) -> this.changedProperty().set(true));
-
     }
 
     public Artwork toArtwork() throws IOException {
@@ -80,11 +91,12 @@ public class TagImage {
             ByteArrayOutputStream imageOutStream = new ByteArrayOutputStream();
             ImageIO.write(awtImage, "png", imageOutStream);
 
+            Integer pictureTypeId = PictureTypes.getInstanceOf().getIdForValue(this.pictureTypeProperty().get());
             Artwork artwork = this.getArtwork() == null ? new Artwork() : this.getArtwork();
             artwork.setBinaryData(imageOutStream.toByteArray());
             artwork.setDescription(this.descriptionProperty().get());
             artwork.setMimeType("image/png");
-            artwork.setPictureType(PictureTypes.getInstanceOf().getIdForValue(this.pictureTypeProperty().get()));
+            artwork.setPictureType(pictureTypeId == null ? PictureTypes.DEFAULT_ID : pictureTypeId.intValue());
             return artwork;
 
         }
@@ -111,10 +123,6 @@ public class TagImage {
 
     public StringProperty pictureTypeProperty() {
         return this.pictureType;
-    }
-
-    public StringProperty mimeTypeProperty() {
-        return this.mimeType;
     }
 
     public StringProperty descriptionProperty() {

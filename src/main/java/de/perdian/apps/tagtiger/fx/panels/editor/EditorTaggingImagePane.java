@@ -66,22 +66,20 @@ class EditorTaggingImagePane extends HBox {
         image.pictureTypeProperty().addListener(new WeakChangeListener<>((o, oldValue, newValue) -> pictureTypeBox.setValue(newValue)));
         GridPane.setHgrow(pictureTypeBox, Priority.ALWAYS);
 
-        Button deleteButton = new Button(localization.deleteImage());
-        deleteButton.setGraphic(new ImageView(new Image(EditorTaggingImagePane.class.getClassLoader().getResourceAsStream("icons/16/delete.png"))));
-        deleteButton.setOnAction(event -> Optional.ofNullable(this.getOnDeleteActionHandler()).ifPresent(handler -> handler.handle(event)));
-        HBox buttonPane = new HBox(deleteButton);
+        Button removeButton = new Button(localization.removeImage());
+        removeButton.setGraphic(new ImageView(new Image(EditorTaggingImagePane.class.getClassLoader().getResourceAsStream("icons/16/delete.png"))));
+        removeButton.setOnAction(event -> Optional.ofNullable(this.getOnDeleteActionHandler()).ifPresent(handler -> handler.handle(event)));
+        HBox buttonPane = new HBox(removeButton);
         buttonPane.setAlignment(Pos.CENTER_RIGHT);
 
         GridPane descriptionPane = new GridPane();
         descriptionPane.setHgap(5);
         descriptionPane.setVgap(5);
-        descriptionPane.add(new Label(localization.mimeType() + ":"), 0, 0);
-        descriptionPane.add(new Label(image.mimeTypeProperty().get()), 1, 0);
-        descriptionPane.add(new Label(localization.description() + ":"), 0, 1);
-        descriptionPane.add(descriptionField, 1, 1);
-        descriptionPane.add(new Label(localization.pictureType() + ":"), 0, 2);
-        descriptionPane.add(pictureTypeBox, 1, 2);
-        descriptionPane.add(buttonPane, 1, 3);
+        descriptionPane.add(new Label(localization.description() + ":"), 0, 0);
+        descriptionPane.add(descriptionField, 1, 0);
+        descriptionPane.add(new Label(localization.pictureType() + ":"), 0, 1);
+        descriptionPane.add(pictureTypeBox, 1, 1);
+        descriptionPane.add(buttonPane, 1, 2);
         this.getChildren().add(descriptionPane);
         HBox.setHgrow(descriptionPane, Priority.ALWAYS);
         HBox.setMargin(descriptionPane, new Insets(5, 0, 5, 10));
