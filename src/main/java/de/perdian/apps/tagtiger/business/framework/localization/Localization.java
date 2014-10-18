@@ -188,4 +188,20 @@ public interface Localization {
         return "Genre";
     }
 
+    default String description() {
+        return "Description";
+    }
+
+    default String mimeType() {
+        return "Mime Type";
+    }
+
+    default String pictureType() {
+        return "Picture type";
+    }
+
+    default String deleteImage() {
+        return "Delete image";
+    }
+
 }

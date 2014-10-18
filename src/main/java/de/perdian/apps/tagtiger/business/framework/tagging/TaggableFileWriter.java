@@ -36,7 +36,7 @@ public class TaggableFileWriter {
 
             AudioFile audioFile = file.getAudioFile();
             audioFile.setFile(newSystemFile);
-            audioFile.setTag(this.populateTag(audioFile.getTagOrCreateDefault(), file));
+            audioFile.setTag(this.populateTag(audioFile.getTagOrCreateAndSetDefault(), file));
 
             AudioFileIO.write(audioFile);
 
@@ -49,8 +49,12 @@ public class TaggableFileWriter {
 
     private Tag populateTag(Tag tag, TaggableFile file) throws TagException {
         for (TaggableFileTag fileTag : TaggableFileTag.values()) {
-            Property<Object> fileProperty = file.getTag(fileTag);
-            fileTag.getDelegate().propertyToTag(fileProperty, tag, fileTag.getFieldKey());
+            Property<Object> property = file.getTagProperty(fileTag);
+            try {
+                fileTag.getDelegate().updateTagFromProperty(tag, property, fileTag.getFieldKey());
+            } catch(Exception e) {
+                log.warn("Cannot update field '" + fileTag.getFieldKey() + "' with value: " + property.getValue(), e);
+            }
         }
         return tag;
     }

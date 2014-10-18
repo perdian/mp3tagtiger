@@ -90,14 +90,14 @@ public class TaggableFile {
         this.changed = changed;
     }
 
-    public Property<Object> getTag(TaggableFileTag fieldKey) {
-        return this.getTags().get(fieldKey);
+    public Property<Object> getTagProperty(TaggableFileTag fieldKey) {
+        return this.getTagProperties().get(fieldKey);
     }
-    Map<TaggableFileTag, Property<Object>> getTags() {
+    Map<TaggableFileTag, Property<Object>> getTagProperties() {
         return this.tags;
     }
-    void setTags(Map<TaggableFileTag, Property<Object>> tags) {
-        this.tags = tags;
+    void setTagProperties(Map<TaggableFileTag, Property<Object>> tagProperties) {
+        this.tags = tagProperties;
     }
 
     AudioFile getAudioFile() {

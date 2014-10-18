@@ -19,10 +19,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -30,8 +28,14 @@ import javafx.beans.value.ChangeListener;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.Tag;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 public class TaggableFileLoader {
+
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
 
     public TaggableFile loadFile(File file) throws Exception {
         int extensionSeparator = file.getName().lastIndexOf(".");
@@ -40,17 +44,15 @@ public class TaggableFileLoader {
         taggableFile.setChanged(new SimpleBooleanProperty());
         taggableFile.setFileName(this.loadStringProperty(extensionSeparator < 0 ? file.getName() : file.getName().substring(0, extensionSeparator), taggableFile.createUpdateChangePropertyListener()));
         taggableFile.setFileExtension(this.loadStringProperty(extensionSeparator < 0 || extensionSeparator >= file.getName().length() - 1 ? null : file.getName().substring(extensionSeparator + 1), taggableFile.createUpdateChangePropertyListener()));
-        taggableFile.setTags(this.loadFileTags(audioFile, taggableFile.createUpdateChangePropertyListener()));
+        taggableFile.setTagProperties(this.loadTagProperties(audioFile, taggableFile.createUpdateChangePropertyListener()));
         return taggableFile;
     }
 
-    private Map<TaggableFileTag, Property<Object>> loadFileTags(AudioFile audioFile, ChangeListener<Object> changeListener) throws Exception {
+    private Map<TaggableFileTag, Property<Object>> loadTagProperties(AudioFile audioFile, ChangeListener<Object> changeListener) throws Exception {
         Tag audioTag = audioFile.getTagOrCreateDefault();
         Map<TaggableFileTag, Property<Object>> fileWrapperTags = new HashMap<>();
         for (TaggableFileTag fileTag : TaggableFileTag.values()) {
-            ObjectProperty<Object> fileTagProperty = new SimpleObjectProperty<>();
-            fileTag.getDelegate().tagToProperty(audioTag, fileTagProperty, fileTag.getFieldKey());
-            fileTagProperty.addListener(changeListener);
+            Property<Object> fileTagProperty = fileTag.getDelegate().createPropertyForTag(audioTag, fileTag.getFieldKey(), changeListener);
             fileWrapperTags.put(fileTag, fileTagProperty);
         }
         return fileWrapperTags;

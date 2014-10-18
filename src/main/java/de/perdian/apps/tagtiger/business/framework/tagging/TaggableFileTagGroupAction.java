@@ -15,9 +15,34 @@
  */
 package de.perdian.apps.tagtiger.business.framework.tagging;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javafx.beans.property.Property;
+import javafx.collections.ObservableList;
+
 public enum TaggableFileTagGroupAction {
 
-    COPY,
-    GENERATE_FROM_POSITION;
+    COPY {
+
+        @Override
+        public void apply(TaggableFile currentFile, TaggableFileTag tag, ObservableList<TaggableFile> otherFiles) {
+            Property<Object> sourceProperty = currentFile.getTagProperty(tag);
+            otherFiles.stream()
+                .filter(file -> !file.equals(currentFile))
+                .forEach(file -> tag.getDelegate().copyPropertyValue(sourceProperty, file.getTagProperty(tag)));
+        }
+
+    },
+    GENERATE_FROM_POSITION {
+
+        @Override
+        public void apply(TaggableFile currentFile, TaggableFileTag tag, ObservableList<TaggableFile> otherFiles) {
+            AtomicInteger counter = new AtomicInteger(1);
+            otherFiles.stream().forEach(file -> file.getTagProperty(tag).setValue(String.valueOf(counter.getAndIncrement())));
+        }
+
+    };
+
+    public abstract void apply(TaggableFile currentFile, TaggableFileTag tag, ObservableList<TaggableFile> otherFiles);
 
 }

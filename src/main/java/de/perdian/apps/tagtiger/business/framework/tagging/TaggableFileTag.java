@@ -17,23 +17,25 @@ package de.perdian.apps.tagtiger.business.framework.tagging;
 
 import org.jaudiotagger.tag.FieldKey;
 
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTagDelegate.GenreTypeDelegate;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTagDelegate.IntegerDelegate;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTagDelegate.StringDelegate;
+import de.perdian.apps.tagtiger.business.framework.tagging.delegates.GenreTypeDelegate;
+import de.perdian.apps.tagtiger.business.framework.tagging.delegates.NumericStringDelegate;
+import de.perdian.apps.tagtiger.business.framework.tagging.delegates.StringDelegate;
+import de.perdian.apps.tagtiger.business.framework.tagging.delegates.TagImageListDelegate;
 
 public enum TaggableFileTag {
 
     TITLE(FieldKey.TITLE, new StringDelegate(), TaggableFileTagGroupAction.COPY),
     ARTIST(FieldKey.ARTIST, new StringDelegate(), TaggableFileTagGroupAction.COPY),
     ALBUM(FieldKey.ALBUM, new StringDelegate(), TaggableFileTagGroupAction.COPY),
-    DISC_NO(FieldKey.DISC_NO, new IntegerDelegate(), TaggableFileTagGroupAction.COPY),
-    DISCS_TOTAL(FieldKey.DISC_TOTAL, new IntegerDelegate(), TaggableFileTagGroupAction.COPY),
+    DISC_NO(FieldKey.DISC_NO, new NumericStringDelegate(), TaggableFileTagGroupAction.COPY),
+    DISCS_TOTAL(FieldKey.DISC_TOTAL, new NumericStringDelegate(), TaggableFileTagGroupAction.COPY),
     YEAR(FieldKey.YEAR, new StringDelegate(), TaggableFileTagGroupAction.COPY),
-    TRACK_NO(FieldKey.TRACK, new IntegerDelegate(), TaggableFileTagGroupAction.GENERATE_FROM_POSITION),
-    TRACKS_TOTAL(FieldKey.TRACK_TOTAL, new IntegerDelegate(), TaggableFileTagGroupAction.COPY),
+    TRACK_NO(FieldKey.TRACK, new NumericStringDelegate(), TaggableFileTagGroupAction.GENERATE_FROM_POSITION),
+    TRACKS_TOTAL(FieldKey.TRACK_TOTAL, new NumericStringDelegate(), TaggableFileTagGroupAction.COPY),
     GENRE(FieldKey.GENRE, new GenreTypeDelegate(), TaggableFileTagGroupAction.COPY),
     COMMENT(FieldKey.COMMENT, new StringDelegate(), TaggableFileTagGroupAction.COPY),
-    COMPOSER(FieldKey.COMPOSER, new StringDelegate(), TaggableFileTagGroupAction.COPY);
+    COMPOSER(FieldKey.COMPOSER, new StringDelegate(), TaggableFileTagGroupAction.COPY),
+    IMAGES(null, new TagImageListDelegate(), TaggableFileTagGroupAction.COPY);
 
     private FieldKey fieldKey = null;
     private TaggableFileTagDelegate delegate = null;
