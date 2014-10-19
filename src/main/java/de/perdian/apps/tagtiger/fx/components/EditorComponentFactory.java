@@ -42,7 +42,7 @@ import javafx.scene.input.KeyEvent;
 public class EditorComponentFactory<T> {
 
     private ObjectProperty<T> beanProperty = null;
-    private List<EditorComponentWrapper<T>> componentWrappers = new ArrayList<>();
+    private List<EditorComponentWrapper<T, ?>> componentWrappers = new ArrayList<>();
     private List<Consumer<Control>> controlCustomizers = new ArrayList<>();
     private List<Control> createdControls = new ArrayList<>();
 
@@ -57,8 +57,7 @@ public class EditorComponentFactory<T> {
 
     }
 
-    @SuppressWarnings("unchecked")
-    public TextField createTextField(Function<T, Property<?>> propertyFunction) {
+    public TextField createTextField(Function<T, Property<String>> propertyFunction) {
 
         TextField textField = new TextField();
         textField.focusedProperty().addListener((o, oldValue, newValue) -> {
@@ -67,10 +66,10 @@ public class EditorComponentFactory<T> {
             }
         });
         textField.setPrefWidth(0);
-        textField.textProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().get()).ifPresent(bean -> ((Property<Object>)propertyFunction.apply(bean)).setValue(newValue)));
+        textField.textProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().get()).ifPresent(bean -> propertyFunction.apply(bean).setValue(newValue)));
         this.getControlCustomizers().forEach(consumer -> consumer.accept(textField));
 
-        EditorComponentWrapper<T> componentWrapper = new EditorComponentWrapper<>();
+        EditorComponentWrapper<T, String> componentWrapper = new EditorComponentWrapper<>();
         componentWrapper.setBeanPropertySupplier(propertyFunction);
         componentWrapper.setBeanPropertyChangeListener((o, oldValue, newValue) -> {
             textField.setText(newValue == null ? null : newValue.toString());
@@ -85,17 +84,16 @@ public class EditorComponentFactory<T> {
 
     }
 
-    @SuppressWarnings("unchecked")
-    public ComboBox<String> createSelectBox(Function<T, Property<?>> propertyFunction, List<String> values) {
+    public ComboBox<String> createSelectBox(Function<T, Property<String>> propertyFunction, List<String> values) {
 
         ComboBox<String> comboBox = new ComboBox<>(FXCollections.observableArrayList(values));
         comboBox.setPrefWidth(0);
         comboBox.setMaxWidth(Double.MAX_VALUE);
         comboBox.setEditable(true);
-        comboBox.valueProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().get()).ifPresent(bean -> ((Property<Object>)propertyFunction.apply(bean)).setValue(newValue)));
+        comboBox.valueProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().get()).ifPresent(bean -> propertyFunction.apply(bean).setValue(newValue)));
         this.getControlCustomizers().forEach(consumer -> consumer.accept(comboBox));
 
-        EditorComponentWrapper<T> componentWrapper = new EditorComponentWrapper<>();
+        EditorComponentWrapper<T, String> componentWrapper = new EditorComponentWrapper<>();
         componentWrapper.setBeanPropertySupplier(propertyFunction);
         componentWrapper.setBeanPropertyChangeListener((o, oldValue, newValue) -> {
             comboBox.setValue(newValue == null ? null : newValue.toString());
@@ -109,7 +107,7 @@ public class EditorComponentFactory<T> {
 
     @SuppressWarnings("unchecked")
     private void handleCurrentBeanUpdate(T oldValue, T newValue) {
-        for (EditorComponentWrapper<T> wrapper : this.getComponentWrappers()) {
+        for (EditorComponentWrapper<T, ?> wrapper : this.getComponentWrappers()) {
             if (oldValue != null) {
                 ((Property<Object>)wrapper.getBeanPropertySupplier().apply(oldValue)).removeListener((ChangeListener<Object>)wrapper.getBeanPropertyChangeListener());
             }
@@ -162,10 +160,10 @@ public class EditorComponentFactory<T> {
         this.beanProperty = beanProperty;
     }
 
-    private List<EditorComponentWrapper<T>> getComponentWrappers() {
+    private List<EditorComponentWrapper<T, ?>> getComponentWrappers() {
         return this.componentWrappers;
     }
-    private void setComponentWrappers(List<EditorComponentWrapper<T>> componentWrappers) {
+    private void setComponentWrappers(List<EditorComponentWrapper<T, ?>> componentWrappers) {
         this.componentWrappers = componentWrappers;
     }
 

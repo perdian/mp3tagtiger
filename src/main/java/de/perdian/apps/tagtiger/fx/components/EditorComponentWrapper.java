@@ -26,10 +26,10 @@ import javafx.beans.value.ChangeListener;
  * @author Christian Robert
  */
 
-class EditorComponentWrapper<T> {
+class EditorComponentWrapper<T, U> {
 
     private ChangeListener<?> beanPropertyChangeListener = null;
-    private Function<T, Property<?>> beanPropertySupplier = null;
+    private Function<T, Property<U>> beanPropertySupplier = null;
 
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
@@ -42,10 +42,10 @@ class EditorComponentWrapper<T> {
         this.beanPropertyChangeListener = beanPropertyChangeListener;
     }
 
-    Function<T, Property<?>> getBeanPropertySupplier() {
+    Function<T, Property<U>> getBeanPropertySupplier() {
         return this.beanPropertySupplier;
     }
-    void setBeanPropertySupplier(Function<T, Property<?>> beanPropertySupplier) {
+    void setBeanPropertySupplier(Function<T, Property<U>> beanPropertySupplier) {
         this.beanPropertySupplier = beanPropertySupplier;
     }
 

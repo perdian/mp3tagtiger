@@ -16,16 +16,16 @@
 package de.perdian.apps.tagtiger.fx.panels.editor;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.function.Function;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
@@ -42,61 +42,73 @@ import org.jaudiotagger.tag.reference.GenreTypes;
 
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.business.framework.tagging.TagHandler;
 import de.perdian.apps.tagtiger.fx.components.EditorComponentFactory;
+import de.perdian.apps.tagtiger.fx.panels.editor.groupactions.CopyTracksCountGroupAction;
+import de.perdian.apps.tagtiger.fx.panels.editor.groupactions.CopyValuesGroupAction;
+import de.perdian.apps.tagtiger.fx.panels.editor.groupactions.GenerateTrackIndexGroupAction;
 
 class EditorTaggingCommonPane extends GridPane {
 
     private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private EditorComponentFactory<TaggableFile> componentFactory = null;
+    private Localization localization = null;
 
     EditorTaggingCommonPane(EditorComponentFactory<TaggableFile> componentFactory, Localization localization) {
-
         this.setHgap(5);
-        this.add(new Label(localization.title()), 0, 0, 4, 1);
-        this.add(this.createTextFieldControl(componentFactory, TagHandler.TITLE, localization), 0, 1, 4, 1);
-        this.add(new Label(localization.artist()), 0, 2, 4, 1);
-        this.add(this.createTextFieldControl(componentFactory, TagHandler.ARTIST, localization), 0, 3, 4, 1);
-        this.add(new Label(localization.album()), 0, 4, 3, 1);
-        this.add(new Label(localization.year()), 3, 4, 1, 1);
-        this.add(this.createTextFieldControl(componentFactory, TagHandler.ALBUM, localization), 0, 5, 3, 1);
-        this.add(this.createNumericTextFieldControl(componentFactory, TagHandler.YEAR, localization), 3, 5, 1, 1);
-        this.add(new Label(localization.track()), 0, 6, 1, 1);
-        this.add(new Label(localization.tracks()), 1, 6, 1, 1);
-        this.add(new Label(localization.disc()), 2, 6, 1, 1);
-        this.add(new Label(localization.discs()), 3, 6, 1, 1);
-        this.add(this.createNumericTextFieldControl(componentFactory, TagHandler.TRACK_NO, localization), 0, 7, 1, 1);
-        this.add(this.createNumericTextFieldControl(componentFactory, TagHandler.TRACKS_TOTAL, localization), 1, 7, 1, 1);
-        this.add(this.createNumericTextFieldControl(componentFactory, TagHandler.DISC_NO, localization), 2, 7, 1, 1);
-        this.add(this.createNumericTextFieldControl(componentFactory, TagHandler.DISCS_TOTAL, localization), 3, 7, 1, 1);
-        this.add(new Label(localization.genre()), 0, 8, 4, 1);
-        this.add(this.createSelectBoxControl(componentFactory, TagHandler.GENRE, GenreTypes.getInstanceOf().getAlphabeticalValueList(), localization), 0, 9, 4, 1);
-        this.add(new Label(localization.comment()), 0, 10, 4, 1);
-        this.add(this.createTextFieldControl(componentFactory, TagHandler.COMMENT, localization), 0, 11, 4, 1);
-        this.add(new Label(localization.composer()), 0, 12, 4, 1);
-        this.add(this.createTextFieldControl(componentFactory, TagHandler.COMPOSER, localization), 0, 13, 4, 1);
-
+        this.setComponentFactory(componentFactory);
+        this.setLocalization(localization);
     }
 
-    private Node createSelectBoxControl(EditorComponentFactory<TaggableFile> componentFactory, TagHandler tag, List<String> values, Localization localization) {
-        return this.createEnhancedControl(componentFactory.createSelectBox(file -> file.getTagProperty(tag), values), tag, localization);
+    void initialize() {
+
+        this.addLabel(this.getLocalization().title(), 0, 0, 4, 1);
+        this.addTextFieldControl(TaggableFile::titleProperty, new CopyValuesGroupAction<>("icons/16/copy.png", this.getLocalization().copyToAllOtherSelectedFiles(), TaggableFile::titleProperty), 0, 1, 4, 1);
+        this.addLabel(this.getLocalization().artist(), 0, 2, 4, 1);
+        this.addTextFieldControl(TaggableFile::artistProperty, new CopyValuesGroupAction<>("icons/16/copy.png", this.getLocalization().copyToAllOtherSelectedFiles(), TaggableFile::artistProperty), 0, 3, 4, 1);
+        this.addLabel(this.getLocalization().album(), 0, 4, 3, 1);
+        this.addLabel(this.getLocalization().year(), 3, 4, 1, 1);
+        this.addTextFieldControl(TaggableFile::albumProperty, new CopyValuesGroupAction<>("icons/16/copy.png", this.getLocalization().copyToAllOtherSelectedFiles(), TaggableFile::albumProperty),0, 5, 3, 1);
+        this.addNumericTextFieldControl(TaggableFile::yearProperty, new CopyValuesGroupAction<>("icons/16/copy.png", this.getLocalization().copyToAllOtherSelectedFiles(), TaggableFile::yearProperty), 3, 5, 1, 1);
+        this.addLabel(this.getLocalization().track(), 0, 6, 1, 1);
+        this.addLabel(this.getLocalization().tracks(), 1, 6, 1, 1);
+        this.addLabel(this.getLocalization().disc(), 2, 6, 1, 1);
+        this.addLabel(this.getLocalization().discs(), 3, 6, 1, 1);
+        this.addNumericTextFieldControl(TaggableFile::trackNumberProperty, new GenerateTrackIndexGroupAction("icons/16/create.png", this.getLocalization().enumerateTracks(), TaggableFile::trackNumberProperty), 0, 7, 1, 1);
+        this.addNumericTextFieldControl(TaggableFile::tracksTotalProperty, new CopyTracksCountGroupAction("icons/16/create.png", this.getLocalization().countTracks(), TaggableFile::tracksTotalProperty), 1, 7, 1, 1);
+        this.addNumericTextFieldControl(TaggableFile::discNumberProperty, new CopyValuesGroupAction<>("icons/16/copy.png", this.getLocalization().copyToAllOtherSelectedFiles(), TaggableFile::discNumberProperty), 2, 7, 1, 1);
+        this.addNumericTextFieldControl(TaggableFile::discsTotalProperty, new CopyValuesGroupAction<>("icons/16/copy.png", this.getLocalization().copyToAllOtherSelectedFiles(), TaggableFile::discsTotalProperty), 3, 7, 1, 1);
+        this.addLabel(this.getLocalization().genre(), 0, 8, 4, 1);
+        this.addSelectBoxControl(TaggableFile::genreProperty, GenreTypes.getInstanceOf().getAlphabeticalValueList(), new CopyValuesGroupAction<>("icons/16/copy.png", this.getLocalization().copyToAllOtherSelectedFiles(), TaggableFile::genreProperty), 0, 9, 4, 1);
+        this.addLabel(this.getLocalization().comment(), 0, 10, 4, 1);
+        this.addTextFieldControl(TaggableFile::commentProperty, new CopyValuesGroupAction<>("icons/16/copy.png", this.getLocalization().copyToAllOtherSelectedFiles(), TaggableFile::commentProperty), 0, 11, 4, 1);
+        this.addLabel(this.getLocalization().composer(), 0, 12, 4, 1);
+        this.addTextFieldControl(TaggableFile::composerProperty, new CopyValuesGroupAction<>("icons/16/copy.png", this.getLocalization().copyToAllOtherSelectedFiles(), TaggableFile::composerProperty), 0, 13, 4, 1);
     }
 
-    private Node createNumericTextFieldControl(EditorComponentFactory<TaggableFile> componentFactory, TagHandler tag, Localization localization) {
-        TextField textField = componentFactory.createTextField(file -> file.getTagProperty(tag));
+    private void addLabel(String text, int x, int y, int width, int height) {
+        this.add(new Label(text), x, y, width, height);
+    }
+
+    private void addSelectBoxControl(Function<TaggableFile, Property<String>> propertyFunction, List<String> values, EditorGroupAction<String> groupAction, int x, int y, int width, int height) {
+        this.addControl(this.getComponentFactory().createSelectBox(propertyFunction, values), groupAction, x, y, width, height);
+    }
+
+    private void addTextFieldControl(Function<TaggableFile, Property<String>> propertyFunction, EditorGroupAction<String> groupAction, int x, int y, int width, int height) {
+        this.addControl(this.getComponentFactory().createTextField(propertyFunction), groupAction,x, y, width, height);
+    }
+
+    private void addNumericTextFieldControl(Function<TaggableFile, Property<String>> propertyFunction, EditorGroupAction<String> groupAction, int x, int y, int width, int height) {
+        TextField textField = this.getComponentFactory().createTextField(propertyFunction);
         textField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
             if (!event.getCharacter().matches("\\d+")) {
                 event.consume();
             }
         });
-        return this.createEnhancedControl(textField, tag, localization);
+        this.addControl(textField, groupAction, x, y, width, height);
     }
 
-    private Node createTextFieldControl(EditorComponentFactory<TaggableFile> componentFactory, TagHandler tag, Localization localization) {
-        return this.createEnhancedControl(componentFactory.createTextField(file -> file.getTagProperty(tag)), tag, localization);
-    }
-
-    private Node createEnhancedControl(Control control, TagHandler tag, Localization localization) {
+    private void addControl(Control control, EditorGroupAction<?> groupAction, int x, int y, int width, int height) {
 
         HBox resultControl = new HBox();
         resultControl.setSpacing(2);
@@ -106,43 +118,50 @@ class EditorTaggingCommonPane extends GridPane {
         resultControl.getChildren().add(control);
         HBox.setHgrow(control, Priority.ALWAYS);
 
-        Node groupActionControl = this.createGroupActionControl(tag, localization);
-        if (groupActionControl != null) {
-            resultControl.getChildren().add(groupActionControl);
+        if (groupAction != null) {
+           Button groupActionButton = new Button(null, new ImageView(new Image(EditorTaggingCommonPane.class.getClassLoader().getResourceAsStream(groupAction.getIconLocation()))));
+           groupActionButton.setTooltip(new Tooltip(groupAction.getTooltipText()));
+           groupActionButton.setOnAction(event -> {
+               groupAction.execute(this.currentFileProperty().get(), this.selectedFilesProperty().get());
+           });
+           this.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> {
+               groupActionButton.setDisable(change.getList().size() < groupAction.getMinimumFiles());
+           });
+           resultControl.getChildren().add(groupActionButton);
         }
 
-        return resultControl;
+        this.add(resultControl, x, y, width, height);
 
     }
 
-    private Node createGroupActionControl(TagHandler tag, Localization localization) {
-        switch (tag.getGroupAction()) {
-
-            case COPY:
-                Button copyButton = new Button(null, new ImageView(new Image(EditorTaggingCommonPane.class.getClassLoader().getResourceAsStream("icons/16/copy.png"))));
-                copyButton.setOnAction(event -> this.handleGroupAction(tag));
-                copyButton.setTooltip(new Tooltip(localization.copyToAllOtherSelectedFiles()));
-                this.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> {
-                    copyButton.setDisable(!change.getList().stream().filter(file -> !Objects.equals(this.currentFileProperty().get(), file)).findAny().isPresent());
-                });
-                return copyButton;
-
-            case GENERATE_FROM_POSITION:
-                Button generateButton = new Button(null, new ImageView(new Image(EditorTaggingCommonPane.class.getClassLoader().getResourceAsStream("icons/16/create.png"))));
-                generateButton.setOnAction(event -> this.handleGroupAction(tag));
-                generateButton.setTooltip(new Tooltip(localization.enumerateTracks()));
-                this.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> generateButton.setDisable(change.getList().isEmpty()));
-                return generateButton;
-
-            default:
-                return null;
-
-        }
-    }
-
-    private void handleGroupAction(TagHandler tag) {
-        tag.getGroupAction().apply(this.currentFileProperty().get(), tag, this.selectedFilesProperty().get());
-    }
+    //    private Node createGroupActionControl(TagHandler tag, Localization localization) {
+//        switch (tag.getGroupAction()) {
+//
+//            case COPY:
+//                Button copyButton = new Button(null, new ImageView(new Image(EditorTaggingCommonPane.class.getClassLoader().getResourceAsStream("icons/16/copy.png"))));
+//                copyButton.setOnAction(event -> this.handleGroupAction(tag));
+//                copyButton.setTooltip(new Tooltip(localization.copyToAllOtherSelectedFiles()));
+//                this.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> {
+//                    copyButton.setDisable(!change.getList().stream().filter(file -> !Objects.equals(this.currentFileProperty().get(), file)).findAny().isPresent());
+//                });
+//                return copyButton;
+//
+//            case GENERATE_FROM_POSITION:
+//                Button generateButton = new Button(null, new ImageView(new Image(EditorTaggingCommonPane.class.getClassLoader().getResourceAsStream("icons/16/create.png"))));
+//                generateButton.setOnAction(event -> this.handleGroupAction(tag));
+//                generateButton.setTooltip(new Tooltip(localization.enumerateTracks()));
+//                this.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> generateButton.setDisable(change.getList().isEmpty()));
+//                return generateButton;
+//
+//            default:
+//                return null;
+//
+//        }
+//    }
+//
+//    private void handleGroupAction(TagHandler tag) {
+//        tag.getGroupAction().apply(this.currentFileProperty().get(), tag, this.selectedFilesProperty().get());
+//    }
 
 
     // -------------------------------------------------------------------------
@@ -155,6 +174,20 @@ class EditorTaggingCommonPane extends GridPane {
 
     public ListProperty<TaggableFile> selectedFilesProperty() {
         return this.selectedFiles;
+    }
+
+    private EditorComponentFactory<TaggableFile> getComponentFactory() {
+        return this.componentFactory;
+    }
+    private void setComponentFactory(EditorComponentFactory<TaggableFile> componentFactory) {
+        this.componentFactory = componentFactory;
+    }
+
+    private Localization getLocalization() {
+        return this.localization;
+    }
+    private void setLocalization(Localization localization) {
+        this.localization = localization;
     }
 
 }

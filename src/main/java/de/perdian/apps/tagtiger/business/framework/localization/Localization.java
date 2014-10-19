@@ -164,6 +164,10 @@ public interface Localization {
         return "Enumerate tracks";
     }
 
+    default String countTracks() {
+        return "Count tracks";
+    }
+
     default String reload() {
         return "Reload";
     }

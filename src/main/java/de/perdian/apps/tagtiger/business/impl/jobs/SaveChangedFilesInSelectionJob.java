@@ -15,7 +15,6 @@
  */
 package de.perdian.apps.tagtiger.business.impl.jobs;
 
-import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +70,7 @@ public class SaveChangedFilesInSelectionJob implements Job {
             Map<TaggableFile, Exception> errorsDuringSave = new LinkedHashMap<>();
             try {
                 if (file.dirtyProperty().get()) {
-                    this.executeSaveFile(file, context);
+                    file.writeIntoFile();
                 }
             } catch (Exception e) {
                 log.error("Cannot save file {}", file.getFile(), e);
@@ -79,29 +78,6 @@ public class SaveChangedFilesInSelectionJob implements Job {
             }
 
         }
-    }
-
-    private void executeSaveFile(TaggableFile file, JobContext context) throws Exception {
-
-        File currentSystemFile = file.getFile().getCanonicalFile();
-        File newSystemFile = this.createNewSystemFile(currentSystemFile, file).getCanonicalFile();
-        if (!newSystemFile.equals(currentSystemFile)) {
-            currentSystemFile.renameTo(newSystemFile);
-        }
-
-        // Now write the MP3 tags back into the file
-        file.writeIntoFile(newSystemFile);
-
-    }
-
-    private File createNewSystemFile(File currentSystemFile, TaggableFile file) {
-
-        StringBuilder newFileName = new StringBuilder();
-        newFileName.append(file.fileNameProperty().get());
-        newFileName.append(".").append(file.fileExtensionProperty().get());
-
-        return new File(currentSystemFile.getParentFile(), newFileName.toString());
-
     }
 
     // -------------------------------------------------------------------------
