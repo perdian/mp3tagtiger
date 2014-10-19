@@ -23,7 +23,7 @@ import javafx.scene.control.Alert.AlertType;
 import de.perdian.apps.tagtiger.business.framework.messages.Message;
 import de.perdian.apps.tagtiger.business.framework.messages.MessageType;
 
-public class TagTigerMessageConsumer implements Consumer<Message> {
+class TagTigerMessageConsumer implements Consumer<Message> {
 
     @Override
     public void accept(Message message) {
