@@ -55,28 +55,19 @@ public class TagTigerApplication extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(TagTigerApplication.class);
 
-    private JobExecutor jobExecutor = null;
-    private Localization localization = null;
-    private Selection selection = null;
-
     public static void main(String[] args) {
         log.info("Starting application");
         Application.launch(TagTigerApplication.class);
     }
 
     @Override
-    public void init() throws Exception {
+    public void start(Stage primaryStage) throws Exception {
 
         log.info("Creating TagTiger business objects");
-
         JobExecutor jobExecutor = new JobExecutor();
-
         MessageDistributor messageDistributor = new MessageDistributor(Collections.singleton(new TagTigerMessageConsumer()));
-
         PreferencesLookup preferences = new PreferencesLookup();
-
         Localization localization = new Localization() {};
-
         Selection selection = new Selection();
         selection.currentDirectoryProperty().addListener((o, oldValue, newValue) -> jobExecutor.executeJob(new DirectorySelectJob(newValue, selection, localization, messageDistributor)));
         selection.currentDirectoryProperty().addListener((o, oldValue, newValue) -> preferences.setString(PreferencesKey.CURRENT_DIRECTORY, newValue == null ? null : newValue.getAbsolutePath()));
@@ -87,35 +78,25 @@ public class TagTigerApplication extends Application {
             selection.currentDirectoryProperty().set(currentDirectory);
         }
 
-        // Store all the objects for further use
-        this.setJobExecutor(jobExecutor);
-        this.setLocalization(localization);
-        this.setSelection(selection);
-
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-
         log.info("Creating JavaFX UI");
-        SelectionPane selectionPane = new SelectionPane(this.getSelection(), this.getLocalization());
+        SelectionPane selectionPane = new SelectionPane(selection, localization);
         selectionPane.setMinWidth(250d);
         selectionPane.setPrefWidth(250d);
-        TitledPane fileSelectionWrapperPane = new TitledPane(this.getLocalization().selectFiles(), selectionPane);
+        TitledPane fileSelectionWrapperPane = new TitledPane(localization.selectFiles(), selectionPane);
         fileSelectionWrapperPane.setMaxHeight(Double.MAX_VALUE);
         fileSelectionWrapperPane.setCollapsible(false);
         fileSelectionWrapperPane.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(fileSelectionWrapperPane, Priority.ALWAYS);
-        this.getJobExecutor().addListener(new DisableWhileJobRunningJobListener(selectionPane.listDisableProperty()));
+        jobExecutor.addListener(new DisableWhileJobRunningJobListener(selectionPane.listDisableProperty()));
 
-        EditorPane editorPane = new EditorPane(this.getLocalization());
+        EditorPane editorPane = new EditorPane(localization);
         editorPane.setMinWidth(400d);
         editorPane.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(editorPane, Priority.ALWAYS);
-        this.getJobExecutor().addListener(new DisableWhileJobRunningJobListener(editorPane.disableProperty()));
-        Bindings.bindBidirectional(editorPane.currentFileProperty(), this.getSelection().currentFileProperty());
-        Bindings.bindContent(editorPane.availableFilesProperty(), this.getSelection().availableFilesProperty());
-        Bindings.bindContent(editorPane.selectedFilesProperty(), this.getSelection().selectedFilesProperty());
+        jobExecutor.addListener(new DisableWhileJobRunningJobListener(editorPane.disableProperty()));
+        Bindings.bindBidirectional(editorPane.currentFileProperty(), selection.currentFileProperty());
+        Bindings.bindContent(editorPane.availableFilesProperty(), selection.availableFilesProperty());
+        Bindings.bindContent(editorPane.selectedFilesProperty(), selection.selectedFilesProperty());
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().add(fileSelectionWrapperPane);
@@ -123,14 +104,14 @@ public class TagTigerApplication extends Application {
         splitPane.setDividerPositions(0.25d);
         VBox.setVgrow(splitPane, Priority.ALWAYS);
 
-        StatusPane statusPane = new StatusPane(this.getJobExecutor(), this.getLocalization());
+        StatusPane statusPane = new StatusPane(jobExecutor, localization);
         statusPane.setPadding(new Insets(2.5, 5, 2.5, 5));
 
-        TagTigerMenuBar menuBar = new TagTigerMenuBar(this.getLocalization());
+        TagTigerMenuBar menuBar = new TagTigerMenuBar(localization);
 
-        TagTigerToolBar toolBar = new TagTigerToolBar(this.getLocalization());
-        toolBar.changedFilesProperty().bind(this.getSelection().changedFilesProperty());
-        toolBar.setOnSaveAction(event -> this.getJobExecutor().executeJob(new SaveChangedFilesInSelectionJob(this.selection, this.localization)));
+        TagTigerToolBar toolBar = new TagTigerToolBar(localization);
+        toolBar.changedFilesProperty().bind(selection.changedFilesProperty());
+        toolBar.setOnSaveAction(event -> jobExecutor.executeJob(new SaveChangedFilesInSelectionJob(selection, localization)));
 
         log.info("Opening JavaFX stage");
         primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/application.png")));
@@ -139,38 +120,13 @@ public class TagTigerApplication extends Application {
         primaryStage.setOnCloseRequest(event -> System.exit(0));
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
-        primaryStage.setTitle(this.getLocalization().applicationTitle());
+        primaryStage.setTitle(localization.applicationTitle());
         primaryStage.setWidth(1024);
         primaryStage.setHeight(768);
         primaryStage.show();
 
         log.info("Application start completed");
 
-    }
-
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
-    private JobExecutor getJobExecutor() {
-        return this.jobExecutor;
-    }
-    private void setJobExecutor(JobExecutor jobExecutor) {
-        this.jobExecutor = jobExecutor;
-    }
-
-    private Localization getLocalization() {
-        return this.localization;
-    }
-    private void setLocalization(Localization localization) {
-        this.localization = localization;
-    }
-
-    private Selection getSelection() {
-        return this.selection;
-    }
-    private void setSelection(Selection selection) {
-        this.selection = selection;
     }
 
 }
