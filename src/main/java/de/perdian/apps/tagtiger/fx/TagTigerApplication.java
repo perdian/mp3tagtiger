@@ -59,7 +59,6 @@ public class TagTigerApplication extends Application {
     private Localization localization = null;
     private Selection selection = null;
 
-
     public static void main(String[] args) {
         log.info("Starting application");
         Application.launch(TagTigerApplication.class);
