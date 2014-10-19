@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.Collections;
 
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
@@ -101,23 +102,21 @@ public class TagTigerApplication extends Application {
         SelectionPane selectionPane = new SelectionPane(this.getSelection(), this.getLocalization());
         selectionPane.setMinWidth(250d);
         selectionPane.setPrefWidth(250d);
-        selectionPane.setOnSaveAction(event -> this.getJobExecutor().executeJob(new SaveChangedFilesInSelectionJob(this.selection, this.localization)));
         TitledPane fileSelectionWrapperPane = new TitledPane(this.getLocalization().selectFiles(), selectionPane);
         fileSelectionWrapperPane.setMaxHeight(Double.MAX_VALUE);
         fileSelectionWrapperPane.setCollapsible(false);
         fileSelectionWrapperPane.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(fileSelectionWrapperPane, Priority.ALWAYS);
-        this.getJobExecutor().addListener(new DisableWhileJobRunningJobListener(selectionPane::setListDisable));
+        this.getJobExecutor().addListener(new DisableWhileJobRunningJobListener(selectionPane.listDisableProperty()));
 
         EditorPane editorPane = new EditorPane(this.getLocalization());
         editorPane.setMinWidth(400d);
         editorPane.setPadding(new Insets(5, 5, 5, 5));
-        editorPane.setUpdateFileConsumer(newFile -> this.getSelection().currentFileProperty().setValue(newFile));
-        editorPane.currentFileProperty().bind(this.getSelection().currentFileProperty());
-        editorPane.availableFilesProperty().bind(this.getSelection().availableFilesProperty());
-        editorPane.selectedFilesProperty().bind(this.getSelection().selectedFilesProperty());
         VBox.setVgrow(editorPane, Priority.ALWAYS);
-        this.getJobExecutor().addListener(new DisableWhileJobRunningJobListener(editorPane::setDisable));
+        this.getJobExecutor().addListener(new DisableWhileJobRunningJobListener(editorPane.disableProperty()));
+        Bindings.bindBidirectional(editorPane.currentFileProperty(), this.getSelection().currentFileProperty());
+        Bindings.bindContent(editorPane.availableFilesProperty(), this.getSelection().availableFilesProperty());
+        Bindings.bindContent(editorPane.selectedFilesProperty(), this.getSelection().selectedFilesProperty());
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().add(fileSelectionWrapperPane);
@@ -128,10 +127,16 @@ public class TagTigerApplication extends Application {
         StatusPane statusPane = new StatusPane(this.getJobExecutor(), this.getLocalization());
         statusPane.setPadding(new Insets(2.5, 5, 2.5, 5));
 
+        TagTigerMenuBar menuBar = new TagTigerMenuBar(this.getLocalization());
+
+        TagTigerToolBar toolBar = new TagTigerToolBar(this.getLocalization());
+        toolBar.changedFilesProperty().bind(this.getSelection().changedFilesProperty());
+        toolBar.setOnSaveAction(event -> this.getJobExecutor().executeJob(new SaveChangedFilesInSelectionJob(this.selection, this.localization)));
+
         log.info("Opening JavaFX stage");
         primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/application.png")));
         primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/64/application.png")));
-        primaryStage.setScene(new Scene(new VBox(splitPane, statusPane)));
+        primaryStage.setScene(new Scene(new VBox(menuBar, toolBar, splitPane, statusPane)));
         primaryStage.setOnCloseRequest(event -> System.exit(0));
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);

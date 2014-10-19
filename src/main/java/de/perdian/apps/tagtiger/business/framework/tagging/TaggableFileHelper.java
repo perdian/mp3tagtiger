@@ -95,7 +95,11 @@ class TaggableFileHelper {
         if (sourceValue == null || sourceValue.length() <= 0) {
             targetTag.deleteField(fieldKey);
         } else {
-            targetTag.setField(fieldKey, sourceValue);
+            try {
+                targetTag.setField(fieldKey, sourceValue);
+            } catch(Exception e) {
+                log.warn("Cannot write tag for key '{}' with value '{}'", fieldKey, sourceValue);
+            }
         }
     }
 

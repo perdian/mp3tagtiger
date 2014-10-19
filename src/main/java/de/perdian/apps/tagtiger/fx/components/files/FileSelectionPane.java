@@ -15,19 +15,12 @@
  */
 package de.perdian.apps.tagtiger.fx.components.files;
 
-import java.util.Optional;
-
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
@@ -44,8 +37,6 @@ public class FileSelectionPane extends VBox {
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ObjectProperty<TaggableFile> selectedFile = new SimpleObjectProperty<>();
-    private final ObjectProperty<EventHandler<ActionEvent>> onSaveActionProperty = new SimpleObjectProperty<>();
-    private final BooleanProperty saveEnabledProperty = new SimpleBooleanProperty();
 
     public FileSelectionPane(Localization localization) {
 
@@ -55,11 +46,7 @@ public class FileSelectionPane extends VBox {
         filesTable.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.selectedFileProperty().set(newValue));
         VBox.setVgrow(filesTable, Priority.ALWAYS);
 
-        FileSelectionActionPane actionPane = new FileSelectionActionPane(localization, this::handleOnSaveActionEvent);
-        actionPane.setPadding(new Insets(5, 5, 5, 5));
-        actionPane.disableProperty().bind(this.saveEnabledProperty().not());
-
-        this.getChildren().addAll(filesTable, actionPane);
+        this.getChildren().addAll(filesTable);
 
         this.selectedFileProperty().addListener((o, oldValue, newValue) -> {
             if (!this.selectedFilesProperty().contains(newValue)) {
@@ -67,10 +54,6 @@ public class FileSelectionPane extends VBox {
             }
         });
 
-    }
-
-    private void handleOnSaveActionEvent(ActionEvent event) {
-        Optional.ofNullable(this.onSaveActionProperty.get()).ifPresent(handler -> handler.handle(event));
     }
 
     // -------------------------------------------------------------------------
@@ -87,17 +70,6 @@ public class FileSelectionPane extends VBox {
 
     public ObjectProperty<TaggableFile> selectedFileProperty() {
         return this.selectedFile;
-    }
-
-    public BooleanProperty saveEnabledProperty() {
-        return this.saveEnabledProperty;
-    }
-
-    public EventHandler<ActionEvent> getOnSaveAction() {
-        return this.onSaveActionProperty.get();
-    }
-    public void setOnSaveAction(EventHandler<ActionEvent> eventHandler) {
-        this.onSaveActionProperty.set(eventHandler);
     }
 
 }

@@ -220,4 +220,12 @@ public interface Localization {
         return "Open image";
     }
 
+    default String file() {
+        return "File";
+    }
+
+    default String exit() {
+        return "Exit";
+    }
+
 }

@@ -16,14 +16,11 @@
 package de.perdian.apps.tagtiger.fx.panels.selection;
 
 import java.io.File;
-import java.util.Optional;
 
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener.Change;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
@@ -44,9 +41,9 @@ public class SelectionPane extends BorderPane {
 
     static final Logger log = LoggerFactory.getLogger(SelectionPane.class);
 
-    private final ObjectProperty<EventHandler<ActionEvent>> onSaveAction = new SimpleObjectProperty<>();
-    private FileSelectionPane selectionPane = null;
+    private final BooleanProperty listDisable = new SimpleBooleanProperty();
 
+    // TODO: Remove dependeny to selection
     public SelectionPane(Selection selection, Localization localization) {
 
         TextField directoryField = new TextField();
@@ -59,10 +56,9 @@ public class SelectionPane extends BorderPane {
 
         FileSelectionPane fileSelectionPane = new FileSelectionPane(localization);
         fileSelectionPane.availableFilesProperty().bindBidirectional(selection.availableFilesProperty());
+        fileSelectionPane.disableProperty().bindBidirectional(this.disableProperty());
         fileSelectionPane.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> selection.selectedFilesProperty().setAll(change.getList()));
         fileSelectionPane.selectedFileProperty().addListener((o, oldValue, newValue) -> selection.currentFileProperty().set(newValue));
-        fileSelectionPane.setOnSaveAction(event -> Optional.ofNullable(this.onSaveActionProperty().get()).ifPresent(handler -> handler.handle(event)));
-        this.setSelectionPane(fileSelectionPane);
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().add(directorySelectionPane);
@@ -73,7 +69,6 @@ public class SelectionPane extends BorderPane {
         this.setCenter(splitPane);
         this.setPadding(new Insets(5, 5, 5, 5));
 
-        selection.changedFilesProperty().addListener((o, oldValue, newValue) -> fileSelectionPane.saveEnabledProperty().set(newValue != null && !newValue.isEmpty()));
         selection.currentFileProperty().addListener((o, oldValue, newValue) -> fileSelectionPane.selectedFileProperty().set(newValue));
 
         // Add listeners to connect the GUI components with the underlying
@@ -99,35 +94,11 @@ public class SelectionPane extends BorderPane {
     }
 
     // -------------------------------------------------------------------------
-    // --- Virtual property access methods -------------------------------------
-    // -------------------------------------------------------------------------
-
-    public void setListDisable(boolean disable) {
-        this.getSelectionPane().setDisable(disable);
-    }
-    public boolean isListDisable() {
-        return this.getSelectionPane().isDisable();
-    }
-
-    // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
-    public ObjectProperty<EventHandler<ActionEvent>> onSaveActionProperty() {
-        return this.onSaveAction;
-    }
-    public EventHandler<ActionEvent> getOnSaveAction() {
-        return this.onSaveAction.get();
-    }
-    public void setOnSaveAction(EventHandler<ActionEvent> eventHandler) {
-        this.onSaveAction.set(eventHandler);
-    }
-
-    private FileSelectionPane getSelectionPane() {
-        return this.selectionPane;
-    }
-    private void setSelectionPane(FileSelectionPane selectionPane) {
-        this.selectionPane = selectionPane;
+    public BooleanProperty listDisableProperty() {
+        return this.listDisable;
     }
 
 }

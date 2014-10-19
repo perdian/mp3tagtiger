@@ -15,29 +15,28 @@
  */
 package de.perdian.apps.tagtiger.business.framework.jobs.listeners;
 
-import java.util.function.Consumer;
-
 import javafx.application.Platform;
+import javafx.beans.property.Property;
 import de.perdian.apps.tagtiger.business.framework.jobs.Job;
 import de.perdian.apps.tagtiger.business.framework.jobs.JobListener;
 
 public class DisableWhileJobRunningJobListener implements JobListener {
 
-    private Consumer<Boolean> consumer = null;
+    private Property<Boolean> disableProperty = null;
 
-    public DisableWhileJobRunningJobListener(Consumer<Boolean> consumer) {
-        this.setConsumer(consumer);
+    public DisableWhileJobRunningJobListener(Property<Boolean> disableProperty) {
+        this.setDisableProperty(disableProperty);
     }
 
     @Override
     public void jobStarted(Job job) {
-        Platform.runLater(() -> this.getConsumer().accept(Boolean.TRUE));
+        Platform.runLater(() -> this.getDisableProperty().setValue(Boolean.TRUE));
     }
 
     @Override
     public void jobCompleted(Job job, boolean otherJobsActive) {
         if (!otherJobsActive) {
-            Platform.runLater(() -> this.getConsumer().accept(Boolean.FALSE));
+            Platform.runLater(() -> this.getDisableProperty().setValue(Boolean.FALSE));
         }
     }
 
@@ -45,11 +44,11 @@ public class DisableWhileJobRunningJobListener implements JobListener {
     // --- Property access methods -----------------------------------------
     // ---------------------------------------------------------------------
 
-    private Consumer<Boolean> getConsumer() {
-        return this.consumer;
+    private Property<Boolean> getDisableProperty() {
+        return this.disableProperty;
     }
-    private void setConsumer(Consumer<Boolean> consumer) {
-        this.consumer = consumer;
+    private void setDisableProperty(Property<Boolean> disableProperty) {
+        this.disableProperty = disableProperty;
     }
 
 }

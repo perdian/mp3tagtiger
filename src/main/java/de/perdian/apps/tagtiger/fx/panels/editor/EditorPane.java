@@ -16,8 +16,6 @@
 package de.perdian.apps.tagtiger.fx.panels.editor;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -25,21 +23,19 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
-import javafx.scene.control.Control;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.business.impl.handler.ChangeCurrentFileEventHandler;
 import de.perdian.apps.tagtiger.fx.components.EditorComponentFactory;
 
 public class EditorPane extends VBox {
 
-    private Consumer<TaggableFile> updateFileConsumer = file -> {};
     private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -47,7 +43,7 @@ public class EditorPane extends VBox {
     public EditorPane(Localization localization) {
 
         EditorComponentFactory<TaggableFile> componentFactory = new EditorComponentFactory<>(this.currentFileProperty());
-        componentFactory.addControlCustomizer(this::customizeTextFieldControl);
+        componentFactory.addControlCustomizer(component -> component.addEventHandler(KeyEvent.KEY_PRESSED, new ChangeCurrentFileEventHandler<>(this.currentFileProperty(), this.availableFilesProperty(), new ChangeCurrentFileEventHandler.KeyEventDirectionFunction())));
 
         EditorInformationPane informationPane = new EditorInformationPane(componentFactory, localization);
         informationPane.setPadding(new Insets(5, 5, 5, 5));
@@ -90,30 +86,6 @@ public class EditorPane extends VBox {
 
     }
 
-    private void customizeTextFieldControl(Control control) {
-        control.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.PAGE_UP) {
-                this.handleTextFieldUpOrDown(-1, event.isShiftDown());
-            } else if (event.getCode() == KeyCode.PAGE_DOWN) {
-                this.handleTextFieldUpOrDown(1, event.isShiftDown());
-            }
-        });
-    }
-
-    private void handleTextFieldUpOrDown(int direction, boolean absolute) {
-        List<TaggableFile> currentFiles = this.availableFilesProperty().get();
-        int currentFileIndex = this.availableFilesProperty().indexOf(this.currentFileProperty().get());
-        int newFileIndex = 0;
-        if (direction < 0) {
-            newFileIndex = absolute ? 0 : Math.max(0, currentFileIndex - 1);
-        } else if (direction > 0) {
-            newFileIndex = absolute ? currentFiles.size() - 1 : Math.min(currentFiles.size(), currentFileIndex + 1);
-        }
-        if (newFileIndex >= 0 && newFileIndex < currentFiles.size()) {
-            this.getUpdateFileConsumer().accept(currentFiles.get(newFileIndex));
-        }
-    }
-
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
@@ -128,13 +100,6 @@ public class EditorPane extends VBox {
 
     public ListProperty<TaggableFile> selectedFilesProperty() {
         return this.selectedFiles;
-    }
-
-    public Consumer<TaggableFile> getUpdateFileConsumer() {
-        return this.updateFileConsumer;
-    }
-    public void setUpdateFileConsumer(Consumer<TaggableFile> updateFileConsumer) {
-        this.updateFileConsumer = updateFileConsumer;
     }
 
 }
