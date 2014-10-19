@@ -31,8 +31,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.business.impl.handler.ChangeCurrentFileEventHandler;
 import de.perdian.apps.tagtiger.fx.components.EditorComponentFactory;
+import de.perdian.apps.tagtiger.fx.handlers.ChangeCurrentFileEventHandler;
 
 public class EditorPane extends VBox {
 
