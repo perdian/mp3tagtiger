@@ -23,9 +23,10 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.TextAlignment;
-import de.perdian.apps.tagtiger.business.framework.TagTiger;
 import de.perdian.apps.tagtiger.business.framework.jobs.Job;
+import de.perdian.apps.tagtiger.business.framework.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.business.framework.jobs.JobListener;
+import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 
 public class StatusPane extends HBox implements JobListener {
 
@@ -33,9 +34,9 @@ public class StatusPane extends HBox implements JobListener {
     private ProgressBar progressBar = null;
     private Button cancelButton = null;
 
-    public StatusPane(TagTiger tagTiger) {
+    public StatusPane(JobExecutor jobExecutor, Localization localization) {
 
-        Label statusLabel = new Label(tagTiger.getLocalization().noFilesSelectedYet());
+        Label statusLabel = new Label(localization.noFilesSelectedYet());
         statusLabel.setPadding(new Insets(5, 5, 0, 5));
         statusLabel.setTextAlignment(TextAlignment.LEFT);
         statusLabel.setMaxWidth(Double.MAX_VALUE);
@@ -47,19 +48,19 @@ public class StatusPane extends HBox implements JobListener {
         progressBar.setMinWidth(200);
         this.setProgressBar(progressBar);
 
-        Button cancelButton = new Button(tagTiger.getLocalization().cancel());
+        Button cancelButton = new Button(localization.cancel());
         cancelButton.setDisable(true);
         cancelButton.setMaxHeight(Double.MAX_VALUE);
         cancelButton.setOnAction(event -> {
             cancelButton.setDisable(true);
-            tagTiger.getJobExecutor().cancelCurrentJob();
+            jobExecutor.cancelCurrentJob();
         });
         this.setCancelButton(cancelButton);
 
         this.setSpacing(5);
         this.getChildren().addAll(statusLabel, progressBar, cancelButton);
 
-        tagTiger.getJobExecutor().addListener(this);
+        jobExecutor.addListener(this);
 
     }
 

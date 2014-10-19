@@ -22,9 +22,9 @@ import javafx.beans.value.ChangeListener;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTagDelegate;
+import de.perdian.apps.tagtiger.business.framework.tagging.TagHandlerDelegate;
 
-public class NumericStringDelegate implements TaggableFileTagDelegate {
+public class NumericStringDelegate implements TagHandlerDelegate {
 
     @Override
     public Property<Object> createPropertyForTag(Tag tag, FieldKey fieldKey, ChangeListener<Object> changeListener) {

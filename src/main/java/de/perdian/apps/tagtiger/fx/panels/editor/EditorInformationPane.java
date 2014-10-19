@@ -48,13 +48,13 @@ class EditorInformationPane extends GridPane {
         this.currentFileProperty().addListener((o, oldValue, newValue) -> this.handleIndexLabelChange(indexLabel, newValue, this.availableFilesProperty().get()));
         this.availableFilesProperty().addListener((o, oldValue, newValue) -> this.handleIndexLabelChange(indexLabel, this.currentFileProperty().get(), newValue));
 
-        TextField fileNameField = componentFactory.createTextField(TaggableFile::getFileName);
+        TextField fileNameField = componentFactory.createTextField(TaggableFile::fileNameProperty);
         fileNameField.setMaxWidth(Double.MAX_VALUE);
         GridPane.setHgrow(fileNameField, Priority.ALWAYS);
 
         Label fileExtensionLabel = new Label(".");
         fileExtensionLabel.setPadding(new Insets(0, 2, 0, 2));
-        TextField fileExtensionField = componentFactory.createTextField(TaggableFile::getFileExtension);
+        TextField fileExtensionField = componentFactory.createTextField(TaggableFile::fileExtensionProperty);
         fileExtensionField.setPrefWidth(50);
 
         this.add(indexLabel, 0, 1);

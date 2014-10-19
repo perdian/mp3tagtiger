@@ -29,7 +29,7 @@ public interface Localization {
     }
 
     default String id3Tag() {
-        return "ID3-TagType";
+        return "ID3-TagHandler";
     }
 
     default String mp3File() {

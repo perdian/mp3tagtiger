@@ -42,7 +42,7 @@ import org.jaudiotagger.tag.reference.GenreTypes;
 
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTag;
+import de.perdian.apps.tagtiger.business.framework.tagging.TagHandler;
 import de.perdian.apps.tagtiger.fx.components.EditorComponentFactory;
 
 class EditorTaggingCommonPane extends GridPane {
@@ -54,35 +54,35 @@ class EditorTaggingCommonPane extends GridPane {
 
         this.setHgap(5);
         this.add(new Label(localization.title()), 0, 0, 4, 1);
-        this.add(this.createTextFieldControl(componentFactory, TaggableFileTag.TITLE, localization), 0, 1, 4, 1);
+        this.add(this.createTextFieldControl(componentFactory, TagHandler.TITLE, localization), 0, 1, 4, 1);
         this.add(new Label(localization.artist()), 0, 2, 4, 1);
-        this.add(this.createTextFieldControl(componentFactory, TaggableFileTag.ARTIST, localization), 0, 3, 4, 1);
+        this.add(this.createTextFieldControl(componentFactory, TagHandler.ARTIST, localization), 0, 3, 4, 1);
         this.add(new Label(localization.album()), 0, 4, 3, 1);
         this.add(new Label(localization.year()), 3, 4, 1, 1);
-        this.add(this.createTextFieldControl(componentFactory, TaggableFileTag.ALBUM, localization), 0, 5, 3, 1);
-        this.add(this.createNumericTextFieldControl(componentFactory, TaggableFileTag.YEAR, localization), 3, 5, 1, 1);
+        this.add(this.createTextFieldControl(componentFactory, TagHandler.ALBUM, localization), 0, 5, 3, 1);
+        this.add(this.createNumericTextFieldControl(componentFactory, TagHandler.YEAR, localization), 3, 5, 1, 1);
         this.add(new Label(localization.track()), 0, 6, 1, 1);
         this.add(new Label(localization.tracks()), 1, 6, 1, 1);
         this.add(new Label(localization.disc()), 2, 6, 1, 1);
         this.add(new Label(localization.discs()), 3, 6, 1, 1);
-        this.add(this.createNumericTextFieldControl(componentFactory, TaggableFileTag.TRACK_NO, localization), 0, 7, 1, 1);
-        this.add(this.createNumericTextFieldControl(componentFactory, TaggableFileTag.TRACKS_TOTAL, localization), 1, 7, 1, 1);
-        this.add(this.createNumericTextFieldControl(componentFactory, TaggableFileTag.DISC_NO, localization), 2, 7, 1, 1);
-        this.add(this.createNumericTextFieldControl(componentFactory, TaggableFileTag.DISCS_TOTAL, localization), 3, 7, 1, 1);
+        this.add(this.createNumericTextFieldControl(componentFactory, TagHandler.TRACK_NO, localization), 0, 7, 1, 1);
+        this.add(this.createNumericTextFieldControl(componentFactory, TagHandler.TRACKS_TOTAL, localization), 1, 7, 1, 1);
+        this.add(this.createNumericTextFieldControl(componentFactory, TagHandler.DISC_NO, localization), 2, 7, 1, 1);
+        this.add(this.createNumericTextFieldControl(componentFactory, TagHandler.DISCS_TOTAL, localization), 3, 7, 1, 1);
         this.add(new Label(localization.genre()), 0, 8, 4, 1);
-        this.add(this.createSelectBoxControl(componentFactory, TaggableFileTag.GENRE, GenreTypes.getInstanceOf().getAlphabeticalValueList(), localization), 0, 9, 4, 1);
+        this.add(this.createSelectBoxControl(componentFactory, TagHandler.GENRE, GenreTypes.getInstanceOf().getAlphabeticalValueList(), localization), 0, 9, 4, 1);
         this.add(new Label(localization.comment()), 0, 10, 4, 1);
-        this.add(this.createTextFieldControl(componentFactory, TaggableFileTag.COMMENT, localization), 0, 11, 4, 1);
+        this.add(this.createTextFieldControl(componentFactory, TagHandler.COMMENT, localization), 0, 11, 4, 1);
         this.add(new Label(localization.composer()), 0, 12, 4, 1);
-        this.add(this.createTextFieldControl(componentFactory, TaggableFileTag.COMPOSER, localization), 0, 13, 4, 1);
+        this.add(this.createTextFieldControl(componentFactory, TagHandler.COMPOSER, localization), 0, 13, 4, 1);
 
     }
 
-    private Node createSelectBoxControl(EditorComponentFactory<TaggableFile> componentFactory, TaggableFileTag tag, List<String> values, Localization localization) {
+    private Node createSelectBoxControl(EditorComponentFactory<TaggableFile> componentFactory, TagHandler tag, List<String> values, Localization localization) {
         return this.createEnhancedControl(componentFactory.createSelectBox(file -> file.getTagProperty(tag), values), tag, localization);
     }
 
-    private Node createNumericTextFieldControl(EditorComponentFactory<TaggableFile> componentFactory, TaggableFileTag tag, Localization localization) {
+    private Node createNumericTextFieldControl(EditorComponentFactory<TaggableFile> componentFactory, TagHandler tag, Localization localization) {
         TextField textField = componentFactory.createTextField(file -> file.getTagProperty(tag));
         textField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
             if (!event.getCharacter().matches("\\d+")) {
@@ -92,11 +92,11 @@ class EditorTaggingCommonPane extends GridPane {
         return this.createEnhancedControl(textField, tag, localization);
     }
 
-    private Node createTextFieldControl(EditorComponentFactory<TaggableFile> componentFactory, TaggableFileTag tag, Localization localization) {
+    private Node createTextFieldControl(EditorComponentFactory<TaggableFile> componentFactory, TagHandler tag, Localization localization) {
         return this.createEnhancedControl(componentFactory.createTextField(file -> file.getTagProperty(tag)), tag, localization);
     }
 
-    private Node createEnhancedControl(Control control, TaggableFileTag tag, Localization localization) {
+    private Node createEnhancedControl(Control control, TagHandler tag, Localization localization) {
 
         HBox resultControl = new HBox();
         resultControl.setSpacing(2);
@@ -115,7 +115,7 @@ class EditorTaggingCommonPane extends GridPane {
 
     }
 
-    private Node createGroupActionControl(TaggableFileTag tag, Localization localization) {
+    private Node createGroupActionControl(TagHandler tag, Localization localization) {
         switch (tag.getGroupAction()) {
 
             case COPY:
@@ -140,7 +140,7 @@ class EditorTaggingCommonPane extends GridPane {
         }
     }
 
-    private void handleGroupAction(TaggableFileTag tag) {
+    private void handleGroupAction(TagHandler tag) {
         tag.getGroupAction().apply(this.currentFileProperty().get(), tag, this.selectedFilesProperty().get());
     }
 

@@ -33,7 +33,6 @@ import de.perdian.apps.tagtiger.business.framework.messages.Message;
 import de.perdian.apps.tagtiger.business.framework.messages.MessageDistributor;
 import de.perdian.apps.tagtiger.business.framework.selection.Selection;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileLoader;
 
 /**
  * The job that is responsible for handling a selection that has been made upon
@@ -85,14 +84,13 @@ public class DirectorySelectJob implements Job {
         log.debug("Collected {} files from directory: {}", sourceFiles.size(), this.getSelectedDirectory().getName());
         context.updateProgress(this.getLocalization().startProcessingOfFiles(sourceFiles.size()), -1, -1);
 
-        TaggableFileLoader taggableFileLoader = new TaggableFileLoader();
         List<TaggableFile> taggableFiles = new ArrayList<>(sourceFiles.size());
         for (int i = 0; i < sourceFiles.size() && context.isActive() && !context.isCancelled(); i++) {
             File sourceFile = sourceFiles.get(i);
             context.updateProgress(this.getLocalization().processingFile(sourceFile.getName()), i + 1, sourceFiles.size());
             try {
-                TaggableFile taggableFile = taggableFileLoader.loadFile(sourceFile);
-                taggableFile.getChanged().addListener((o, oldValue, newValue) -> {
+                TaggableFile taggableFile = new TaggableFile(sourceFile);
+                taggableFile.dirtyProperty().addListener((o, oldValue, newValue) -> {
                     List<TaggableFile> targetList = this.getTargetSelection().changedFilesProperty();
                     Platform.runLater(() -> {
                         if (newValue != null && newValue.booleanValue()) {

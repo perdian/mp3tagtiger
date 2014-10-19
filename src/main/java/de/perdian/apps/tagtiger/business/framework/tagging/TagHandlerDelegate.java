@@ -21,7 +21,7 @@ import javafx.beans.value.ChangeListener;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 
-public interface TaggableFileTagDelegate {
+public interface TagHandlerDelegate {
 
     void updateTagFromProperty(Tag tag, Property<Object> property, FieldKey fieldKey) throws Exception;
 

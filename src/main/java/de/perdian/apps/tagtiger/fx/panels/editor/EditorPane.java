@@ -36,7 +36,7 @@ import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TagImageList;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTag;
+import de.perdian.apps.tagtiger.business.framework.tagging.TagHandler;
 import de.perdian.apps.tagtiger.fx.components.EditorComponentFactory;
 
 public class EditorPane extends VBox {
@@ -87,7 +87,7 @@ public class EditorPane extends VBox {
         this.getChildren().addAll(informationWrapperPane, taggingWrapperPane);
 
         this.currentFileProperty().addListener((o, oldValue, newValue) -> Arrays.asList(informationWrapperPane, taggingWrapperPane).forEach(pane -> pane.setDisable(newValue == null)));
-        this.currentFileProperty().addListener((o, oldValue, newValue) -> taggingImagesPane.imagesProperty().set(newValue == null ? null : ((TagImageList)newValue.getTagProperty(TaggableFileTag.IMAGES).getValue()).getTagImages()));
+        this.currentFileProperty().addListener((o, oldValue, newValue) -> taggingImagesPane.imagesProperty().set(newValue == null ? null : ((TagImageList)newValue.getTagProperty(TagHandler.IMAGES).getValue()).getTagImages()));
 
     }
 

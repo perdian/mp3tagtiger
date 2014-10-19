@@ -16,7 +16,6 @@
 package de.perdian.apps.tagtiger.fx.components.directories;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
  * @author Christian Robert
  */
 
-public class DirectorySelectionBean {
+class DirectorySelectionBean {
 
     private String title = null;
     private File file = null;
@@ -48,15 +47,15 @@ public class DirectorySelectionBean {
      * List all the root directories that are available in the current file
      * system
      */
-    public static List<DirectorySelectionBean> listRoots() {
+    static List<DirectorySelectionBean> listRoots() {
         return Arrays.stream(File.listRoots()).map(file -> new DirectorySelectionBean(file, file.getAbsolutePath())).collect(Collectors.toList());
     }
 
     /**
      * List the direct children of the current directory
      */
-    public List<DirectorySelectionBean> listChildren() {
-        File[] childrenArray = this.getFile() == null ? null : this.getFile().listFiles(new DirectoryFileFilter());
+    List<DirectorySelectionBean> listChildren() {
+        File[] childrenArray = this.getFile() == null ? null : this.getFile().listFiles(file -> file.isDirectory() && !file.isHidden());
         if (childrenArray == null) {
             return Collections.emptyList();
         } else {
@@ -76,7 +75,7 @@ public class DirectorySelectionBean {
         } else {
             try {
                 return (that instanceof DirectorySelectionBean) && Objects.equals(this.getFile().getCanonicalFile(), ((DirectorySelectionBean)that).getFile().getCanonicalFile());
-            } catch(Exception e) {
+            } catch (Exception e) {
                 return (that instanceof DirectorySelectionBean) && Objects.equals(this.getFile(), ((DirectorySelectionBean)that).getFile());
             }
         }
@@ -85,19 +84,6 @@ public class DirectorySelectionBean {
     @Override
     public int hashCode() {
         return this.getFile() == null ? 0 : this.getFile().hashCode();
-    }
-
-    // -------------------------------------------------------------------------
-    // --- Inner classes -------------------------------------------------------
-    // -------------------------------------------------------------------------
-
-    static class DirectoryFileFilter implements FileFilter {
-
-        @Override
-        public boolean accept(File file) {
-            return file.isDirectory() && !file.isHidden();
-        }
-
     }
 
     // -------------------------------------------------------------------------

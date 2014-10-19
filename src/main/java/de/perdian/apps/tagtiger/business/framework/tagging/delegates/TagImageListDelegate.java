@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.tagtiger.business.framework.tagging.TagImage;
 import de.perdian.apps.tagtiger.business.framework.tagging.TagImageList;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTagDelegate;
+import de.perdian.apps.tagtiger.business.framework.tagging.TagHandlerDelegate;
 
-public class TagImageListDelegate implements TaggableFileTagDelegate {
+public class TagImageListDelegate implements TagHandlerDelegate {
 
     static final Logger log = LoggerFactory.getLogger(TagImageListDelegate.class);
 

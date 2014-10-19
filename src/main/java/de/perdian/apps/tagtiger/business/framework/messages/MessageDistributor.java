@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.tagtiger.business.framework.messages;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -28,6 +29,10 @@ import java.util.function.Consumer;
 public class MessageDistributor {
 
     private List<Consumer<Message>> consumers = new CopyOnWriteArrayList<>();
+
+    public MessageDistributor(Collection<Consumer<Message>> consumers) {
+        this.getConsumers().addAll(consumers);
+    }
 
     public void distributeMessage(Message message) {
         this.getConsumers().forEach(consumer -> consumer.accept(message));

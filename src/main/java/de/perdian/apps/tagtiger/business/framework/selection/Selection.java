@@ -33,10 +33,14 @@ import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 public class Selection {
 
     private final ObjectProperty<File> currentDirectory = new SimpleObjectProperty<>();
+    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> changedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
-    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
+
+    public Selection() {
+        this.availableFilesProperty().addListener((o, oldValue, newValue) -> this.changedFilesProperty().clear());
+    }
 
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
@@ -44,6 +48,10 @@ public class Selection {
 
     public ObjectProperty<File> currentDirectoryProperty() {
         return this.currentDirectory;
+    }
+
+    public ObjectProperty<TaggableFile> currentFileProperty() {
+        return this.currentFile;
     }
 
     public ListProperty<TaggableFile> availableFilesProperty() {
@@ -56,10 +64,6 @@ public class Selection {
 
     public ListProperty<TaggableFile> changedFilesProperty() {
         return this.changedFiles;
-    }
-
-    public ObjectProperty<TaggableFile> currentFileProperty() {
-        return this.currentFile;
     }
 
 }

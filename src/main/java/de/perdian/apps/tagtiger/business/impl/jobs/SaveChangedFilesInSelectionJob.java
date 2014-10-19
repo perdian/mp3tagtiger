@@ -29,7 +29,6 @@ import de.perdian.apps.tagtiger.business.framework.jobs.JobContext;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.selection.Selection;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileWriter;
 
 public class SaveChangedFilesInSelectionJob implements Job {
 
@@ -71,7 +70,7 @@ public class SaveChangedFilesInSelectionJob implements Job {
             log.debug("Saving MP3 file: {}", file.getFile().getAbsolutePath());
             Map<TaggableFile, Exception> errorsDuringSave = new LinkedHashMap<>();
             try {
-                if (file.getChanged().get()) {
+                if (file.dirtyProperty().get()) {
                     this.executeSaveFile(file, context);
                 }
             } catch (Exception e) {
@@ -91,19 +90,15 @@ public class SaveChangedFilesInSelectionJob implements Job {
         }
 
         // Now write the MP3 tags back into the file
-        TaggableFileWriter fileWriter = new TaggableFileWriter();
-        fileWriter.writeFile(file, newSystemFile);
-
-        // We're done, so mark the file as clean
-        file.getChanged().set(false);
+        file.writeIntoFile(newSystemFile);
 
     }
 
     private File createNewSystemFile(File currentSystemFile, TaggableFile file) {
 
         StringBuilder newFileName = new StringBuilder();
-        newFileName.append(file.getFileName().get());
-        newFileName.append(".").append(file.getFileExtension().get());
+        newFileName.append(file.fileNameProperty().get());
+        newFileName.append(".").append(file.fileExtensionProperty().get());
 
         return new File(currentSystemFile.getParentFile(), newFileName.toString());
 

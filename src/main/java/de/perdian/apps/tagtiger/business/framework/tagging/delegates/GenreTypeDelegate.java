@@ -28,9 +28,9 @@ import org.jaudiotagger.tag.reference.GenreTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFileTagDelegate;
+import de.perdian.apps.tagtiger.business.framework.tagging.TagHandlerDelegate;
 
-public class GenreTypeDelegate implements TaggableFileTagDelegate {
+public class GenreTypeDelegate implements TagHandlerDelegate {
 
     static final Logger log = LoggerFactory.getLogger(GenreTypeDelegate.class);
 

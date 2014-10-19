@@ -22,7 +22,7 @@ import de.perdian.apps.tagtiger.business.framework.tagging.delegates.NumericStri
 import de.perdian.apps.tagtiger.business.framework.tagging.delegates.StringDelegate;
 import de.perdian.apps.tagtiger.business.framework.tagging.delegates.TagImageListDelegate;
 
-public enum TaggableFileTag {
+public enum TagHandler {
 
     TITLE(FieldKey.TITLE, new StringDelegate(), TaggableFileTagGroupAction.COPY),
     ARTIST(FieldKey.ARTIST, new StringDelegate(), TaggableFileTagGroupAction.COPY),
@@ -38,10 +38,10 @@ public enum TaggableFileTag {
     IMAGES(null, new TagImageListDelegate(), TaggableFileTagGroupAction.COPY);
 
     private FieldKey fieldKey = null;
-    private TaggableFileTagDelegate delegate = null;
+    private TagHandlerDelegate delegate = null;
     private TaggableFileTagGroupAction groupAction = null;
 
-    private TaggableFileTag(FieldKey fieldKey, TaggableFileTagDelegate delegate, TaggableFileTagGroupAction groupAction) {
+    private TagHandler(FieldKey fieldKey, TagHandlerDelegate delegate, TaggableFileTagGroupAction groupAction) {
         this.setFieldKey(fieldKey);
         this.setDelegate(delegate);
         this.setGroupAction(groupAction);
@@ -58,10 +58,10 @@ public enum TaggableFileTag {
         this.fieldKey = fieldKey;
     }
 
-    TaggableFileTagDelegate getDelegate() {
+    TagHandlerDelegate getDelegate() {
         return this.delegate;
     }
-    private void setDelegate(TaggableFileTagDelegate delegate) {
+    private void setDelegate(TagHandlerDelegate delegate) {
         this.delegate = delegate;
     }
 

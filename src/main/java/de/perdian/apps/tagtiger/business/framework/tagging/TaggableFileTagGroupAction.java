@@ -25,7 +25,7 @@ public enum TaggableFileTagGroupAction {
     COPY {
 
         @Override
-        public void apply(TaggableFile currentFile, TaggableFileTag tag, ObservableList<TaggableFile> otherFiles) {
+        public void apply(TaggableFile currentFile, TagHandler tag, ObservableList<TaggableFile> otherFiles) {
             Property<Object> sourceProperty = currentFile.getTagProperty(tag);
             otherFiles.stream()
                 .filter(file -> !file.equals(currentFile))
@@ -36,13 +36,13 @@ public enum TaggableFileTagGroupAction {
     GENERATE_FROM_POSITION {
 
         @Override
-        public void apply(TaggableFile currentFile, TaggableFileTag tag, ObservableList<TaggableFile> otherFiles) {
+        public void apply(TaggableFile currentFile, TagHandler tag, ObservableList<TaggableFile> otherFiles) {
             AtomicInteger counter = new AtomicInteger(1);
             otherFiles.stream().forEach(file -> file.getTagProperty(tag).setValue(String.valueOf(counter.getAndIncrement())));
         }
 
     };
 
-    public abstract void apply(TaggableFile currentFile, TaggableFileTag tag, ObservableList<TaggableFile> otherFiles);
+    public abstract void apply(TaggableFile currentFile, TagHandler tag, ObservableList<TaggableFile> otherFiles);
 
 }
