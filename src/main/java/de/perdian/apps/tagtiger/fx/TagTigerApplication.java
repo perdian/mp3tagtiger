@@ -108,10 +108,14 @@ public class TagTigerApplication extends Application {
         statusPane.setPadding(new Insets(2.5, 5, 2.5, 5));
 
         TagTigerMenuBar menuBar = new TagTigerMenuBar(localization);
+        Bindings.bindBidirectional(menuBar.currentFileProperty(), selection.currentFileProperty());
+        Bindings.bindContent(menuBar.availableFilesProperty(), selection.availableFilesProperty());
 
         TagTigerToolBar toolBar = new TagTigerToolBar(localization);
         toolBar.changedFilesProperty().bind(selection.changedFilesProperty());
         toolBar.setOnSaveAction(event -> jobExecutor.executeJob(new SaveChangedFilesInSelectionJob(selection, localization)));
+        Bindings.bindBidirectional(toolBar.currentFileProperty(), selection.currentFileProperty());
+        Bindings.bindContent(toolBar.availableFilesProperty(), selection.availableFilesProperty());
 
         log.info("Opening JavaFX stage");
         primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/application.png")));

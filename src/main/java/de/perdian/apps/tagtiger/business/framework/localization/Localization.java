@@ -228,4 +228,20 @@ public interface Localization {
         return "Exit";
     }
 
+    default String firstFile() {
+        return "First file";
+    }
+
+    default String previousFile() {
+        return "Previous file";
+    }
+
+    default String nextFile() {
+        return "Next file";
+    }
+
+    default String lastFile() {
+        return "Last file";
+    }
+
 }

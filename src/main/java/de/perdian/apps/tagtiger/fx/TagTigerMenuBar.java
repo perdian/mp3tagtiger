@@ -15,14 +15,23 @@
  */
 package de.perdian.apps.tagtiger.fx;
 
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
+import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
 
 class TagTigerMenuBar extends MenuBar {
+
+    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
+    private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     TagTigerMenuBar(Localization localization) {
 
@@ -33,6 +42,18 @@ class TagTigerMenuBar extends MenuBar {
         fileMenu.getItems().add(exitItem);
         this.getMenus().add(fileMenu);
 
+    }
+
+    // -------------------------------------------------------------------------
+    // --- Property access methods ---------------------------------------------
+    // -------------------------------------------------------------------------
+
+    ObjectProperty<TaggableFile> currentFileProperty() {
+        return this.currentFile;
+    }
+
+    ListProperty<TaggableFile> availableFilesProperty() {
+        return this.availableFiles;
     }
 
 }
