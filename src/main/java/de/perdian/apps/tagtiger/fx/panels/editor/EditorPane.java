@@ -31,8 +31,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.components.EditorComponentFactory;
 import de.perdian.apps.tagtiger.fx.handlers.ChangeCurrentFileEventHandler;
+import de.perdian.apps.tagtiger.fx.util.EditorComponentFactory;
 
 public class EditorPane extends VBox {
 
@@ -47,8 +47,9 @@ public class EditorPane extends VBox {
 
         EditorInformationPane informationPane = new EditorInformationPane(componentFactory, localization);
         informationPane.setPadding(new Insets(5, 5, 5, 5));
-        informationPane.availableFilesProperty().bind(this.availableFilesProperty());
         informationPane.currentFileProperty().bind(this.currentFileProperty());
+        informationPane.availableFilesProperty().bind(this.availableFilesProperty());
+        informationPane.selectedFilesProperty().bind(this.selectedFilesProperty());
         TitledPane informationWrapperPane = new TitledPane(localization.mp3File(), informationPane);
         informationWrapperPane.setExpanded(true);
         informationWrapperPane.setDisable(true);

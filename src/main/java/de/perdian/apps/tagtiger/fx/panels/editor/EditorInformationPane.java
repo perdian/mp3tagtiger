@@ -27,16 +27,19 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.components.EditorComponentFactory;
+import de.perdian.apps.tagtiger.fx.panels.editor.groupactions.CopyValuesGroupAction;
+import de.perdian.apps.tagtiger.fx.util.EditorComponentFactory;
 
 class EditorInformationPane extends GridPane {
 
     private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     EditorInformationPane(EditorComponentFactory<TaggableFile> componentFactory, Localization localization) {
 
@@ -55,14 +58,16 @@ class EditorInformationPane extends GridPane {
         Label fileExtensionLabel = new Label(".");
         fileExtensionLabel.setPadding(new Insets(0, 2, 0, 2));
         TextField fileExtensionField = componentFactory.createTextField(TaggableFile::fileExtensionProperty);
-        fileExtensionField.setPrefWidth(50);
+        Pane fileExtensionFieldWrapper = EditorPaneHelper.createControlWrapper(fileExtensionField, new CopyValuesGroupAction<>("icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), TaggableFile::fileExtensionProperty), this.currentFileProperty(), this.selectedFilesProperty());
+        fileExtensionFieldWrapper.setPrefWidth(90);
+        GridPane.setHgrow(fileExtensionFieldWrapper, Priority.NEVER);
 
         this.add(indexLabel, 0, 1);
         this.add(new Label(localization.fileName()), 4, 0);
         this.add(fileNameField, 4, 1);
         this.add(fileExtensionLabel, 5, 1);
         this.add(new Label(localization.fileExtension()), 6, 0);
-        this.add(fileExtensionField, 6, 1);
+        this.add(fileExtensionFieldWrapper, 6, 1);
 
     }
 
@@ -85,6 +90,10 @@ class EditorInformationPane extends GridPane {
 
     ListProperty<TaggableFile> availableFilesProperty() {
         return this.availableFiles;
+    }
+
+    ListProperty<TaggableFile> selectedFilesProperty() {
+        return this.selectedFiles;
     }
 
 }

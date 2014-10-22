@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.components.files;
+package de.perdian.apps.tagtiger.fx.panels.files;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;

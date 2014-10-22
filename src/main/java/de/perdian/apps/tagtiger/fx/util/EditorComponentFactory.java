@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.components;
+package de.perdian.apps.tagtiger.fx.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +91,9 @@ public class EditorComponentFactory<T> {
         comboBox.setMaxWidth(Double.MAX_VALUE);
         comboBox.setEditable(true);
         comboBox.valueProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().get()).ifPresent(bean -> propertyFunction.apply(bean).setValue(newValue)));
+        comboBox.focusedProperty().addListener((o, oldValue, newValue) -> {
+            Platform.runLater(() -> comboBox.getEditor().selectAll());
+        });
         this.getControlCustomizers().forEach(consumer -> consumer.accept(comboBox));
 
         EditorComponentWrapper<T, String> componentWrapper = new EditorComponentWrapper<>();
@@ -126,10 +129,6 @@ public class EditorComponentFactory<T> {
                 this.handleControlUpOrDown(control, -1, event.isShiftDown());
             } else if (event.getCode() == KeyCode.DOWN) {
                 this.handleControlUpOrDown(control, 1, event.isShiftDown());
-            } else if (event.getCode() == KeyCode.ENTER && event.isShiftDown()) {
-                this.handleControlUpOrDown(control, -1, false);
-            } else if (event.getCode() == KeyCode.ENTER && !event.isShiftDown()) {
-                this.handleControlUpOrDown(control, 1, false);
             }
         });
     }

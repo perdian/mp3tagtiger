@@ -13,9 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.components.status;
+package de.perdian.apps.tagtiger.fx.panels.status;
+
+import java.util.Optional;
 
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -24,17 +30,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.TextAlignment;
 import de.perdian.apps.tagtiger.business.framework.jobs.Job;
-import de.perdian.apps.tagtiger.business.framework.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.business.framework.jobs.JobListener;
 import de.perdian.apps.tagtiger.business.framework.localization.Localization;
 
 public class StatusPane extends HBox implements JobListener {
 
+    private final ObjectProperty<EventHandler<ActionEvent>> onCancelAction = new SimpleObjectProperty<>();
     private Label statusLabel = null;
     private ProgressBar progressBar = null;
     private Button cancelButton = null;
 
-    public StatusPane(JobExecutor jobExecutor, Localization localization) {
+    public StatusPane(Localization localization) {
 
         Label statusLabel = new Label(localization.noFilesSelectedYet());
         statusLabel.setPadding(new Insets(5, 5, 0, 5));
@@ -48,19 +54,18 @@ public class StatusPane extends HBox implements JobListener {
         progressBar.setMinWidth(200);
         this.setProgressBar(progressBar);
 
+
         Button cancelButton = new Button(localization.cancel());
         cancelButton.setDisable(true);
         cancelButton.setMaxHeight(Double.MAX_VALUE);
         cancelButton.setOnAction(event -> {
             cancelButton.setDisable(true);
-            jobExecutor.cancelCurrentJob();
+            Optional.ofNullable(this.onCancelActionProperty().get()).ifPresent(action -> action.handle(event));
         });
         this.setCancelButton(cancelButton);
 
         this.setSpacing(5);
         this.getChildren().addAll(statusLabel, progressBar, cancelButton);
-
-        jobExecutor.addListener(this);
 
     }
 
@@ -105,6 +110,16 @@ public class StatusPane extends HBox implements JobListener {
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
+
+    public ObjectProperty<EventHandler<ActionEvent>> onCancelActionProperty() {
+        return this.onCancelAction;
+    }
+    public EventHandler<ActionEvent> getOnCancelAction() {
+        return this.onCancelActionProperty().get();
+    }
+    public void setOnCancelAction(EventHandler<ActionEvent> action) {
+        this.onCancelActionProperty().set(action);
+    }
 
     private Label getStatusLabel() {
         return this.statusLabel;
