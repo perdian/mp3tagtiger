@@ -34,8 +34,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.ChangeCurrentFileDirection;
-import de.perdian.apps.tagtiger.fx.handlers.ChangeCurrentFileEventHandler;
+import de.perdian.apps.tagtiger.fx.handlers.selection.ChangeCurrentFileDirection;
+import de.perdian.apps.tagtiger.fx.handlers.selection.ChangeCurrentFileEventHandler;
 
 class TagTigerToolBar extends ToolBar {
 

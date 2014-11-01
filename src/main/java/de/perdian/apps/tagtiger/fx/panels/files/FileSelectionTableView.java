@@ -36,6 +36,7 @@ class FileSelectionTableView extends TableView<TaggableFile> {
 
         Image flagIconImage = new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/flag-red.png"));
         TableColumn<TaggableFile, Boolean> changedColumn = new TableColumn<>();
+        changedColumn.setSortable(false);
         changedColumn.setCellValueFactory(p -> p.getValue().dirtyProperty());
         changedColumn.setCellFactory(item -> {
             TableCell<TaggableFile, Boolean> tableCell = new TableCell<TaggableFile, Boolean>() {
@@ -52,6 +53,7 @@ class FileSelectionTableView extends TableView<TaggableFile> {
         this.getColumns().add(changedColumn);
 
         TableColumn<TaggableFile, String> fileNameColumn = new TableColumn<>(localization.fileName());
+        fileNameColumn.setSortable(false);
         fileNameColumn.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().getFile().getName()));
         fileNameColumn.setMaxWidth(Double.MAX_VALUE);
         this.getColumns().add(fileNameColumn);

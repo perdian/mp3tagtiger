@@ -26,9 +26,9 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import de.perdian.apps.tagtiger.actions.batchupdate.filenames.UpdateFileNamesFromTagsAction;
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.filenames.UpdateFileNamesFromTagsAction;
 
 class TagTigerMenuBar extends MenuBar {
 

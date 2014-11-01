@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.actions.batchupdate.filenames;
+package de.perdian.apps.tagtiger.fx.handlers.batchupdate.filenames;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,9 +29,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.WeakListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -43,11 +42,11 @@ import javafx.stage.Stage;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 
-import de.perdian.apps.tagtiger.actions.batchupdate.BatchUpdateAction;
-import de.perdian.apps.tagtiger.actions.batchupdate.BatchUpdateDialog;
-import de.perdian.apps.tagtiger.actions.batchupdate.BatchUpdatePlaceholder;
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdateAction;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdateDialog;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdatePlaceholder;
 
 /**
  * Updates a series of file names from information presented in the tags
@@ -67,15 +66,18 @@ public class UpdateFileNamesFromTagsAction extends BatchUpdateAction {
         ObservableList<UpdateFileNamesFromTagsItem> items = FXCollections.observableArrayList(this.getFiles().stream().map(UpdateFileNamesFromTagsItem::new).collect(Collectors.toList()));
         StringProperty patternFieldProperty = new SimpleStringProperty();
 
-        TextField patternField = new TextField();
-        Bindings.bindBidirectional(patternFieldProperty, patternField.textProperty());
-        HBox.setHgrow(patternField, Priority.ALWAYS);
+        List<String> patternItems = Arrays.asList("${track} ${title}");
+        ComboBox<String> patternBox = new ComboBox<>(FXCollections.observableArrayList(patternItems));
+        patternBox.setEditable(true);
+        patternBox.setMaxWidth(Double.MAX_VALUE);
+        Bindings.bindBidirectional(patternFieldProperty, patternBox.valueProperty());
+        HBox.setHgrow(patternBox, Priority.ALWAYS);
 
         Button executeButton = new Button(this.getLocalization().executeRename(), new ImageView(new Image(UpdateFileNamesFromTagsAction.class.getClassLoader().getResourceAsStream("icons/16/save.png"))));
         executeButton.setDisable(true);
         patternFieldProperty.addListener((o, oldValue, newValue) -> executeButton.setDisable(newValue.length() <= 0));
 
-        HBox patternFieldPane = new HBox(10, patternField, executeButton);
+        HBox patternFieldPane = new HBox(10, patternBox, executeButton);
         patternFieldPane.setPadding(new Insets(5, 5, 5, 5));
 
         TitledPane patternFieldTitlePane = new TitledPane(this.getLocalization().fileNamePattern(), patternFieldPane);
@@ -108,8 +110,10 @@ public class UpdateFileNamesFromTagsAction extends BatchUpdateAction {
     private TableView<?> createNewFileNamesPane(ObservableList<UpdateFileNamesFromTagsItem> items) {
 
         TableColumn<UpdateFileNamesFromTagsItem, String> currentFileNameColumn = new TableColumn<>(this.getLocalization().currentFileName());
+        currentFileNameColumn.setSortable(false);
         currentFileNameColumn.setCellValueFactory(p -> p.getValue().getCurrentFileName());
         TableColumn<UpdateFileNamesFromTagsItem, String> newFileNameColumn = new TableColumn<>(this.getLocalization().newFileName());
+        newFileNameColumn.setSortable(false);
         newFileNameColumn.setCellValueFactory(p -> p.getValue().getNewFileName());
 
         TableView<UpdateFileNamesFromTagsItem> tableView = new TableView<>(items);
@@ -126,12 +130,13 @@ public class UpdateFileNamesFromTagsAction extends BatchUpdateAction {
     private void computeNewFileNames(List<UpdateFileNamesFromTagsItem> items, String fileNamePattern) {
         for (UpdateFileNamesFromTagsItem item : items) {
 
-            Map<String, String> replacementValues = new HashMap<>();
-            Arrays.stream(BatchUpdatePlaceholder.values()).forEach(placeholder -> replacementValues.put(placeholder.getPlaceholder(), placeholder.resolveValue(item.getFile())));
+            Map<String, String> replacementValues = Arrays
+                .stream(BatchUpdatePlaceholder.values())
+                .collect(Collectors.toMap(p -> p.getPlaceholder(), p -> p.resolveValue(item.getFile())));
 
             StrSubstitutor substitutor = new StrSubstitutor(replacementValues);
             String substitutionEvaluationResult = substitutor.replace(fileNamePattern);
-            String substitutionSanitizedResult = this.sanitizeFileName(substitutionEvaluationResult);
+            String substitutionSanitizedResult = this.sanitizeFileName(substitutionEvaluationResult).trim();
 
             if (!Objects.equals(substitutionSanitizedResult, item.getNewFileName().getValue())) {
                 item.getNewFileName().setValue(substitutionSanitizedResult);

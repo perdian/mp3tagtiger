@@ -38,8 +38,6 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.tagtiger.actions.selection.DirectorySelectJob;
-import de.perdian.apps.tagtiger.actions.selection.SaveChangedFilesInSelectionJob;
 import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.jobs.listeners.DisableWhileJobRunningJobListener;
 import de.perdian.apps.tagtiger.core.localization.Localization;
@@ -48,6 +46,8 @@ import de.perdian.apps.tagtiger.core.preferences.PreferencesKey;
 import de.perdian.apps.tagtiger.core.preferences.PreferencesLookup;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.handlers.selection.DirectorySelectJob;
+import de.perdian.apps.tagtiger.fx.handlers.selection.SaveChangedFilesInSelectionJob;
 import de.perdian.apps.tagtiger.fx.panels.directories.DirectorySelectionPane;
 import de.perdian.apps.tagtiger.fx.panels.editor.EditorPane;
 import de.perdian.apps.tagtiger.fx.panels.files.FileSelectionPane;

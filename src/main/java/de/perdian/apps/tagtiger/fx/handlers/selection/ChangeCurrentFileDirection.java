@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.handlers;
+package de.perdian.apps.tagtiger.fx.handlers.selection;
 
 import java.util.List;
 
