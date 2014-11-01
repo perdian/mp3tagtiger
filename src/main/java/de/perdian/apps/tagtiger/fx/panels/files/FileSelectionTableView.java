@@ -23,8 +23,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import de.perdian.apps.tagtiger.business.framework.localization.Localization;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 
 class FileSelectionTableView extends TableView<TaggableFile> {
 

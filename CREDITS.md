@@ -1,6 +1,11 @@
 The following external libraries and/or resources have been used in the creation
 of TagTiger:
 
+Apache Commons Lang
+-------------------
+http://commons.apache.org/proper/commons-lang/
+Apache license
+
 ControlsFX
 ----------
 http://fxexperience.com/controlsfx/

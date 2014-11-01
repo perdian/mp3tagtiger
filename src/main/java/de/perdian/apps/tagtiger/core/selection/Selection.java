@@ -13,52 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.files;
+package de.perdian.apps.tagtiger.core.selection;
+
+import java.io.File;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener.Change;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 
 /**
- * Displays a list of selected files that are in use by the user
+ * Wrapper around a list of selected files
  *
  * @author Christian Robert
  */
 
-public class FileSelectionPane extends VBox {
+public class Selection {
 
+    private final ObjectProperty<File> currentDirectory = new SimpleObjectProperty<>();
+    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
-    private final ObjectProperty<TaggableFile> selectedFile = new SimpleObjectProperty<>();
+    private final ListProperty<TaggableFile> changedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public FileSelectionPane(Localization localization) {
-
-        FileSelectionTableView filesTable = new FileSelectionTableView(localization);
-        filesTable.itemsProperty().bind(this.availableFilesProperty());
-        filesTable.getSelectionModel().getSelectedItems().addListener((Change<? extends TaggableFile> change) -> this.selectedFilesProperty().setAll(change.getList()));
-        filesTable.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.selectedFileProperty().set(newValue));
-        VBox.setVgrow(filesTable, Priority.ALWAYS);
-
-        this.getChildren().addAll(filesTable);
-
-        this.selectedFileProperty().addListener((o, oldValue, newValue) -> {
-            if (!this.selectedFilesProperty().contains(newValue)) {
-                filesTable.getSelectionModel().clearAndSelect(this.availableFilesProperty().indexOf(newValue));
-            }
-        });
-
+    public Selection() {
+        this.availableFilesProperty().addListener((o, oldValue, newValue) -> this.changedFilesProperty().clear());
     }
 
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
+
+    public ObjectProperty<File> currentDirectoryProperty() {
+        return this.currentDirectory;
+    }
+
+    public ObjectProperty<TaggableFile> currentFileProperty() {
+        return this.currentFile;
+    }
 
     public ListProperty<TaggableFile> availableFilesProperty() {
         return this.availableFiles;
@@ -68,8 +62,8 @@ public class FileSelectionPane extends VBox {
         return this.selectedFiles;
     }
 
-    public ObjectProperty<TaggableFile> selectedFileProperty() {
-        return this.selectedFile;
+    public ListProperty<TaggableFile> changedFilesProperty() {
+        return this.changedFiles;
     }
 
 }

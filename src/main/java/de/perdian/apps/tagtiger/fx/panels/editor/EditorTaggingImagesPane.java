@@ -37,9 +37,9 @@ import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.tagtiger.business.framework.localization.Localization;
-import de.perdian.apps.tagtiger.business.framework.tagging.TagImage;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.tagging.TagImage;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 
 class EditorTaggingImagesPane extends BorderPane {
 

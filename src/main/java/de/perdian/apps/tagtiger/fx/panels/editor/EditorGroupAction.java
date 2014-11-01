@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import javafx.beans.property.Property;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 
 public abstract class EditorGroupAction<T> {
 

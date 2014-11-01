@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import de.perdian.apps.tagtiger.business.framework.messages.Message;
-import de.perdian.apps.tagtiger.business.framework.messages.MessageType;
+import de.perdian.apps.tagtiger.core.messages.Message;
+import de.perdian.apps.tagtiger.core.messages.MessageType;
 
 class TagTigerMessageConsumer implements Consumer<Message> {
 

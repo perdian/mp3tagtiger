@@ -37,8 +37,8 @@ import javafx.scene.layout.Priority;
 
 import org.jaudiotagger.tag.reference.PictureTypes;
 
-import de.perdian.apps.tagtiger.business.framework.localization.Localization;
-import de.perdian.apps.tagtiger.business.framework.tagging.TagImage;
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.tagging.TagImage;
 
 class EditorTaggingImagePane extends HBox {
 

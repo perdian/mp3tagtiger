@@ -20,18 +20,21 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import de.perdian.apps.tagtiger.business.framework.localization.Localization;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.actions.batchupdate.filenames.UpdateFileNamesFromTagsAction;
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 
 class TagTigerMenuBar extends MenuBar {
 
     private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     TagTigerMenuBar(Localization localization) {
 
@@ -41,6 +44,15 @@ class TagTigerMenuBar extends MenuBar {
         exitItem.setOnAction(event -> System.exit(0));
         fileMenu.getItems().add(exitItem);
         this.getMenus().add(fileMenu);
+
+        Menu actionsMenu = new Menu(localization.actions());
+        MenuItem updateFileNamesFromTagsItem = new MenuItem(localization.updateFileNames());
+        updateFileNamesFromTagsItem.setOnAction(new UpdateFileNamesFromTagsAction(this.selectedFilesProperty(), localization));
+        updateFileNamesFromTagsItem.setDisable(true);
+        this.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> updateFileNamesFromTagsItem.setDisable(change.getList().isEmpty()));
+        actionsMenu.getItems().add(updateFileNamesFromTagsItem);
+
+        this.getMenus().add(actionsMenu);
 
     }
 
@@ -54,6 +66,10 @@ class TagTigerMenuBar extends MenuBar {
 
     ListProperty<TaggableFile> availableFilesProperty() {
         return this.availableFiles;
+    }
+
+    ListProperty<TaggableFile> selectedFilesProperty() {
+        return this.selectedFiles;
     }
 
 }

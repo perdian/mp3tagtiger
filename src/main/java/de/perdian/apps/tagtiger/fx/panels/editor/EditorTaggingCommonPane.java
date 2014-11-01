@@ -33,8 +33,8 @@ import javafx.scene.layout.GridPane;
 
 import org.jaudiotagger.tag.reference.GenreTypes;
 
-import de.perdian.apps.tagtiger.business.framework.localization.Localization;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.panels.editor.groupactions.CopyTracksCountGroupAction;
 import de.perdian.apps.tagtiger.fx.panels.editor.groupactions.CopyValuesGroupAction;
 import de.perdian.apps.tagtiger.fx.panels.editor.groupactions.GenerateTrackIndexGroupAction;

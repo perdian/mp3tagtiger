@@ -29,9 +29,9 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.TextAlignment;
-import de.perdian.apps.tagtiger.business.framework.jobs.Job;
-import de.perdian.apps.tagtiger.business.framework.jobs.JobListener;
-import de.perdian.apps.tagtiger.business.framework.localization.Localization;
+import de.perdian.apps.tagtiger.core.jobs.Job;
+import de.perdian.apps.tagtiger.core.jobs.JobListener;
+import de.perdian.apps.tagtiger.core.localization.Localization;
 
 public class StatusPane extends HBox implements JobListener {
 

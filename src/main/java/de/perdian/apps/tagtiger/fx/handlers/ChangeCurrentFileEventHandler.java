@@ -22,7 +22,7 @@ import javafx.beans.property.Property;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 
 /**
  * Updates the selection to a specific record

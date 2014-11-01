@@ -30,6 +30,7 @@
     </developers>
 
     <properties>
+        <commons-lang3.version>3.3.2</commons-lang3.version>
         <log4j.version>1.2.16</log4j.version>
         <jaudiotagger.version>2.0.3</jaudiotagger.version>
         <openjfx-dialogs.version>1.0.2</openjfx-dialogs.version>
@@ -37,6 +38,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

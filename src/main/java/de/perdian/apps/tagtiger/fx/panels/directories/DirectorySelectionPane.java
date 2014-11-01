@@ -31,7 +31,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import de.perdian.apps.tagtiger.business.framework.localization.Localization;
+import de.perdian.apps.tagtiger.core.localization.Localization;
 
 /**
  * Panel in which a tree of directories is displayed

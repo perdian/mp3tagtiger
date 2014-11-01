@@ -38,16 +38,16 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.tagtiger.business.framework.jobs.JobExecutor;
-import de.perdian.apps.tagtiger.business.framework.jobs.listeners.DisableWhileJobRunningJobListener;
-import de.perdian.apps.tagtiger.business.framework.localization.Localization;
-import de.perdian.apps.tagtiger.business.framework.messages.MessageDistributor;
-import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesKey;
-import de.perdian.apps.tagtiger.business.framework.preferences.PreferencesLookup;
-import de.perdian.apps.tagtiger.business.framework.selection.Selection;
-import de.perdian.apps.tagtiger.business.framework.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.business.impl.jobs.DirectorySelectJob;
-import de.perdian.apps.tagtiger.business.impl.jobs.SaveChangedFilesInSelectionJob;
+import de.perdian.apps.tagtiger.actions.selection.DirectorySelectJob;
+import de.perdian.apps.tagtiger.actions.selection.SaveChangedFilesInSelectionJob;
+import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
+import de.perdian.apps.tagtiger.core.jobs.listeners.DisableWhileJobRunningJobListener;
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.messages.MessageDistributor;
+import de.perdian.apps.tagtiger.core.preferences.PreferencesKey;
+import de.perdian.apps.tagtiger.core.preferences.PreferencesLookup;
+import de.perdian.apps.tagtiger.core.selection.Selection;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.panels.directories.DirectorySelectionPane;
 import de.perdian.apps.tagtiger.fx.panels.editor.EditorPane;
 import de.perdian.apps.tagtiger.fx.panels.files.FileSelectionPane;
@@ -125,6 +125,7 @@ public class TagTigerApplication extends Application {
         TagTigerMenuBar menuBar = new TagTigerMenuBar(localization);
         Bindings.bindBidirectional(menuBar.currentFileProperty(), selection.currentFileProperty());
         Bindings.bindContent(menuBar.availableFilesProperty(), selection.availableFilesProperty());
+        Bindings.bindContent(menuBar.selectedFilesProperty(), selection.selectedFilesProperty());
         return menuBar;
     }
 
