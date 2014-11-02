@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.handlers.batchupdate.filenames;
+package de.perdian.apps.tagtiger.fx.handlers.batchupdate.files;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,19 +22,25 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.WeakListChangeListener;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -44,8 +50,7 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdateAction;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdateDialog;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdateDialogActionEventHandler;
 import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdatePlaceholder;
 
 /**
@@ -54,16 +59,16 @@ import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdatePlaceholder;
  * @author Christian Robert
  */
 
-public class UpdateFileNamesFromTagsAction extends BatchUpdateAction {
+public class UpdateFileNamesFromTagsActionEventHandler extends BatchUpdateDialogActionEventHandler {
 
-    public UpdateFileNamesFromTagsAction(ObservableList<TaggableFile> files, Localization localization) {
-        super(files, localization);
+    public UpdateFileNamesFromTagsActionEventHandler(Property<TaggableFile> currentFile, ObservableList<TaggableFile> otherFiles, Localization localization) {
+        super(currentFile, otherFiles, localization);
     }
 
     @Override
     protected BatchUpdateDialog createDialog() {
 
-        ObservableList<UpdateFileNamesFromTagsItem> items = FXCollections.observableArrayList(this.getFiles().stream().map(UpdateFileNamesFromTagsItem::new).collect(Collectors.toList()));
+        ObservableList<UpdateFileNamesFromTagsItem> items = FXCollections.observableArrayList(this.getOtherFiles().stream().map(UpdateFileNamesFromTagsItem::new).collect(Collectors.toList()));
         StringProperty patternFieldProperty = new SimpleStringProperty();
 
         List<String> patternItems = Arrays.asList("${track} ${title}");
@@ -73,7 +78,7 @@ public class UpdateFileNamesFromTagsAction extends BatchUpdateAction {
         Bindings.bindBidirectional(patternFieldProperty, patternBox.editorProperty().get().textProperty());
         HBox.setHgrow(patternBox, Priority.ALWAYS);
 
-        Button executeButton = new Button(this.getLocalization().executeRename(), new ImageView(new Image(UpdateFileNamesFromTagsAction.class.getClassLoader().getResourceAsStream("icons/16/save.png"))));
+        Button executeButton = new Button(this.getLocalization().executeRename(), new ImageView(new Image(UpdateFileNamesFromTagsActionEventHandler.class.getClassLoader().getResourceAsStream("icons/16/save.png"))));
         executeButton.setDisable(true);
         patternFieldProperty.addListener((o, oldValue, newValue) -> executeButton.setDisable(newValue.length() <= 0));
 
@@ -94,9 +99,10 @@ public class UpdateFileNamesFromTagsAction extends BatchUpdateAction {
         dialog.setDialogPrefWidth(800);
         dialog.setDialogTitle(this.getLocalization().updateFileNames());
         dialog.setActionPane(actionPane);
+        dialog.setLegendPane(this.createLegendPane());
 
         // Add listeners
-        this.getFiles().addListener(new WeakListChangeListener<>(change -> items.setAll(change.getList().stream().map(UpdateFileNamesFromTagsItem::new).collect(Collectors.toList()))));
+        this.getOtherFiles().addListener(new WeakListChangeListener<>((Change<? extends TaggableFile> change) -> items.setAll(change.getList().stream().map(UpdateFileNamesFromTagsItem::new).collect(Collectors.toList()))));
         patternFieldProperty.addListener((o, oldValue, newValue) -> this.computeNewFileNames(items, newValue));
         executeButton.setOnAction(event -> {
             this.updateNewFileNames(items);
@@ -104,6 +110,41 @@ public class UpdateFileNamesFromTagsAction extends BatchUpdateAction {
         });
 
         return dialog;
+
+    }
+
+    private Parent createLegendPane() {
+
+        GridPane legendPane = new GridPane();
+        legendPane.setPadding(new Insets(5, 5, 5, 5));
+        int columnCount = 3;
+        int currentRow = 0;
+        int currentColumn = 0;
+        for (BatchUpdatePlaceholder placeholder : BatchUpdatePlaceholder.values()) {
+
+            StringBuilder placeholderText = new StringBuilder();
+            placeholderText.append("${").append(placeholder.getPlaceholder()).append("}: ");
+            placeholderText.append(placeholder.resolveLocalization(this.getLocalization()));
+
+            Label placeholderLabel = new Label(placeholderText.toString());
+            placeholderLabel.setMaxWidth(Double.MAX_VALUE);
+            placeholderLabel.setPadding(new Insets(3, 3, 3, 3));
+            placeholderLabel.setAlignment(Pos.TOP_LEFT);
+            legendPane.add(placeholderLabel, currentColumn, currentRow);
+            GridPane.setFillWidth(placeholderLabel, Boolean.TRUE);
+            GridPane.setHgrow(placeholderLabel, Priority.ALWAYS);
+
+            currentColumn++;
+            if (currentColumn >= columnCount) {
+                currentRow++;
+                currentColumn = 0;
+            }
+
+        }
+
+        TitledPane legendTitlePane = new TitledPane(this.getLocalization().legend(), legendPane);
+        legendTitlePane.setCollapsible(false);
+        return legendTitlePane;
 
     }
 

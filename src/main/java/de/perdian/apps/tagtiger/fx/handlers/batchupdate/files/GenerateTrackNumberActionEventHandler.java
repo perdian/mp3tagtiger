@@ -13,26 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.editor.groupactions;
+package de.perdian.apps.tagtiger.fx.handlers.batchupdate.files;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import javafx.beans.property.Property;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.panels.editor.EditorGroupAction;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdateActionEventHandler;
 
-public class GenerateTrackIndexGroupAction extends EditorGroupAction<String> {
+/**
+ * Generates the track index from the position of a file within the list of
+ * currently selected files
+ *
+ * @author Christian Robert
+ */
 
-    public GenerateTrackIndexGroupAction(String iconLocation, String tooltipText, Function<TaggableFile, Property<String>> propertyFunction) {
-        super(iconLocation, tooltipText, propertyFunction, 1);
+public class GenerateTrackNumberActionEventHandler extends BatchUpdateActionEventHandler {
+
+    public GenerateTrackNumberActionEventHandler(Property<TaggableFile> currentFileProperty, ObservableList<TaggableFile> otherFiles) {
+        super(currentFileProperty, otherFiles);
     }
 
     @Override
-    public void execute(TaggableFile currentFile, List<TaggableFile> otherFiles) {
+    public void handle(ActionEvent event) {
         AtomicInteger counter = new AtomicInteger(1);
-        otherFiles.forEach(file -> this.getPropertyFunction().apply(file).setValue(String.valueOf(counter.getAndIncrement())));
+        this.getOtherFiles().forEach(file -> file.trackNumberProperty().setValue(String.valueOf(counter.getAndIncrement())));
     }
 
 }

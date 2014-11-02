@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.editor;
+package de.perdian.apps.tagtiger.fx.panels.editor.components;
 
 import java.util.Optional;
 
@@ -40,12 +40,12 @@ import org.jaudiotagger.tag.reference.PictureTypes;
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TagImage;
 
-class EditorTaggingImagePane extends HBox {
+class ImagesImageEditorPane extends HBox {
 
     private final BooleanProperty changed = new SimpleBooleanProperty();
     private EventHandler<ActionEvent> onDeleteActionHandler = null;
 
-    EditorTaggingImagePane(TagImage image, Localization localization) {
+    ImagesImageEditorPane(TagImage image, Localization localization) {
 
         ImageView imageView = new ImageView(image.imageProperty().get());
         imageView.setFitWidth(150);
@@ -67,7 +67,7 @@ class EditorTaggingImagePane extends HBox {
         GridPane.setHgrow(pictureTypeBox, Priority.ALWAYS);
 
         Button removeButton = new Button(localization.removeImage());
-        removeButton.setGraphic(new ImageView(new Image(EditorTaggingImagePane.class.getClassLoader().getResourceAsStream("icons/16/delete.png"))));
+        removeButton.setGraphic(new ImageView(new Image(ImagesImageEditorPane.class.getClassLoader().getResourceAsStream("icons/16/delete.png"))));
         removeButton.setOnAction(event -> Optional.ofNullable(this.getOnDeleteActionHandler()).ifPresent(handler -> handler.handle(event)));
         HBox buttonPane = new HBox(removeButton);
         buttonPane.setAlignment(Pos.CENTER_RIGHT);

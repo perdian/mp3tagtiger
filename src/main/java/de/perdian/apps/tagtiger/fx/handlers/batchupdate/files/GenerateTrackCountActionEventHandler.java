@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.editor.groupactions;
-
-import java.util.List;
-import java.util.function.Function;
+package de.perdian.apps.tagtiger.fx.handlers.batchupdate.files;
 
 import javafx.beans.property.Property;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.panels.editor.EditorGroupAction;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdateActionEventHandler;
 
-public class CopyTracksCountGroupAction extends EditorGroupAction<String> {
+public class GenerateTrackCountActionEventHandler extends BatchUpdateActionEventHandler {
 
-    public CopyTracksCountGroupAction(String iconLocation, String tooltipText, Function<TaggableFile, Property<String>> propertyFunction) {
-        super(iconLocation, tooltipText, propertyFunction, 1);
+    public GenerateTrackCountActionEventHandler(Property<TaggableFile> currentFileProperty, ObservableList<TaggableFile> otherFiles) {
+        super(currentFileProperty, otherFiles);
     }
 
     @Override
-    public void execute(TaggableFile currentFile, List<TaggableFile> otherFiles) {
-        otherFiles.forEach(file -> this.getPropertyFunction().apply(file).setValue(String.valueOf(otherFiles.size())));
+    public void handle(ActionEvent event) {
+        this.getOtherFiles().forEach(file -> file.tracksTotalProperty().setValue(String.valueOf(this.getOtherFiles().size())));
     }
 
 }

@@ -104,6 +104,14 @@ public class TagImage {
         }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append(this.getClass().getSimpleName());
+        result.append("[description=").append(this.descriptionProperty().get());
+        return result.append("]").toString();
+    }
+
     // -------------------------------------------------------------------------
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------

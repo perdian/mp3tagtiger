@@ -57,6 +57,16 @@ public class EditorComponentFactory<T> {
 
     }
 
+    public TextField createNumericTextField(Function<T, Property<String>> propertyFunction) {
+        TextField textField = this.createTextField(propertyFunction);
+        textField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            if (!event.getCharacter().matches("\\d+")) {
+                event.consume();
+            }
+        });
+        return textField;
+    }
+
     public TextField createTextField(Function<T, Property<String>> propertyFunction) {
 
         TextField textField = new TextField();

@@ -23,7 +23,6 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyEvent;
@@ -32,6 +31,9 @@ import javafx.scene.layout.VBox;
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.handlers.selection.ChangeCurrentFileEventHandler;
+import de.perdian.apps.tagtiger.fx.panels.editor.components.CommonEditorTab;
+import de.perdian.apps.tagtiger.fx.panels.editor.components.ImagesEditorTab;
+import de.perdian.apps.tagtiger.fx.panels.editor.components.InformationEditorPane;
 import de.perdian.apps.tagtiger.fx.util.EditorComponentFactory;
 
 public class EditorPane extends VBox {
@@ -45,34 +47,21 @@ public class EditorPane extends VBox {
         EditorComponentFactory<TaggableFile> componentFactory = new EditorComponentFactory<>(this.currentFileProperty());
         componentFactory.addControlCustomizer(component -> component.addEventHandler(KeyEvent.KEY_PRESSED, new ChangeCurrentFileEventHandler<>(this.currentFileProperty(), this.availableFilesProperty(), new ChangeCurrentFileEventHandler.KeyEventDirectionFunction())));
 
-        EditorInformationPane informationPane = new EditorInformationPane(componentFactory, localization);
-        informationPane.setPadding(new Insets(5, 5, 5, 5));
-        informationPane.currentFileProperty().bind(this.currentFileProperty());
-        informationPane.availableFilesProperty().bind(this.availableFilesProperty());
-        informationPane.selectedFilesProperty().bind(this.selectedFilesProperty());
-        TitledPane informationWrapperPane = new TitledPane(localization.mp3File(), informationPane);
-        informationWrapperPane.setExpanded(true);
-        informationWrapperPane.setDisable(true);
+        InformationEditorPane informationEditorPane = new InformationEditorPane(componentFactory, localization);
+        informationEditorPane.currentFileProperty().bind(this.currentFileProperty());
+        informationEditorPane.selectedFilesProperty().bind(this.selectedFilesProperty());
+        informationEditorPane.availableFilesProperty().bind(this.availableFilesProperty());
 
-        EditorTaggingCommonPane taggingCommonPane = new EditorTaggingCommonPane(componentFactory, localization);
-        taggingCommonPane.initialize();
-        taggingCommonPane.setPadding(new Insets(5, 5, 5, 5));
-        taggingCommonPane.currentFileProperty().bind(this.currentFileProperty());
-        taggingCommonPane.selectedFilesProperty().bind(this.selectedFilesProperty());
-        Tab taggingCommonTab = new Tab(localization.common());
-        taggingCommonTab.setContent(taggingCommonPane);
-        taggingCommonTab.setClosable(false);
+        CommonEditorTab commonEditorTab = new CommonEditorTab(componentFactory, localization);
+        commonEditorTab.currentFileProperty().bind(this.currentFileProperty());
+        commonEditorTab.selectedFilesProperty().bind(this.selectedFilesProperty());
 
-        EditorTaggingImagesPane taggingImagesPane = new EditorTaggingImagesPane(localization);
-        taggingImagesPane.setPadding(new Insets(5, 5, 5, 5));
-        taggingImagesPane.currentFileProperty().bind(this.currentFileProperty());
-        taggingImagesPane.selectedFilesProperty().bind(this.selectedFilesProperty());
-        Tab imagesTab = new Tab(localization.images());
-        imagesTab.setContent(taggingImagesPane);
-        imagesTab.setClosable(false);
+        ImagesEditorTab imagesEditorPane = new ImagesEditorTab(localization);
+        imagesEditorPane.currentFileProperty().bind(this.currentFileProperty());
+        imagesEditorPane.selectedFilesProperty().bind(this.selectedFilesProperty());
 
         TabPane taggingPane = new TabPane();
-        taggingPane.getTabs().addAll(taggingCommonTab, imagesTab);
+        taggingPane.getTabs().addAll(commonEditorTab, imagesEditorPane);
         taggingPane.setPadding(new Insets(5, 5, 5, 5));
         TitledPane taggingWrapperPane = new TitledPane(localization.tags(), taggingPane);
         taggingWrapperPane.setCollapsible(false);
@@ -81,10 +70,10 @@ public class EditorPane extends VBox {
         VBox.setVgrow(taggingWrapperPane, Priority.ALWAYS);
 
         this.setSpacing(5);
-        this.getChildren().addAll(informationWrapperPane, taggingWrapperPane);
+        this.getChildren().addAll(informationEditorPane, taggingWrapperPane);
 
-        this.currentFileProperty().addListener((o, oldValue, newValue) -> Arrays.asList(informationWrapperPane, taggingWrapperPane).forEach(pane -> pane.setDisable(newValue == null)));
-        this.currentFileProperty().addListener((o, oldValue, newValue) -> taggingImagesPane.imagesProperty().set(newValue == null ? null : newValue.imagesProperty().getValue().getTagImages()));
+        this.currentFileProperty().addListener((o, oldValue, newValue) -> Arrays.asList(informationEditorPane, taggingWrapperPane).forEach(pane -> pane.setDisable(newValue == null)));
+        this.currentFileProperty().addListener((o, oldValue, newValue) -> imagesEditorPane.imagesProperty().set(newValue == null ? null : newValue.imagesProperty().getValue().getTagImages()));
 
     }
 

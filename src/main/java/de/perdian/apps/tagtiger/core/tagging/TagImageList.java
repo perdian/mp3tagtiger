@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.tagtiger.core.tagging;
 
+import java.util.Collection;
 import java.util.List;
 
 import javafx.beans.property.BooleanProperty;
@@ -39,6 +40,20 @@ public class TagImageList {
         this.changedProperty().addListener(changeListener);
         this.setTagImages(observableTagImages);
 
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append(this.getClass().getSimpleName());
+        result.append("[tagImages=").append(this.getTagImages());
+        result.append(",changed=").append(this.changedProperty().get());
+        return result.append("]").toString();
+    }
+
+    public void updateTagImages(Collection<TagImage> newImages) {
+        this.getTagImages().setAll(newImages);
+        this.changedProperty().set(true);
     }
 
     // -------------------------------------------------------------------------

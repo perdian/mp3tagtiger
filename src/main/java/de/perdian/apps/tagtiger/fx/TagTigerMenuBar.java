@@ -28,7 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.filenames.UpdateFileNamesFromTagsAction;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.files.UpdateFileNamesFromTagsActionEventHandler;
 
 class TagTigerMenuBar extends MenuBar {
 
@@ -48,7 +48,7 @@ class TagTigerMenuBar extends MenuBar {
         Menu actionsMenu = new Menu(localization.actions());
         MenuItem updateFileNamesFromTagsItem = new MenuItem(localization.updateFileNames());
         updateFileNamesFromTagsItem.setGraphic(new ImageView(new Image(TagTigerMenuBar.class.getClassLoader().getResourceAsStream("icons/16/file-list.png"))));
-        updateFileNamesFromTagsItem.setOnAction(new UpdateFileNamesFromTagsAction(this.selectedFilesProperty(), localization));
+        updateFileNamesFromTagsItem.setOnAction(new UpdateFileNamesFromTagsActionEventHandler(this.currentFileProperty(), this.selectedFilesProperty(), localization));
         updateFileNamesFromTagsItem.setDisable(true);
         this.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> updateFileNamesFromTagsItem.setDisable(change.getList().isEmpty()));
         actionsMenu.getItems().add(updateFileNamesFromTagsItem);
