@@ -28,6 +28,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TagImage;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.panels.editor.groupactions.CopyImagesGroupAction;
 
 class EditorTaggingImagesPane extends BorderPane {
 
@@ -47,6 +49,7 @@ class EditorTaggingImagesPane extends BorderPane {
 
     private final ListProperty<TagImage> images = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
+    private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     EditorTaggingImagesPane(Localization localization) {
 
@@ -54,14 +57,23 @@ class EditorTaggingImagesPane extends BorderPane {
         listView.setCellFactory(e -> new ImageListCell(localization));
         this.imagesProperty().addListener((Change<? extends TagImage> change) -> listView.itemsProperty().get().setAll(change.getList()));
 
+        Button copyImagesButton = new Button(localization.copyImages());
+        copyImagesButton.setOnAction(event -> {
+            CopyImagesGroupAction action = new CopyImagesGroupAction("icons/16/copy.png", localization.copyImagesToOtherFiles(), TaggableFile::imagesProperty);
+            action.execute(this.currentFileProperty().get(), this.selectedFilesProperty());
+        });
+        copyImagesButton.setTooltip(new Tooltip(localization.copyImagesToOtherFiles()));
+
         Button removeImagesButton = new Button(localization.clearImages());
-        removeImagesButton.setDisable(true);
         removeImagesButton.setGraphic(new ImageView(new Image(EditorTaggingImagesPane.class.getClassLoader().getResourceAsStream("icons/16/delete.png"))));
-        removeImagesButton.setOnAction(event -> this.imagesProperty().get().clear() );
+        removeImagesButton.setTooltip(new Tooltip(localization.removeAllImages()));
+        removeImagesButton.setOnAction(event -> this.imagesProperty().get().clear());
+        removeImagesButton.setDisable(true);
         this.imagesProperty().addListener((Change<? extends TagImage> change) -> removeImagesButton.setDisable(change.getList() == null || change.getList().isEmpty()));
 
         Button addImageButton = new Button(localization.addImage());
         addImageButton.setGraphic(new ImageView(new Image(EditorTaggingImagesPane.class.getClassLoader().getResourceAsStream("icons/16/add.png"))));
+        addImageButton.setTooltip(new Tooltip(localization.addImage()));
         addImageButton.setOnAction(event -> {
             File tagFile = this.currentFileProperty().get().getFile();
             FileChooser fileChooser = new FileChooser();
@@ -78,7 +90,7 @@ class EditorTaggingImagesPane extends BorderPane {
             }
         });
 
-        HBox buttonPane = new HBox(removeImagesButton, addImageButton);
+        HBox buttonPane = new HBox(copyImagesButton, removeImagesButton, addImageButton);
         buttonPane.setSpacing(5);
         buttonPane.setAlignment(Pos.CENTER_RIGHT);
         buttonPane.setPadding(new Insets(5, 0, 0, 0));
@@ -140,6 +152,10 @@ class EditorTaggingImagesPane extends BorderPane {
 
     ObjectProperty<TaggableFile> currentFileProperty() {
         return this.currentFile;
+    }
+
+    ListProperty<TaggableFile> selectedFilesProperty() {
+        return this.selectedFiles;
     }
 
 }

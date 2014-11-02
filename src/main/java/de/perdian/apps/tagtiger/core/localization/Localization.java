@@ -284,4 +284,16 @@ public interface Localization {
         return "Execute rename";
     }
 
+    default String copyImages() {
+        return "Copy images";
+    }
+
+    default String copyImagesToOtherFiles() {
+        return "Copy images to other selected files";
+    }
+
+    default String removeAllImages() {
+        return "Remove all images";
+    }
+
 }

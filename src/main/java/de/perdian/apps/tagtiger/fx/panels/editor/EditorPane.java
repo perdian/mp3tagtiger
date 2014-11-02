@@ -66,6 +66,7 @@ public class EditorPane extends VBox {
         EditorTaggingImagesPane taggingImagesPane = new EditorTaggingImagesPane(localization);
         taggingImagesPane.setPadding(new Insets(5, 5, 5, 5));
         taggingImagesPane.currentFileProperty().bind(this.currentFileProperty());
+        taggingImagesPane.selectedFilesProperty().bind(this.selectedFilesProperty());
         Tab imagesTab = new Tab(localization.images());
         imagesTab.setContent(taggingImagesPane);
         imagesTab.setClosable(false);

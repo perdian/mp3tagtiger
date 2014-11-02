@@ -47,6 +47,7 @@ class TagTigerMenuBar extends MenuBar {
 
         Menu actionsMenu = new Menu(localization.actions());
         MenuItem updateFileNamesFromTagsItem = new MenuItem(localization.updateFileNames());
+        updateFileNamesFromTagsItem.setGraphic(new ImageView(new Image(TagTigerMenuBar.class.getClassLoader().getResourceAsStream("icons/16/file-list.png"))));
         updateFileNamesFromTagsItem.setOnAction(new UpdateFileNamesFromTagsAction(this.selectedFilesProperty(), localization));
         updateFileNamesFromTagsItem.setDisable(true);
         this.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> updateFileNamesFromTagsItem.setDisable(change.getList().isEmpty()));

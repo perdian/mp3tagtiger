@@ -70,7 +70,7 @@ public class UpdateFileNamesFromTagsAction extends BatchUpdateAction {
         ComboBox<String> patternBox = new ComboBox<>(FXCollections.observableArrayList(patternItems));
         patternBox.setEditable(true);
         patternBox.setMaxWidth(Double.MAX_VALUE);
-        Bindings.bindBidirectional(patternFieldProperty, patternBox.valueProperty());
+        Bindings.bindBidirectional(patternFieldProperty, patternBox.editorProperty().get().textProperty());
         HBox.setHgrow(patternBox, Priority.ALWAYS);
 
         Button executeButton = new Button(this.getLocalization().executeRename(), new ImageView(new Image(UpdateFileNamesFromTagsAction.class.getClassLoader().getResourceAsStream("icons/16/save.png"))));

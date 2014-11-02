@@ -74,6 +74,7 @@ public class TagImage {
             this.imageProperty().set(image);
             this.imageSizeProperty().set((int)imageFile.length());
             this.descriptionProperty().set(imageFile.getName());
+            this.pictureTypeProperty().set(PictureTypes.DEFAULT_VALUE);
             this.registerListeners();
         }
     }
