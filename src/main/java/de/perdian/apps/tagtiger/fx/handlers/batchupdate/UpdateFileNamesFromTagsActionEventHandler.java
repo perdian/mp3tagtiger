@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.handlers.batchupdate.files;
+package de.perdian.apps.tagtiger.fx.handlers.batchupdate;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,8 +50,6 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdateDialogActionEventHandler;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdatePlaceholder;
 
 /**
  * Updates a series of file names from information presented in the tags
@@ -59,7 +57,7 @@ import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdatePlaceholder;
  * @author Christian Robert
  */
 
-public class UpdateFileNamesFromTagsActionEventHandler extends BatchUpdateDialogActionEventHandler {
+public class UpdateFileNamesFromTagsActionEventHandler extends AbstractDialogActionEventHandler {
 
     public UpdateFileNamesFromTagsActionEventHandler(Property<TaggableFile> currentFile, ObservableList<TaggableFile> otherFiles, Localization localization) {
         super(currentFile, otherFiles, localization);
@@ -120,7 +118,7 @@ public class UpdateFileNamesFromTagsActionEventHandler extends BatchUpdateDialog
         int columnCount = 3;
         int currentRow = 0;
         int currentColumn = 0;
-        for (BatchUpdatePlaceholder placeholder : BatchUpdatePlaceholder.values()) {
+        for (UpdateFileNamesPlaceholder placeholder : UpdateFileNamesPlaceholder.values()) {
 
             StringBuilder placeholderText = new StringBuilder();
             placeholderText.append("${").append(placeholder.getPlaceholder()).append("}: ");
@@ -172,7 +170,7 @@ public class UpdateFileNamesFromTagsActionEventHandler extends BatchUpdateDialog
         for (UpdateFileNamesFromTagsItem item : items) {
 
             Map<String, String> replacementValues = Arrays
-                .stream(BatchUpdatePlaceholder.values())
+                .stream(UpdateFileNamesPlaceholder.values())
                 .collect(Collectors.toMap(p -> p.getPlaceholder(), p -> p.resolveValue(item.getFile())));
 
             StrSubstitutor substitutor = new StrSubstitutor(replacementValues);

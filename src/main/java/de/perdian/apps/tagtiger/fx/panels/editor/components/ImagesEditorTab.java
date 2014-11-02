@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TagImage;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.files.CopyPropertyValueActionEventHandler;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.CopyPropertyValueActionEventHandler;
 
 public class ImagesEditorTab extends Tab {
 

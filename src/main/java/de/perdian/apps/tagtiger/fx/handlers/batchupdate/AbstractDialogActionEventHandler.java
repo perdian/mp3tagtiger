@@ -33,11 +33,11 @@ import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
  * @author Christian Robert
  */
 
-public abstract class BatchUpdateDialogActionEventHandler extends BatchUpdateActionEventHandler {
+public abstract class AbstractDialogActionEventHandler extends AbstractActionEventHandler {
 
     private Localization localization = null;
 
-    public BatchUpdateDialogActionEventHandler(Property<TaggableFile> currentFile, ObservableList<TaggableFile> otherFiles, Localization localization) {
+    public AbstractDialogActionEventHandler(Property<TaggableFile> currentFile, ObservableList<TaggableFile> otherFiles, Localization localization) {
         super(currentFile, otherFiles);
         this.setLocalization(localization);
     }

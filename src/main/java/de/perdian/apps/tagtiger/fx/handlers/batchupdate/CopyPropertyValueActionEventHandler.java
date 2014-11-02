@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.handlers.batchupdate.files;
+package de.perdian.apps.tagtiger.fx.handlers.batchupdate;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -23,9 +23,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import de.perdian.apps.tagtiger.core.tagging.TagImageList;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdateActionEventHandler;
 
-public class CopyPropertyValueActionEventHandler<T> extends BatchUpdateActionEventHandler {
+public class CopyPropertyValueActionEventHandler<T> extends AbstractActionEventHandler {
 
     private Function<TaggableFile, Property<T>> propertyFunction = null;
     private BiConsumer<Property<T>, T> copyValueConsumer = null;

@@ -36,7 +36,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.files.CopyPropertyValueActionEventHandler;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.CopyPropertyValueActionEventHandler;
 import de.perdian.apps.tagtiger.fx.util.EditorComponentFactory;
 
 public class InformationEditorPane extends TitledPane {

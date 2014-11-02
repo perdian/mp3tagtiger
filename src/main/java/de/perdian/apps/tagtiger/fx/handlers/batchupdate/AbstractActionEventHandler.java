@@ -28,12 +28,12 @@ import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
  * @author Christian Robert
  */
 
-public abstract class BatchUpdateActionEventHandler implements EventHandler<ActionEvent> {
+public abstract class AbstractActionEventHandler implements EventHandler<ActionEvent> {
 
     private ObservableList<TaggableFile> otherFiles = null;
     private Property<TaggableFile> currentFileProperty = null;
 
-    public BatchUpdateActionEventHandler(Property<TaggableFile> currentFileProperty, ObservableList<TaggableFile> otherFiles) {
+    public AbstractActionEventHandler(Property<TaggableFile> currentFileProperty, ObservableList<TaggableFile> otherFiles) {
         this.setCurrentFileProperty(currentFileProperty);
         this.setOtherFiles(otherFiles);
     }

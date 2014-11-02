@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.handlers.batchupdate.files;
+package de.perdian.apps.tagtiger.fx.handlers.batchupdate;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;

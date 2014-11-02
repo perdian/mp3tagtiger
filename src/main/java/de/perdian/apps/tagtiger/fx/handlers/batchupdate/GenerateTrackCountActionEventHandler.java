@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.handlers.batchupdate.files;
+package de.perdian.apps.tagtiger.fx.handlers.batchupdate;
 
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.BatchUpdateActionEventHandler;
 
-public class GenerateTrackCountActionEventHandler extends BatchUpdateActionEventHandler {
+public class GenerateTrackCountActionEventHandler extends AbstractActionEventHandler {
 
     public GenerateTrackCountActionEventHandler(Property<TaggableFile> currentFileProperty, ObservableList<TaggableFile> otherFiles) {
         super(currentFileProperty, otherFiles);

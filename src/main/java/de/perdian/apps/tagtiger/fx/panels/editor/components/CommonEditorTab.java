@@ -32,9 +32,9 @@ import org.jaudiotagger.tag.reference.GenreTypes;
 
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.files.CopyPropertyValueActionEventHandler;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.files.GenerateTrackCountActionEventHandler;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.files.GenerateTrackNumberActionEventHandler;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.CopyPropertyValueActionEventHandler;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.GenerateTrackCountActionEventHandler;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.GenerateTrackNumberActionEventHandler;
 import de.perdian.apps.tagtiger.fx.util.EditorComponentFactory;
 
 public class CommonEditorTab extends Tab {

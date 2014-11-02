@@ -23,40 +23,40 @@ import javafx.beans.property.Property;
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 
-public enum BatchUpdatePlaceholder {
+enum UpdateFileNamesPlaceholder {
 
-    TITLE("title", TaggableFile::titleProperty, Localization::title, BatchUpdatePlaceholder::resolveDefault),
-    TRACK_NUMBER("track", TaggableFile::trackNumberProperty, Localization::trackNumber, BatchUpdatePlaceholder::resolveTrackNumber),
-    TRACKS("tracks", TaggableFile::tracksTotalProperty, Localization::tracks, BatchUpdatePlaceholder::resolveDefault),
+    TITLE("title", TaggableFile::titleProperty, Localization::title, UpdateFileNamesPlaceholder::resolveDefault),
+    TRACK_NUMBER("track", TaggableFile::trackNumberProperty, Localization::trackNumber, UpdateFileNamesPlaceholder::resolveTrackNumber),
+    TRACKS("tracks", TaggableFile::tracksTotalProperty, Localization::tracks, UpdateFileNamesPlaceholder::resolveDefault),
 
-    ALBUM("album", TaggableFile::albumProperty, Localization::album, BatchUpdatePlaceholder::resolveDefault),
-    ARTIST("artist", TaggableFile::artistProperty, Localization::artist, BatchUpdatePlaceholder::resolveDefault),
-    YEAR("year", TaggableFile::yearProperty, Localization::year, BatchUpdatePlaceholder::resolveDefault),
+    ALBUM("album", TaggableFile::albumProperty, Localization::album, UpdateFileNamesPlaceholder::resolveDefault),
+    ARTIST("artist", TaggableFile::artistProperty, Localization::artist, UpdateFileNamesPlaceholder::resolveDefault),
+    YEAR("year", TaggableFile::yearProperty, Localization::year, UpdateFileNamesPlaceholder::resolveDefault),
 
-    GENRE("genre", TaggableFile::genreProperty, Localization::genre, BatchUpdatePlaceholder::resolveDefault),
-    DISC_NUMBER("disc", TaggableFile::discNumberProperty, Localization::discNumber, BatchUpdatePlaceholder::resolveDefault),
-    DISCS("discs", TaggableFile::discsTotalProperty, Localization::discs, BatchUpdatePlaceholder::resolveDefault),
+    GENRE("genre", TaggableFile::genreProperty, Localization::genre, UpdateFileNamesPlaceholder::resolveDefault),
+    DISC_NUMBER("disc", TaggableFile::discNumberProperty, Localization::discNumber, UpdateFileNamesPlaceholder::resolveDefault),
+    DISCS("discs", TaggableFile::discsTotalProperty, Localization::discs, UpdateFileNamesPlaceholder::resolveDefault),
 
-    COMMENT("comment", TaggableFile::commentProperty, Localization::comment, BatchUpdatePlaceholder::resolveDefault),
-    COMPOSER("composer", TaggableFile::composerProperty, Localization::composer, BatchUpdatePlaceholder::resolveDefault);
+    COMMENT("comment", TaggableFile::commentProperty, Localization::comment, UpdateFileNamesPlaceholder::resolveDefault),
+    COMPOSER("composer", TaggableFile::composerProperty, Localization::composer, UpdateFileNamesPlaceholder::resolveDefault);
 
     private String placeholder = null;
     private Function<TaggableFile, Property<String>> propertyFunction = null;
     private Function<Localization, String> localizationFunction = null;
     private BiFunction<String, TaggableFile, String> resolverFunction = null;
 
-    private BatchUpdatePlaceholder(String placeholder, Function<TaggableFile, Property<String>> propertyFunction, Function<Localization, String> localizationFunction, BiFunction<String, TaggableFile, String> resolverFunction) {
+    private UpdateFileNamesPlaceholder(String placeholder, Function<TaggableFile, Property<String>> propertyFunction, Function<Localization, String> localizationFunction, BiFunction<String, TaggableFile, String> resolverFunction) {
         this.setPlaceholder(placeholder);
         this.setPropertyFunction(propertyFunction);
         this.setLocalizationFunction(localizationFunction);
         this.setResolverFunction(resolverFunction);
     }
 
-    public String resolveLocalization(Localization localization) {
+    String resolveLocalization(Localization localization) {
         return this.getLocalizationFunction().apply(localization);
     }
 
-    public String resolveValue(TaggableFile file) {
+    String resolveValue(TaggableFile file) {
         return this.getResolverFunction().apply(this.getPropertyFunction().apply(file).getValue(), file);
     }
 
@@ -81,7 +81,7 @@ public enum BatchUpdatePlaceholder {
     // --- Property access methods ---------------------------------------------
     // -------------------------------------------------------------------------
 
-    public String getPlaceholder() {
+    String getPlaceholder() {
         return this.placeholder;
     }
     private void setPlaceholder(String placeholder) {
