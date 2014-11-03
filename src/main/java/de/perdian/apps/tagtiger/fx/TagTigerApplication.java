@@ -48,7 +48,7 @@ import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.handlers.selection.DirectorySelectJob;
 import de.perdian.apps.tagtiger.fx.handlers.selection.SaveChangedFilesInSelectionJob;
-import de.perdian.apps.tagtiger.fx.panels.directories.DirectorySelectionPane;
+import de.perdian.apps.tagtiger.fx.panels.directories.DirectoryTreeView;
 import de.perdian.apps.tagtiger.fx.panels.editor.EditorPane;
 import de.perdian.apps.tagtiger.fx.panels.files.FileSelectionPane;
 import de.perdian.apps.tagtiger.fx.panels.status.StatusPane;
@@ -80,14 +80,14 @@ public class TagTigerApplication extends Application {
         selection.currentDirectoryProperty().addListener((o, oldValue, newValue) -> jobExecutor.executeJob(new DirectorySelectJob(newValue, selection, localization, messageDistributor)));
         selection.currentDirectoryProperty().addListener((o, oldValue, newValue) -> preferences.setString(PreferencesKey.CURRENT_DIRECTORY, newValue == null ? null : newValue.getAbsolutePath()));
 
+        log.info("Creating JavaFX UI");
+        Parent mainPanel = this.createMainPanel(selection, jobExecutor, localization);
+
         String currentDirectoryValue = preferences.getString(PreferencesKey.CURRENT_DIRECTORY, null);
         File currentDirectory = currentDirectoryValue == null ? null : new File(currentDirectoryValue);
         if (currentDirectory != null && currentDirectory.exists() && currentDirectory.isDirectory()) {
-            selection.currentDirectoryProperty().set(currentDirectory);
+            selection.currentDirectoryProperty().setValue(currentDirectory);
         }
-
-        log.info("Creating JavaFX UI");
-        Parent mainPanel = this.createMainPanel(selection, jobExecutor, localization);
 
         log.info("Opening JavaFX stage");
         primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/application.png")));
@@ -153,16 +153,18 @@ public class TagTigerApplication extends Application {
         HBox directoryFieldWrapper = new HBox(directoryField);
         directoryFieldWrapper.setPadding(new Insets(0, 0, 5, 0));
 
-        DirectorySelectionPane directorySelectionPane = new DirectorySelectionPane(localization);
-        directorySelectionPane.selectedDirectoryProperty().bindBidirectional(selection.currentDirectoryProperty());
+        DirectoryTreeView directoryTreeView = new DirectoryTreeView(localization);
+        directoryTreeView.setMinWidth(175d);
+        directoryTreeView.selectedDirectoryProperty().addListener((o, oldValue, newValue) -> selection.currentDirectoryProperty().setValue(newValue));
 
         FileSelectionPane fileSelectionPane = new FileSelectionPane(localization);
+        fileSelectionPane.setMinWidth(175d);
         fileSelectionPane.availableFilesProperty().bindBidirectional(selection.availableFilesProperty());
         fileSelectionPane.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> selection.selectedFilesProperty().setAll(change.getList()));
         fileSelectionPane.selectedFileProperty().addListener((o, oldValue, newValue) -> selection.currentFileProperty().set(newValue));
 
         SplitPane splitPane = new SplitPane();
-        splitPane.getItems().add(directorySelectionPane);
+        splitPane.getItems().add(directoryTreeView);
         splitPane.getItems().add(fileSelectionPane);
         splitPane.setDividerPositions(0.4d);
 
@@ -170,23 +172,24 @@ public class TagTigerApplication extends Application {
         selectionPane.setTop(directoryFieldWrapper);
         selectionPane.setCenter(splitPane);
         selectionPane.setPadding(new Insets(5, 5, 5, 5));
-        selectionPane.setMinWidth(250d);
-        selectionPane.setPrefWidth(250d);
+        selectionPane.setMinWidth(400d);
+        selectionPane.setPrefWidth(400d);
 
         selection.currentFileProperty().addListener((o, oldValue, newValue) -> fileSelectionPane.selectedFileProperty().set(newValue));
+        selection.currentDirectoryProperty().addListener((o, oldValue, newValue) -> directoryTreeView.selectDirectory(newValue));
 
         // Add listeners to connect the GUI components with the underlying
         // data structures
         directoryField.setOnAction(event -> {
             String directoryValue = ((TextField)event.getSource()).getText();
-            directorySelectionPane.selectedDirectoryProperty().set(new File(directoryValue));
+            directoryTreeView.selectDirectory(new File(directoryValue));
         });
         directoryField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 Platform.runLater(() -> directoryField.selectAll());
             }
         });
-        directorySelectionPane.selectedDirectoryProperty().addListener((observable, oldValue, newValue) -> {
+        directoryTreeView.selectedDirectoryProperty().addListener((observable, oldValue, newValue) -> {
             Platform.runLater(() -> {
                 directoryField.setText(newValue == null ? "" : newValue.getAbsolutePath());
                 if (directoryField.isFocused()) {
