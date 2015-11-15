@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.files;
 
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -50,7 +51,13 @@ public class FileSelectionPane extends VBox {
 
         this.selectedFileProperty().addListener((o, oldValue, newValue) -> {
             if (!this.selectedFilesProperty().contains(newValue)) {
-                filesTable.getSelectionModel().clearAndSelect(this.availableFilesProperty().indexOf(newValue));
+            	Platform.runLater(() -> {
+	            	try {
+	            		filesTable.getSelectionModel().clearAndSelect(this.availableFilesProperty().indexOf(newValue));
+	            	} catch (Exception e) {
+	            		// Ignore here
+	            	}
+            	});
             }
         });
 
