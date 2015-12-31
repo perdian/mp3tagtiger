@@ -38,12 +38,7 @@ class TagTigerMenuBar extends MenuBar {
 
     TagTigerMenuBar(Localization localization) {
 
-        Menu fileMenu = new Menu(localization.file());
-        MenuItem exitItem = new MenuItem(localization.exit());
-        exitItem.setGraphic(new ImageView(new Image(TagTigerMenuBar.class.getClassLoader().getResourceAsStream("icons/16/exit.png"))));
-        exitItem.setOnAction(event -> System.exit(0));
-        fileMenu.getItems().add(exitItem);
-        this.getMenus().add(fileMenu);
+    	this.useSystemMenuBarProperty().set(true);
 
         Menu actionsMenu = new Menu(localization.actions());
         MenuItem updateFileNamesFromTagsItem = new MenuItem(localization.updateFileNames());

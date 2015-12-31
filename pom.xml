@@ -76,6 +76,7 @@
     </dependencies>
 
     <build>
+        <finalName>${project.name}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -99,23 +100,77 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <finalName>tagtiger</finalName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>generic-bundle</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>2.3</version>
+                        <configuration>
+                            <finalName>tagtiger</finalName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>osx-bundle</id>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                    </resource>
+                    <resource>
+                        <directory>src/bundle/osx/resources</directory>
+                    </resource>
+                </resources>
+                <plugins>
+                    <plugin>
+                        <groupId>sh.tak.appbundler</groupId>
+                        <artifactId>appbundle-maven-plugin</artifactId>
+                        <version>1.0.4</version>
+                        <configuration>
+                            <mainClass>de.perdian.apps.tagtiger.fx.TagTigerApplication</mainClass>
+                            <generateDiskImageFile>true</generateDiskImageFile>
+                            <jvmVersion>1.8+</jvmVersion>
+                            <iconFile>tagtiger.icns</iconFile>
+                            <additionalResources>
+                                <additionalResource>
+                                    <directory>${project.basedir}</directory>
+                                    <include>LICENSE.txt</include>
+                                    <include>CREDITS.txt</include>
+                                </additionalResource>
+                                <additionalResource>
+                                    <directory>${project.basedir}/src/bundle/osx/distribution</directory>
+                                </additionalResource>
+                            </additionalResources>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>bundle</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

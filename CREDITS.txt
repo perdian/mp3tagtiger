@@ -1,5 +1,5 @@
 The following external libraries and/or resources have been used in the creation
-of TagTiger:
+of MP3 TagTiger:
 
 Apache Commons Lang
 -------------------

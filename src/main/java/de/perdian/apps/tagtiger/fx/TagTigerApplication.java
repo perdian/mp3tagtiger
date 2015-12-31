@@ -90,8 +90,7 @@ public class TagTigerApplication extends Application {
         }
 
         log.info("Opening JavaFX stage");
-        primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/application.png")));
-        primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/64/application.png")));
+        primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));
         primaryStage.setScene(new Scene(mainPanel));
         primaryStage.setOnCloseRequest(event -> System.exit(0));
         primaryStage.setMinWidth(800);
