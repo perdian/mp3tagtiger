@@ -21,6 +21,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.text.StrSubstitutor;
+
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -46,11 +50,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
-
-import de.perdian.apps.tagtiger.core.localization.Localization;
-import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-
 /**
  * Updates a series of file names from information presented in the tags
  *
@@ -64,6 +63,7 @@ public class UpdateFileNamesFromTagsActionEventHandler extends AbstractDialogAct
     }
 
     @Override
+    @SuppressWarnings("unused")
     protected BatchUpdateDialog createDialog() {
 
         ObservableList<UpdateFileNamesFromTagsItem> items = FXCollections.observableArrayList(this.getOtherFiles().stream().map(UpdateFileNamesFromTagsItem::new).collect(Collectors.toList()));
@@ -100,7 +100,7 @@ public class UpdateFileNamesFromTagsActionEventHandler extends AbstractDialogAct
         dialog.setLegendPane(this.createLegendPane());
 
         // Add listeners
-        this.getOtherFiles().addListener(new WeakListChangeListener<>((Change<? extends TaggableFile> change) -> items.setAll(change.getList().stream().map(UpdateFileNamesFromTagsItem::new).collect(Collectors.toList()))));
+        this.getOtherFiles().addListener(new WeakListChangeListener<TaggableFile>((Change<? extends TaggableFile> change) -> items.setAll(change.getList().stream().map(UpdateFileNamesFromTagsItem::new).collect(Collectors.toList()))));
         patternFieldProperty.addListener((o, oldValue, newValue) -> this.computeNewFileNames(items, newValue));
         executeButton.setOnAction(event -> {
             this.updateNewFileNames(items);
