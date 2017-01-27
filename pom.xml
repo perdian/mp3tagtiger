@@ -1,12 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>de.perdian</groupId>
-        <artifactId>parent</artifactId>
-        <version>1.0.0</version>
-    </parent>
-
     <groupId>de.perdian.apps.tagtiger</groupId>
     <artifactId>tagtiger</artifactId>
     <version>1.0.0-SNAPSHOT</version>
@@ -30,11 +24,11 @@
     </developers>
 
     <properties>
-        <commons-lang3.version>3.3.2</commons-lang3.version>
-        <log4j.version>1.2.16</log4j.version>
+        <commons-lang3.version>3.5</commons-lang3.version>
+        <log4j.version>1.2.17</log4j.version>
         <jaudiotagger.version>2.0.3</jaudiotagger.version>
-        <openjfx-dialogs.version>1.0.2</openjfx-dialogs.version>
-        <slf4j.version>1.7.10</slf4j.version>
+        <openjfx-dialogs.version>1.0.3</openjfx-dialogs.version>
+        <slf4j.version>1.7.22</slf4j.version>
     </properties>
 
     <dependencies>
