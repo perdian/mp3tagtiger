@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import de.perdian.apps.tagtiger.core.localization.Localization;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ContextMenu;
@@ -29,7 +30,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import de.perdian.apps.tagtiger.core.localization.Localization;
 
 /**
  * A specialized {@code TreeView} implementation that is designed to display the
@@ -45,7 +45,7 @@ public class DirectoryTreeView extends TreeView<Directory> {
     private final ObjectProperty<File> selectedDirectory = new SimpleObjectProperty<>();
 
     public DirectoryTreeView(Localization localization) {
-        this(file -> true, localization);
+        this(new DirectoryTreeDefaultFileFilter(), localization);
     }
 
     /**
