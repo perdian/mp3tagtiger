@@ -28,7 +28,7 @@
         <log4j.version>1.2.17</log4j.version>
         <jaudiotagger.version>2.0.3</jaudiotagger.version>
         <openjfx-dialogs.version>1.0.3</openjfx-dialogs.version>
-        <slf4j.version>1.7.22</slf4j.version>
+        <slf4j.version>1.7.25</slf4j.version>
     </properties>
 
     <dependencies>
@@ -75,7 +75,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
+                <version>3.6.1</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <source>1.8</source>
@@ -85,7 +85,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.0.2</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -105,7 +105,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-shade-plugin</artifactId>
-                        <version>2.3</version>
+                        <version>3.0.0</version>
                         <configuration>
                             <finalName>tagtiger</finalName>
                         </configuration>
@@ -136,7 +136,7 @@
                     <plugin>
                         <groupId>sh.tak.appbundler</groupId>
                         <artifactId>appbundle-maven-plugin</artifactId>
-                        <version>1.0.4</version>
+                        <version>1.2.0</version>
                         <configuration>
                             <mainClass>de.perdian.apps.tagtiger.fx.TagTigerApplication</mainClass>
                             <generateDiskImageFile>true</generateDiskImageFile>
