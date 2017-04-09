@@ -19,9 +19,9 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import javafx.beans.property.Property;
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import javafx.beans.property.Property;
 
 enum UpdateFileNamesPlaceholder {
 
@@ -31,6 +31,7 @@ enum UpdateFileNamesPlaceholder {
 
     ALBUM("album", TaggableFile::albumProperty, Localization::album, UpdateFileNamesPlaceholder::resolveDefault),
     ARTIST("artist", TaggableFile::artistProperty, Localization::artist, UpdateFileNamesPlaceholder::resolveDefault),
+    ALBUM_ARTIST("albumArtist", TaggableFile::albumArtistProperty, Localization::albumArtist, UpdateFileNamesPlaceholder::resolveDefault),
     YEAR("year", TaggableFile::yearProperty, Localization::year, UpdateFileNamesPlaceholder::resolveDefault),
 
     GENRE("genre", TaggableFile::genreProperty, Localization::genre, UpdateFileNamesPlaceholder::resolveDefault),

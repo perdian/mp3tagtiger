@@ -17,14 +17,6 @@ package de.perdian.apps.tagtiger.core.tagging;
 
 import java.io.File;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
@@ -32,6 +24,14 @@ import org.jaudiotagger.tag.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 
 public class TaggableFile {
 
@@ -43,6 +43,7 @@ public class TaggableFile {
     private final StringProperty title = new SimpleStringProperty();
     private final StringProperty artist = new SimpleStringProperty();
     private final StringProperty album = new SimpleStringProperty();
+    private final StringProperty albumArtist = new SimpleStringProperty();
     private final StringProperty discNumber = new SimpleStringProperty();
     private final StringProperty discsTotal = new SimpleStringProperty();
     private final StringProperty year = new SimpleStringProperty();
@@ -77,6 +78,7 @@ public class TaggableFile {
         TaggableFileHelper.initializePropertyFromStringTag(this.titleProperty(), tag, FieldKey.TITLE, markAsDirtyChangeListener);
         TaggableFileHelper.initializePropertyFromStringTag(this.artistProperty(), tag, FieldKey.ARTIST, markAsDirtyChangeListener);
         TaggableFileHelper.initializePropertyFromStringTag(this.albumProperty(), tag, FieldKey.ALBUM, markAsDirtyChangeListener);
+        TaggableFileHelper.initializePropertyFromStringTag(this.albumArtistProperty(), tag, FieldKey.ALBUM_ARTIST, markAsDirtyChangeListener);
         TaggableFileHelper.initializePropertyFromStringTag(this.yearProperty(), tag, FieldKey.YEAR, markAsDirtyChangeListener);
         TaggableFileHelper.initializePropertyFromStringTag(this.trackNumberProperty(), tag, FieldKey.TRACK, markAsDirtyChangeListener);
         TaggableFileHelper.initializePropertyFromStringTag(this.tracksTotalProperty(), tag, FieldKey.TRACK_TOTAL, markAsDirtyChangeListener);
@@ -112,6 +114,7 @@ public class TaggableFile {
         TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.TITLE, this.titleProperty());
         TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.ARTIST, this.artistProperty());
         TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.ALBUM, this.albumProperty());
+        TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.ALBUM_ARTIST, this.albumArtistProperty());
         TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.YEAR, this.yearProperty());
         TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.TRACK, this.trackNumberProperty());
         TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.TRACK_TOTAL, this.tracksTotalProperty());
@@ -170,6 +173,9 @@ public class TaggableFile {
     }
     public StringProperty albumProperty() {
         return this.album;
+    }
+    public StringProperty albumArtistProperty() {
+        return this.albumArtist;
     }
     public StringProperty discNumberProperty() {
         return this.discNumber;

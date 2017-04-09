@@ -112,6 +112,10 @@ public interface Localization {
         return "Album";
     }
 
+    default String albumArtist() {
+        return "Album artist";
+    }
+
     default String year() {
         return "Year";
     }
