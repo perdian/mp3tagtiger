@@ -104,6 +104,7 @@ public class TaggableFile {
         newFileName.append(".").append(this.fileExtensionProperty().get());
 
         File currentSystemFile = this.getFile().getCanonicalFile();
+        long originalTimestamp = currentSystemFile.lastModified();
         File newSystemFile = new File(currentSystemFile.getParentFile(), newFileName.toString());
         if (!newSystemFile.equals(currentSystemFile)) {
             currentSystemFile.renameTo(newSystemFile);
@@ -128,6 +129,7 @@ public class TaggableFile {
         audioFile.setFile(newSystemFile);
         audioFile.setTag(targetTag);
         AudioFileIO.write(audioFile);
+        newSystemFile.setLastModified(originalTimestamp);
         this.dirtyProperty().setValue(false);
 
     }
