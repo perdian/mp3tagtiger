@@ -15,6 +15,9 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.editor.components;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.beans.property.Property;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -32,15 +35,16 @@ import javafx.scene.layout.Priority;
 
 class ComponentBuilder {
 
-    private EventHandler<ActionEvent> actionEventHandler = null;
-    private String buttonText = null;
-    private String buttonIconLocation = null;
-    private String buttonIconTooltipText = null;
     private Property<Boolean> disableProperty = null;
     private Control control = null;
+    private List<ButtonDefinition> buttonDefinitions = null;
 
     static ComponentBuilder create() {
         return new ComponentBuilder();
+    }
+
+    private ComponentBuilder() {
+        this.setButtonDefinitions(new ArrayList<>());
     }
 
     /**
@@ -50,21 +54,21 @@ class ComponentBuilder {
     Pane buildControlPane() {
 
         HBox controlWrapper = new HBox();
-        controlWrapper.setSpacing(2);
+        controlWrapper.setSpacing(5);
         GridPane.setHgrow(controlWrapper, Priority.ALWAYS);
 
-        controlWrapper.getChildren().add(this.control);
-        HBox.setHgrow(this.control, Priority.ALWAYS);
+        controlWrapper.getChildren().add(this.getControl());
+        HBox.setHgrow(this.getControl(), Priority.ALWAYS);
 
-        if (this.getActionEventHandler() != null) {
+        for (ButtonDefinition buttonDefinition : this.getButtonDefinitions()) {
 
-           Button button = new Button(this.getButtonText());
-           button.setOnAction(this.getActionEventHandler());
-           if (this.getButtonIconLocation() != null) {
-               button.setGraphic(new ImageView(new Image(ComponentBuilder.class.getClassLoader().getResourceAsStream(this.getButtonIconLocation()))));
+           Button button = new Button();
+           button.setOnAction(buttonDefinition.getActionEventHandler());
+           if (buttonDefinition.getButtonIconLocation() != null) {
+               button.setGraphic(new ImageView(new Image(ComponentBuilder.class.getClassLoader().getResourceAsStream(buttonDefinition.getButtonIconLocation()))));
            }
-           if (this.getButtonIconTooltipText() != null) {
-               button.setTooltip(new Tooltip(this.getButtonIconTooltipText()));
+           if (buttonDefinition.getButtonIconTooltipText() != null) {
+               button.setTooltip(new Tooltip(buttonDefinition.getButtonIconTooltipText()));
            }
            if (this.getDisableProperty() != null) {
                button.setDisable(this.getDisableProperty().getValue());
@@ -72,62 +76,54 @@ class ComponentBuilder {
            }
 
            controlWrapper.getChildren().add(button);
-           this.getControl().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-               if (event.getCode() == KeyCode.ENTER && event.isControlDown()) {
-                   this.getActionEventHandler().handle(new ActionEvent(button, button));
-               }
-           });
+           if (buttonDefinition.isPrimary()) {
+               this.getControl().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                   if (event.getCode() == KeyCode.ENTER && event.isControlDown()) {
+                       buttonDefinition.getActionEventHandler().handle(new ActionEvent(button, button));
+                   }
+               });
+           }
+
         }
         return controlWrapper;
 
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
+    static class ButtonDefinition {
 
-    ComponentBuilder actionEventHandler(EventHandler<ActionEvent> actionEventHandler) {
-        this.setActionEventHandler(actionEventHandler);
-        return this;
-    }
-    private EventHandler<ActionEvent> getActionEventHandler() {
-        return this.actionEventHandler;
-    }
-    private void setActionEventHandler(EventHandler<ActionEvent> actionEventHandler) {
-        this.actionEventHandler = actionEventHandler;
-    }
+        private EventHandler<ActionEvent> actionEventHandler = null;
+        private String buttonIconLocation = null;
+        private String buttonIconTooltipText = null;
+        private boolean primary = false;
 
-    ComponentBuilder buttonText(String buttonText) {
-        this.setButtonText(buttonText);
-        return this;
-    }
-    private String getButtonText() {
-        return this.buttonText;
-    }
-    private void setButtonText(String buttonText) {
-        this.buttonText = buttonText;
-    }
+        EventHandler<ActionEvent> getActionEventHandler() {
+            return this.actionEventHandler;
+        }
+        void setActionEventHandler(EventHandler<ActionEvent> actionEventHandler) {
+            this.actionEventHandler = actionEventHandler;
+        }
 
-    ComponentBuilder buttonIconLocation(String buttonIconLocation) {
-        this.setButtonIconLocation(buttonIconLocation);
-        return this;
-    }
-    private String getButtonIconLocation() {
-        return this.buttonIconLocation;
-    }
-    private void setButtonIconLocation(String buttonIconLocation) {
-        this.buttonIconLocation = buttonIconLocation;
-    }
+        String getButtonIconLocation() {
+            return this.buttonIconLocation;
+        }
+        void setButtonIconLocation(String buttonIconLocation) {
+            this.buttonIconLocation = buttonIconLocation;
+        }
 
-    ComponentBuilder buttonIconTooltipText(String buttonIconTooltipText) {
-        this.setButtonIconTooltipText(buttonIconTooltipText);
-        return this;
-    }
-    private String getButtonIconTooltipText() {
-        return this.buttonIconTooltipText;
-    }
-    private void setButtonIconTooltipText(String buttonIconTooltipText) {
-        this.buttonIconTooltipText = buttonIconTooltipText;
+        String getButtonIconTooltipText() {
+            return this.buttonIconTooltipText;
+        }
+        void setButtonIconTooltipText(String buttonIconTooltipText) {
+            this.buttonIconTooltipText = buttonIconTooltipText;
+        }
+
+        boolean isPrimary() {
+            return this.primary;
+        }
+        void setPrimary(boolean primary) {
+            this.primary = primary;
+        }
+
     }
 
     ComponentBuilder disableProperty(Property<Boolean> disableProperty) {
@@ -150,6 +146,22 @@ class ComponentBuilder {
     }
     private void setControl(Control control) {
         this.control = control;
+    }
+
+    ComponentBuilder button(boolean primary, String iconLocation, String iconTooltipText, EventHandler<ActionEvent> eventHandler) {
+        ButtonDefinition buttonDefinition = new ButtonDefinition();
+        buttonDefinition.setActionEventHandler(eventHandler);
+        buttonDefinition.setButtonIconLocation(iconLocation);
+        buttonDefinition.setButtonIconTooltipText(iconTooltipText);
+        buttonDefinition.setPrimary(primary);
+        this.getButtonDefinitions().add(buttonDefinition);
+        return this;
+    }
+    private List<ButtonDefinition> getButtonDefinitions() {
+        return this.buttonDefinitions;
+    }
+    private void setButtonDefinitions(List<ButtonDefinition> buttonDefinitions) {
+        this.buttonDefinitions = buttonDefinitions;
     }
 
 }

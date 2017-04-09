@@ -300,4 +300,8 @@ public interface Localization {
         return "Remove all images";
     }
 
+    default String clearAllValues() {
+        return "Clear all value";
+    }
+
 }

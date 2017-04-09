@@ -19,6 +19,7 @@ import org.jaudiotagger.tag.reference.GenreTypes;
 
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.handlers.batchupdate.ClearPropertyValuesActionEventHandler;
 import de.perdian.apps.tagtiger.fx.handlers.batchupdate.CopyPropertyValueActionEventHandler;
 import de.perdian.apps.tagtiger.fx.handlers.batchupdate.GenerateTrackCountActionEventHandler;
 import de.perdian.apps.tagtiger.fx.handlers.batchupdate.GenerateTrackNumberActionEventHandler;
@@ -50,104 +51,84 @@ public class CommonEditorTab extends Tab {
 
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(5, 5, 5, 5));
-        gridPane.setHgap(5);
+        gridPane.setHgap(10);
         gridPane.setVgap(5);
 
         gridPane.add(new Label(localization.title()), 0, currentRowIndex, 1, 1);
         gridPane.add(ComponentBuilder.create()
             .control(componentFactory.createTextField(TaggableFile::titleProperty))
             .disableProperty(disableProperty)
-            .actionEventHandler(new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::titleProperty, null))
-            .buttonIconLocation("icons/16/copy.png")
-            .buttonIconTooltipText(localization.copyToAllOtherSelectedFiles())
+            .button(true, "icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::titleProperty, null))
             .buildControlPane(), 1, currentRowIndex, 5, 1);
 
         gridPane.add(new Label(localization.artist()), 0, ++currentRowIndex, 1, 1);
         gridPane.add(ComponentBuilder.create()
             .control(componentFactory.createTextField(TaggableFile::artistProperty))
             .disableProperty(disableProperty)
-            .actionEventHandler(new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::artistProperty, null))
-            .buttonIconLocation("icons/16/copy.png")
-            .buttonIconTooltipText(localization.copyToAllOtherSelectedFiles())
+            .button(true, "icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::artistProperty, null))
             .buildControlPane(), 1, currentRowIndex, 5, 1);
 
         gridPane.add(new Label(localization.album()), 0, ++currentRowIndex, 1, 1);
         gridPane.add(ComponentBuilder.create()
             .control(componentFactory.createTextField(TaggableFile::albumProperty))
             .disableProperty(disableProperty)
-            .actionEventHandler(new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::albumProperty, null))
-            .buttonIconLocation("icons/16/copy.png")
-            .buttonIconTooltipText(localization.copyToAllOtherSelectedFiles())
+            .button(true, "icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::albumProperty, null))
             .buildControlPane(), 1, currentRowIndex, 3, 1);
         gridPane.add(new Label(localization.disc()), 4, currentRowIndex, 1, 1);
         gridPane.add(ComponentBuilder.create()
             .control(componentFactory.createNumericTextField(TaggableFile::discNumberProperty))
             .disableProperty(disableProperty)
-            .actionEventHandler(new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::discNumberProperty, null))
-            .buttonIconLocation("icons/16/copy.png")
-            .buttonIconTooltipText(localization.copyToAllOtherSelectedFiles())
+            .button(true, "icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::discNumberProperty, null))
             .buildControlPane(), 5, currentRowIndex, 1, 1);
 
         gridPane.add(new Label(localization.albumArtist()), 0, ++currentRowIndex, 1, 1);
         gridPane.add(ComponentBuilder.create()
             .control(componentFactory.createTextField(TaggableFile::albumArtistProperty))
             .disableProperty(disableProperty)
-            .actionEventHandler(new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::albumArtistProperty, null))
-            .buttonIconLocation("icons/16/copy.png")
-            .buttonIconTooltipText(localization.copyToAllOtherSelectedFiles())
+            .button(true, "icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::albumArtistProperty, null))
             .buildControlPane(), 1, currentRowIndex, 5, 1);
 
         gridPane.add(new Label(localization.year()), 0, ++currentRowIndex, 1, 1);
         gridPane.add(ComponentBuilder.create()
             .control(componentFactory.createNumericTextField(TaggableFile::yearProperty))
             .disableProperty(disableProperty)
-            .actionEventHandler(new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::yearProperty, null))
-            .buttonIconLocation("icons/16/copy.png")
-            .buttonIconTooltipText(localization.copyToAllOtherSelectedFiles())
+            .button(true, "icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::yearProperty, null))
             .buildControlPane(), 1, currentRowIndex, 1, 1);
 
         gridPane.add(new Label(localization.track()), 2, currentRowIndex, 1, 1);
         gridPane.add(ComponentBuilder.create()
             .control(componentFactory.createNumericTextField(TaggableFile::trackNumberProperty))
             .disableProperty(disableProperty)
-            .actionEventHandler(new GenerateTrackNumberActionEventHandler(this.currentFileProperty(), this.selectedFilesProperty()))
-            .buttonIconLocation("icons/16/create.png")
-            .buttonIconTooltipText(localization.enumerateTracks())
+            .button(true, "icons/16/create.png", localization.enumerateTracks(), new GenerateTrackNumberActionEventHandler(this.currentFileProperty(), this.selectedFilesProperty()))
+            .button(false, "icons/16/delete.png", localization.clearAllValues(), new ClearPropertyValuesActionEventHandler(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::trackNumberProperty))
             .buildControlPane(), 3, currentRowIndex, 1, 1);
         gridPane.add(new Label(localization.tracks()), 4, currentRowIndex, 1, 1);
         gridPane.add(ComponentBuilder.create()
             .control(componentFactory.createNumericTextField(TaggableFile::tracksTotalProperty))
             .disableProperty(disableProperty)
-            .actionEventHandler(new GenerateTrackCountActionEventHandler(this.currentFileProperty(), this.selectedFilesProperty()))
-            .buttonIconLocation("icons/16/create.png")
-            .buttonIconTooltipText(localization.countTracks())
+            .button(true, "icons/16/create.png", localization.countTracks(), new GenerateTrackCountActionEventHandler(this.currentFileProperty(), this.selectedFilesProperty()))
+            .button(false, "icons/16/delete.png", localization.clearAllValues(), new ClearPropertyValuesActionEventHandler(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::tracksTotalProperty))
             .buildControlPane(), 5, currentRowIndex, 1, 1);
 
         gridPane.add(new Label(localization.genre()), 0, ++currentRowIndex, 1, 1);
         gridPane.add(ComponentBuilder.create()
             .control(componentFactory.createSelectBox(TaggableFile::genreProperty, GenreTypes.getInstanceOf().getAlphabeticalValueList()))
             .disableProperty(disableProperty)
-            .actionEventHandler(new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::genreProperty, null))
-            .buttonIconLocation("icons/16/copy.png")
-            .buttonIconTooltipText(localization.copyToAllOtherSelectedFiles())
+            .button(true, "icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::genreProperty, null))
             .buildControlPane(), 1, currentRowIndex, 5, 1);
 
         gridPane.add(new Label(localization.comment()), 0, ++currentRowIndex, 1, 1);
         gridPane.add(ComponentBuilder.create()
             .control(componentFactory.createTextField(TaggableFile::commentProperty))
             .disableProperty(disableProperty)
-            .actionEventHandler(new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::commentProperty, null))
-            .buttonIconLocation("icons/16/copy.png")
-            .buttonIconTooltipText(localization.copyToAllOtherSelectedFiles())
+            .button(true, "icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::commentProperty, null))
             .buildControlPane(), 1, currentRowIndex, 5, 1);
 
         gridPane.add(new Label(localization.composer()), 0, ++currentRowIndex, 1, 1);
         gridPane.add(ComponentBuilder.create()
             .control(componentFactory.createTextField(TaggableFile::composerProperty))
             .disableProperty(disableProperty)
-            .actionEventHandler(new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::composerProperty, null))
-            .buttonIconLocation("icons/16/copy.png")
-            .buttonIconTooltipText(localization.copyToAllOtherSelectedFiles())
+            .button(true, "icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::composerProperty, null))
             .buildControlPane(), 1, currentRowIndex, 5, 1);
 
         this.setText(localization.common());

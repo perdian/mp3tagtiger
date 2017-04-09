@@ -75,6 +75,7 @@ public class EditorComponentFactory<T> {
                 Platform.runLater(() -> textField.selectAll());
             }
         });
+        textField.setMinWidth(50);
         textField.setPrefWidth(0);
         textField.textProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().get()).ifPresent(bean -> propertyFunction.apply(bean).setValue(newValue)));
         this.getControlCustomizers().forEach(consumer -> consumer.accept(textField));
