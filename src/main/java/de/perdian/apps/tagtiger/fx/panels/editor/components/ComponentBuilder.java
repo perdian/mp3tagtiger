@@ -79,7 +79,7 @@ class ComponentBuilder {
            if (buttonDefinition.isPrimary()) {
                this.getControl().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                    if (event.getCode() == KeyCode.ENTER && event.isControlDown()) {
-                       buttonDefinition.getActionEventHandler().handle(new ActionEvent(button, button));
+                       button.fire();
                    }
                });
            }
