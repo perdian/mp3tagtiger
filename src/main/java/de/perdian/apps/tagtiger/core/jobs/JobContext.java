@@ -15,23 +15,29 @@
  */
 package de.perdian.apps.tagtiger.core.jobs;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+public interface JobContext {
 
-public class JobContext {
+    public static final JobContext NULL_CONTEXT = new JobContext() {
 
-    private boolean cancelled = false;
-    private Job job = null;
-    private List<JobListener> listeners = null;
-    private long jobIndex = 0;
-    private AtomicLong jobCounter = null;
+        @Override
+        public void updateProgress(String message, Integer step, Integer totalSteps) {
+        }
 
-    JobContext(Job job, long jobIndex, AtomicLong jobCounter, List<JobListener> listeners) {
-        this.setJob(job);
-        this.setJobIndex(jobIndex);
-        this.setJobCounter(jobCounter);
-        this.setListeners(listeners);
-    }
+        @Override
+        public void updateProgress(String message) {
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return false;
+        }
+
+        @Override
+        public boolean isActive() {
+            return false;
+        }
+
+    };
 
     /**
      * Sends a progress information to the system telling everyone about the
@@ -40,9 +46,7 @@ public class JobContext {
      * @param message
      *     the message to be shown to the user
      */
-    public void updateProgress(String message) {
-        this.updateProgress(message, null, null);
-    }
+    public void updateProgress(String message);
 
     /**
      * Sends a progress information to the system telling everyone about the
@@ -55,57 +59,18 @@ public class JobContext {
      * @param totalSteps
      *     the total number of steps that this job is going to process
      */
-    public void updateProgress(String message, Integer step, Integer totalSteps) {
-        if(!this.isCancelled() && this.isActive()) {
-            this.getListeners().forEach(listener -> listener.jobProgress(this.getJob(), message, step, totalSteps));
-        }
-    }
+    public void updateProgress(String message, Integer step, Integer totalSteps);
 
     /**
      * Checks if the current job is active, meaning whether it has overall
      * control over the GUI and is the main job whose progress is being
      * displayed
      */
-    public boolean isActive() {
-        return this.getJobIndex() == this.getJobCounter().get();
-    }
+    public boolean isActive();
 
     /**
      * Checks if the job has been cancelled
      */
-    public boolean isCancelled() {
-        return this.cancelled;
-    }
-    void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
-    }
-
-    Job getJob() {
-        return this.job;
-    }
-    void setJob(Job job) {
-        this.job = job;
-    }
-
-    List<JobListener> getListeners() {
-        return this.listeners;
-    }
-    void setListeners(List<JobListener> listeners) {
-        this.listeners = listeners;
-    }
-
-    AtomicLong getJobCounter() {
-        return this.jobCounter;
-    }
-    void setJobCounter(AtomicLong jobCounter) {
-        this.jobCounter = jobCounter;
-    }
-
-    long getJobIndex() {
-        return this.jobIndex;
-    }
-    void setJobIndex(long jobIndex) {
-        this.jobIndex = jobIndex;
-    }
+    public boolean isCancelled();
 
 }

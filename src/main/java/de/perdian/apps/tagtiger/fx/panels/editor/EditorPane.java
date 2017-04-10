@@ -29,9 +29,12 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -42,10 +45,11 @@ public class EditorPane extends VBox {
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public EditorPane(Localization localization) {
+    public EditorPane(EventHandler<ActionEvent> saveEventHandler, Localization localization) {
 
         EditorComponentFactory<TaggableFile> componentFactory = new EditorComponentFactory<>(this.currentFileProperty());
         componentFactory.addControlCustomizer(component -> component.addEventHandler(KeyEvent.KEY_PRESSED, new ChangeCurrentFileEventHandler<>(this.currentFileProperty(), this.availableFilesProperty(), new ChangeCurrentFileEventHandler.KeyEventDirectionFunction())));
+        componentFactory.addControlCustomizer(component -> component.addEventHandler(KeyEvent.KEY_PRESSED, event -> this.handleKeyPressedEvent(event, saveEventHandler)));
 
         InformationEditorPane informationEditorPane = new InformationEditorPane(componentFactory, localization);
         informationEditorPane.currentFileProperty().bind(this.currentFileProperty());
@@ -76,6 +80,12 @@ public class EditorPane extends VBox {
         this.currentFileProperty().addListener((o, oldValue, newValue) -> Arrays.asList(informationEditorPane, taggingWrapperPane).forEach(pane -> pane.setDisable(newValue == null)));
         this.currentFileProperty().addListener((o, oldValue, newValue) -> imagesEditorPane.imagesProperty().set(newValue == null ? null : newValue.imagesProperty().getValue().getTagImages()));
 
+    }
+
+    private void handleKeyPressedEvent(KeyEvent event, EventHandler<ActionEvent> saveEventHandler) {
+        if (event.isMetaDown() && KeyCode.ENTER.equals(event.getCode())) {
+            saveEventHandler.handle(new ActionEvent(event.getSource(), event.getTarget()));
+        }
     }
 
     public ObjectProperty<TaggableFile> currentFileProperty() {

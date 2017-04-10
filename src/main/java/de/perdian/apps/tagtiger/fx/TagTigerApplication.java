@@ -21,6 +21,7 @@ import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.perdian.apps.tagtiger.core.jobs.JobContext;
 import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.jobs.listeners.DisableWhileJobRunningJobListener;
 import de.perdian.apps.tagtiger.core.localization.Localization;
@@ -39,6 +40,8 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener.Change;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -207,7 +210,10 @@ public class TagTigerApplication extends Application {
     }
 
     private Parent createEditorPane(Selection selection, JobExecutor jobExecutor, Localization localization) {
-        EditorPane editorPane = new EditorPane(localization);
+
+        EventHandler<ActionEvent> saveEventHandler = event -> new SaveChangedFilesInSelectionJob(selection, localization).execute(JobContext.NULL_CONTEXT);
+
+        EditorPane editorPane = new EditorPane(saveEventHandler, localization);
         editorPane.setMinWidth(400d);
         editorPane.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(editorPane, Priority.ALWAYS);
@@ -216,6 +222,7 @@ public class TagTigerApplication extends Application {
         Bindings.bindContent(editorPane.availableFilesProperty(), selection.availableFilesProperty());
         Bindings.bindContent(editorPane.selectedFilesProperty(), selection.selectedFilesProperty());
         return editorPane;
+
     }
 
 }

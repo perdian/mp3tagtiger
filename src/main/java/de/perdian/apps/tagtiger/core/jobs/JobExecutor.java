@@ -31,7 +31,7 @@ public class JobExecutor {
     private List<JobListener> listeners = new CopyOnWriteArrayList<>();
     private Executor executor = Executors.newCachedThreadPool();
     private AtomicLong jobCounter = new AtomicLong();
-    private JobContext currentJobContext = null;
+    private JobContextImpl currentJobContext = null;
 
     /**
      * Executes the given job with a separate thread. All registered listeners
@@ -48,7 +48,7 @@ public class JobExecutor {
         this.cancelCurrentJob();
 
         long jobIndex = this.getJobCounter().incrementAndGet();
-        JobContext jobContext = new JobContext(job, jobIndex, this.getJobCounter(), this.getListeners());
+        JobContextImpl jobContext = new JobContextImpl(job, jobIndex, this.getJobCounter(), this.getListeners());
         this.setCurrentJobContext(jobContext);
 
         log.trace("Executing job: {}", job);
@@ -100,10 +100,10 @@ public class JobExecutor {
         this.jobCounter = jobCounter;
     }
 
-    JobContext getCurrentJobContext() {
+    JobContextImpl getCurrentJobContext() {
         return this.currentJobContext;
     }
-    void setCurrentJobContext(JobContext currentJobContext) {
+    void setCurrentJobContext(JobContextImpl currentJobContext) {
         this.currentJobContext = currentJobContext;
     }
 
