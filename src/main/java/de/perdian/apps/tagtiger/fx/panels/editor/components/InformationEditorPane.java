@@ -17,9 +17,9 @@ package de.perdian.apps.tagtiger.fx.panels.editor.components;
 
 import java.util.List;
 
-import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.handlers.files.CopyPropertyValueAction;
+import de.perdian.apps.tagtiger.fx.localization.Localization;
 import de.perdian.apps.tagtiger.fx.panels.editor.support.ComponentBuilder;
 import de.perdian.apps.tagtiger.fx.util.EditorComponentFactory;
 import javafx.application.Platform;

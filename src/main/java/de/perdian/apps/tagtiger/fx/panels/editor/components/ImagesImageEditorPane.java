@@ -19,8 +19,8 @@ import java.util.Optional;
 
 import org.jaudiotagger.tag.reference.PictureTypes;
 
-import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TagImage;
+import de.perdian.apps.tagtiger.fx.localization.Localization;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.WeakChangeListener;

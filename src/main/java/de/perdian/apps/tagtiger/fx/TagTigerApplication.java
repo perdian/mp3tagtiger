@@ -20,18 +20,19 @@ import java.util.Collections;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import de.perdian.apps.tagtiger.core.jobs.JobContext;
 import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
-import de.perdian.apps.tagtiger.core.jobs.listeners.DisableWhileJobRunningJobListener;
-import de.perdian.apps.tagtiger.core.localization.Localization;
-import de.perdian.apps.tagtiger.core.messages.MessageDistributor;
 import de.perdian.apps.tagtiger.core.preferences.PreferencesKey;
 import de.perdian.apps.tagtiger.core.preferences.PreferencesLookup;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.handlers.others.DisableWhileJobRunningJobListener;
 import de.perdian.apps.tagtiger.fx.handlers.selection.DirectorySelectJob;
 import de.perdian.apps.tagtiger.fx.handlers.selection.SaveChangedFilesInSelectionJob;
+import de.perdian.apps.tagtiger.fx.localization.Localization;
+import de.perdian.apps.tagtiger.fx.messages.MessageDistributor;
 import de.perdian.apps.tagtiger.fx.panels.directories.DirectoryTreeView;
 import de.perdian.apps.tagtiger.fx.panels.editor.EditorPane;
 import de.perdian.apps.tagtiger.fx.panels.files.FileSelectionPane;
@@ -64,6 +65,11 @@ import javafx.stage.Stage;
 public class TagTigerApplication extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(TagTigerApplication.class);
+
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
 
     public static void main(String[] args) {
         log.info("Starting application");

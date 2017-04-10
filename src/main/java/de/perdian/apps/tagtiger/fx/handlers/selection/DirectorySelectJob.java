@@ -28,11 +28,11 @@ import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.tagtiger.core.jobs.Job;
 import de.perdian.apps.tagtiger.core.jobs.JobContext;
-import de.perdian.apps.tagtiger.core.localization.Localization;
-import de.perdian.apps.tagtiger.core.messages.Message;
-import de.perdian.apps.tagtiger.core.messages.MessageDistributor;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.localization.Localization;
+import de.perdian.apps.tagtiger.fx.messages.Message;
+import de.perdian.apps.tagtiger.fx.messages.MessageDistributor;
 
 /**
  * The job that is responsible for handling a selection that has been made upon

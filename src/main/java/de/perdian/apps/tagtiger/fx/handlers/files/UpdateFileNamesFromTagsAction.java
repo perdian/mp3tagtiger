@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 
-import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.localization.Localization;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;

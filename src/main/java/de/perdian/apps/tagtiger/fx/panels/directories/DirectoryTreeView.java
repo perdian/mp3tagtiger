@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.fx.localization.Localization;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ContextMenu;

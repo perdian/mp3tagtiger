@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.core.localization;
+package de.perdian.apps.tagtiger.fx.localization;
 
 /**
  * Interface to provide methods for accessing localized values

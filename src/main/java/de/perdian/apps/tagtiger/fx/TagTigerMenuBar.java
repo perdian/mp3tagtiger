@@ -15,9 +15,9 @@
  */
 package de.perdian.apps.tagtiger.fx;
 
-import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.handlers.files.UpdateFileNamesFromTagsAction;
+import de.perdian.apps.tagtiger.fx.localization.Localization;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;

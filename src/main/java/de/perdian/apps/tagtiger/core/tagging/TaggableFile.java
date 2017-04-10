@@ -23,7 +23,6 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -57,11 +56,6 @@ public class TaggableFile {
     private final StringProperty fileName = new SimpleStringProperty();
     private final StringProperty fileExtension = new SimpleStringProperty();
     private final BooleanProperty dirty = new SimpleBooleanProperty(false);
-
-    static {
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-    }
 
     public TaggableFile(File file) throws Exception {
 

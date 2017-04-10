@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.tagtiger.core.jobs.Job;
 import de.perdian.apps.tagtiger.core.jobs.JobContext;
-import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.localization.Localization;
 
 public class SaveChangedFilesInSelectionJob implements Job {
 

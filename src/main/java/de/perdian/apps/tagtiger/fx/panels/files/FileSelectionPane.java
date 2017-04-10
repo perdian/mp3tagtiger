@@ -15,8 +15,8 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.files;
 
-import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.localization.Localization;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.Property;

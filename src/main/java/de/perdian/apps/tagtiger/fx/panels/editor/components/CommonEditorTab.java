@@ -17,12 +17,12 @@ package de.perdian.apps.tagtiger.fx.panels.editor.components;
 
 import org.jaudiotagger.tag.reference.GenreTypes;
 
-import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.handlers.files.ClearPropertyValueAction;
 import de.perdian.apps.tagtiger.fx.handlers.files.CopyPropertyValueAction;
 import de.perdian.apps.tagtiger.fx.handlers.files.GenerateTrackCountAction;
 import de.perdian.apps.tagtiger.fx.handlers.files.GenerateTrackNumberAction;
+import de.perdian.apps.tagtiger.fx.localization.Localization;
 import de.perdian.apps.tagtiger.fx.panels.editor.support.ComponentBuilder;
 import de.perdian.apps.tagtiger.fx.util.EditorComponentFactory;
 import javafx.beans.property.BooleanProperty;
