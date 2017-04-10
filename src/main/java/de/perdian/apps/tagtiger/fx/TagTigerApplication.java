@@ -96,8 +96,8 @@ public class TagTigerApplication extends Application {
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.setTitle(localization.applicationTitle());
-        primaryStage.setWidth(1024);
-        primaryStage.setHeight(768);
+        primaryStage.setWidth(1200);
+        primaryStage.setHeight(800);
         primaryStage.show();
 
         log.info("Application start completed");
