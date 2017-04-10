@@ -25,7 +25,7 @@ import de.perdian.apps.tagtiger.core.tagging.TagImage;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.handlers.files.CopyPropertyValueAction;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -48,7 +48,7 @@ public class ImagesEditorTab extends Tab {
     private static final Logger log = LoggerFactory.getLogger(ImagesEditorTab.class);
 
     private final ListProperty<TagImage> images = new SimpleListProperty<>(FXCollections.observableArrayList());
-    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
+    private final Property<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public ImagesEditorTab(Localization localization) {
@@ -73,7 +73,7 @@ public class ImagesEditorTab extends Tab {
         addImageButton.setGraphic(new ImageView(new Image(ImagesEditorTab.class.getClassLoader().getResourceAsStream("icons/16/add.png"))));
         addImageButton.setTooltip(new Tooltip(localization.addImage()));
         addImageButton.setOnAction(event -> {
-            File tagFile = this.currentFileProperty().get().getFile();
+            File tagFile = this.currentFileProperty().getValue().getFile();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle(localization.openImage());
             fileChooser.setInitialDirectory(tagFile.getParentFile());
@@ -142,7 +142,7 @@ public class ImagesEditorTab extends Tab {
         return this.images;
     }
 
-    public ObjectProperty<TaggableFile> currentFileProperty() {
+    public Property<TaggableFile> currentFileProperty() {
         return this.currentFile;
     }
 

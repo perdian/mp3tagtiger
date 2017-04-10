@@ -22,7 +22,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -41,12 +40,12 @@ import javafx.scene.input.KeyEvent;
 
 public class EditorComponentFactory<T> {
 
-    private ObjectProperty<T> beanProperty = null;
+    private Property<T> beanProperty = null;
     private List<EditorComponentWrapper<T, ?>> componentWrappers = new ArrayList<>();
     private List<Consumer<Control>> controlCustomizers = new ArrayList<>();
     private List<Control> createdControls = new ArrayList<>();
 
-    public EditorComponentFactory(ObjectProperty<T> beanProperty) {
+    public EditorComponentFactory(Property<T> beanProperty) {
 
         this.setBeanProperty(beanProperty);
         this.setComponentWrappers(new ArrayList<>());
@@ -77,7 +76,7 @@ public class EditorComponentFactory<T> {
         });
         textField.setMinWidth(50);
         textField.setPrefWidth(0);
-        textField.textProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().get()).ifPresent(bean -> propertyFunction.apply(bean).setValue(newValue)));
+        textField.textProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().getValue()).ifPresent(bean -> propertyFunction.apply(bean).setValue(newValue)));
         this.getControlCustomizers().forEach(consumer -> consumer.accept(textField));
 
         EditorComponentWrapper<T, String> componentWrapper = new EditorComponentWrapper<>();
@@ -101,7 +100,7 @@ public class EditorComponentFactory<T> {
         comboBox.setPrefWidth(0);
         comboBox.setMaxWidth(Double.MAX_VALUE);
         comboBox.setEditable(true);
-        comboBox.valueProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().get()).ifPresent(bean -> propertyFunction.apply(bean).setValue(newValue)));
+        comboBox.valueProperty().addListener((o, oldValue, newValue) -> Optional.ofNullable(this.getBeanProperty().getValue()).ifPresent(bean -> propertyFunction.apply(bean).setValue(newValue)));
         comboBox.focusedProperty().addListener((o, oldValue, newValue) -> {
             Platform.runLater(() -> comboBox.getEditor().selectAll());
         });
@@ -159,10 +158,10 @@ public class EditorComponentFactory<T> {
         }
     }
 
-    private ObjectProperty<T> getBeanProperty() {
+    private Property<T> getBeanProperty() {
         return this.beanProperty;
     }
-    private void setBeanProperty(ObjectProperty<T> beanProperty) {
+    private void setBeanProperty(Property<T> beanProperty) {
         this.beanProperty = beanProperty;
     }
 

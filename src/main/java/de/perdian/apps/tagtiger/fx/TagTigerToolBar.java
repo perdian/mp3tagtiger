@@ -18,8 +18,12 @@ package de.perdian.apps.tagtiger.fx;
 import java.util.List;
 import java.util.Optional;
 
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.handlers.selection.ChangeCurrentFileDirection;
+import de.perdian.apps.tagtiger.fx.handlers.selection.ChangeCurrentFileEventHandler;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -32,17 +36,13 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import de.perdian.apps.tagtiger.core.localization.Localization;
-import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.selection.ChangeCurrentFileDirection;
-import de.perdian.apps.tagtiger.fx.handlers.selection.ChangeCurrentFileEventHandler;
 
 class TagTigerToolBar extends ToolBar {
 
-    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
+    private final Property<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> changedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
-    private final ObjectProperty<EventHandler<ActionEvent>> onSaveAction = new SimpleObjectProperty<>();
+    private final Property<EventHandler<ActionEvent>> onSaveAction = new SimpleObjectProperty<>();
 
     TagTigerToolBar(Localization localization) {
 
@@ -83,7 +83,7 @@ class TagTigerToolBar extends ToolBar {
     private void computeButtonStates(Button firstButton, Button prevButton, Button nextButton, Button lastButton) {
 
         List<TaggableFile> availableFiles = this.availableFilesProperty().get();
-        TaggableFile currentFile = this.currentFileProperty().get();
+        TaggableFile currentFile = this.currentFileProperty().getValue();
         int maxFiles = this.availableFilesProperty().get() == null ? 0 : this.availableFilesProperty().size();
         int currentFileIndex = currentFile == null || availableFiles == null ? -1 : availableFiles.indexOf(currentFile);
         firstButton.setDisable(maxFiles <= 1 || currentFileIndex <= 0);
@@ -94,16 +94,16 @@ class TagTigerToolBar extends ToolBar {
     }
 
     EventHandler<ActionEvent> getOnSaveAction() {
-        return this.onSaveActionProperty().get();
+        return this.onSaveActionProperty().getValue();
     }
     void setOnSaveAction(EventHandler<ActionEvent> eventHandler) {
-        this.onSaveActionProperty().set(eventHandler);
+        this.onSaveActionProperty().setValue(eventHandler);
     }
-    ObjectProperty<EventHandler<ActionEvent>> onSaveActionProperty() {
+    Property<EventHandler<ActionEvent>> onSaveActionProperty() {
         return this.onSaveAction;
     }
 
-    ObjectProperty<TaggableFile> currentFileProperty() {
+    Property<TaggableFile> currentFileProperty() {
         return this.currentFile;
     }
 

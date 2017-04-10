@@ -25,7 +25,7 @@ import de.perdian.apps.tagtiger.fx.panels.editor.components.ImagesEditorTab;
 import de.perdian.apps.tagtiger.fx.panels.editor.components.InformationEditorPane;
 import de.perdian.apps.tagtiger.fx.util.EditorComponentFactory;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -41,7 +41,7 @@ import javafx.scene.layout.VBox;
 
 public class EditorPane extends VBox {
 
-    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
+    private final Property<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
@@ -88,7 +88,7 @@ public class EditorPane extends VBox {
         }
     }
 
-    public ObjectProperty<TaggableFile> currentFileProperty() {
+    public Property<TaggableFile> currentFileProperty() {
         return this.currentFile;
     }
 

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.perdian.apps.tagtiger.core.localization.Localization;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -42,7 +42,7 @@ import javafx.scene.image.ImageView;
 
 public class DirectoryTreeView extends TreeView<Directory> {
 
-    private final ObjectProperty<File> selectedDirectory = new SimpleObjectProperty<>();
+    private final Property<File> selectedDirectory = new SimpleObjectProperty<>();
 
     public DirectoryTreeView(Localization localization) {
         this(new DirectoryTreeDefaultFileFilter(), localization);
@@ -131,7 +131,7 @@ public class DirectoryTreeView extends TreeView<Directory> {
 
     }
 
-    public ObjectProperty<File> selectedDirectoryProperty() {
+    public Property<File> selectedDirectoryProperty() {
         return this.selectedDirectory;
     }
 

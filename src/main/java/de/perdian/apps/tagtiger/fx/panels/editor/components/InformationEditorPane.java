@@ -25,7 +25,7 @@ import de.perdian.apps.tagtiger.fx.util.EditorComponentFactory;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -42,7 +42,7 @@ import javafx.scene.layout.Region;
 
 public class InformationEditorPane extends TitledPane {
 
-    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
+    private final Property<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
@@ -54,7 +54,7 @@ public class InformationEditorPane extends TitledPane {
         indexLabel.setPadding(new Insets(0, 5, 0, 0));
 
         this.currentFileProperty().addListener((o, oldValue, newValue) -> this.handleIndexLabelChange(indexLabel, newValue, this.availableFilesProperty().get()));
-        this.availableFilesProperty().addListener((o, oldValue, newValue) -> this.handleIndexLabelChange(indexLabel, this.currentFileProperty().get(), newValue));
+        this.availableFilesProperty().addListener((o, oldValue, newValue) -> this.handleIndexLabelChange(indexLabel, this.currentFileProperty().getValue(), newValue));
 
         TextField fileNameField = componentFactory.createTextField(TaggableFile::fileNameProperty);
         fileNameField.setMaxWidth(Double.MAX_VALUE);
@@ -99,7 +99,7 @@ public class InformationEditorPane extends TitledPane {
         Platform.runLater(() -> targetLabel.setText(targetLabelContent.toString()));
     }
 
-    public ObjectProperty<TaggableFile> currentFileProperty() {
+    public Property<TaggableFile> currentFileProperty() {
         return this.currentFile;
     }
 

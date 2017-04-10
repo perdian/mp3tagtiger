@@ -17,6 +17,10 @@ package de.perdian.apps.tagtiger.fx.panels.editor.components;
 
 import java.util.Optional;
 
+import org.jaudiotagger.tag.reference.PictureTypes;
+
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.tagging.TagImage;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.WeakChangeListener;
@@ -35,11 +39,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
-import org.jaudiotagger.tag.reference.PictureTypes;
-
-import de.perdian.apps.tagtiger.core.localization.Localization;
-import de.perdian.apps.tagtiger.core.tagging.TagImage;
-
 class ImagesImageEditorPane extends HBox {
 
     private final BooleanProperty changed = new SimpleBooleanProperty();
@@ -47,7 +46,7 @@ class ImagesImageEditorPane extends HBox {
 
     ImagesImageEditorPane(TagImage image, Localization localization) {
 
-        ImageView imageView = new ImageView(image.imageProperty().get());
+        ImageView imageView = new ImageView(image.imageProperty().getValue());
         imageView.setFitWidth(150);
         imageView.setPreserveRatio(true);
         this.getChildren().add(imageView);

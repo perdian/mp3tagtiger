@@ -17,8 +17,11 @@ package de.perdian.apps.tagtiger.fx.panels.status;
 
 import java.util.Optional;
 
+import de.perdian.apps.tagtiger.core.jobs.Job;
+import de.perdian.apps.tagtiger.core.jobs.JobListener;
+import de.perdian.apps.tagtiger.core.localization.Localization;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -29,13 +32,10 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.TextAlignment;
-import de.perdian.apps.tagtiger.core.jobs.Job;
-import de.perdian.apps.tagtiger.core.jobs.JobListener;
-import de.perdian.apps.tagtiger.core.localization.Localization;
 
 public class StatusPane extends HBox implements JobListener {
 
-    private final ObjectProperty<EventHandler<ActionEvent>> onCancelAction = new SimpleObjectProperty<>();
+    private final Property<EventHandler<ActionEvent>> onCancelAction = new SimpleObjectProperty<>();
     private Label statusLabel = null;
     private ProgressBar progressBar = null;
     private Button cancelButton = null;
@@ -60,7 +60,7 @@ public class StatusPane extends HBox implements JobListener {
         cancelButton.setMaxHeight(Double.MAX_VALUE);
         cancelButton.setOnAction(event -> {
             cancelButton.setDisable(true);
-            Optional.ofNullable(this.onCancelActionProperty().get()).ifPresent(action -> action.handle(event));
+            Optional.ofNullable(this.onCancelActionProperty().getValue()).ifPresent(action -> action.handle(event));
         });
         this.setCancelButton(cancelButton);
 
@@ -103,14 +103,14 @@ public class StatusPane extends HBox implements JobListener {
         }
     }
 
-    public ObjectProperty<EventHandler<ActionEvent>> onCancelActionProperty() {
+    public Property<EventHandler<ActionEvent>> onCancelActionProperty() {
         return this.onCancelAction;
     }
     public EventHandler<ActionEvent> getOnCancelAction() {
-        return this.onCancelActionProperty().get();
+        return this.onCancelActionProperty().getValue();
     }
     public void setOnCancelAction(EventHandler<ActionEvent> action) {
-        this.onCancelActionProperty().set(action);
+        this.onCancelActionProperty().setValue(action);
     }
 
     private Label getStatusLabel() {

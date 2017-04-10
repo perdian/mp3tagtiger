@@ -15,17 +15,17 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.files;
 
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import de.perdian.apps.tagtiger.core.localization.Localization;
-import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 
 /**
  * Displays a list of selected files that are in use by the user
@@ -37,14 +37,14 @@ public class FileSelectionPane extends VBox {
 
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
-    private final ObjectProperty<TaggableFile> selectedFile = new SimpleObjectProperty<>();
+    private final Property<TaggableFile> selectedFile = new SimpleObjectProperty<>();
 
     public FileSelectionPane(Localization localization) {
 
         FileSelectionTableView filesTable = new FileSelectionTableView(localization);
         filesTable.itemsProperty().bind(this.availableFilesProperty());
         filesTable.getSelectionModel().getSelectedItems().addListener((Change<? extends TaggableFile> change) -> this.selectedFilesProperty().setAll(change.getList()));
-        filesTable.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.selectedFileProperty().set(newValue));
+        filesTable.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.selectedFileProperty().setValue(newValue));
         VBox.setVgrow(filesTable, Priority.ALWAYS);
 
         this.getChildren().addAll(filesTable);
@@ -71,7 +71,7 @@ public class FileSelectionPane extends VBox {
         return this.selectedFiles;
     }
 
-    public ObjectProperty<TaggableFile> selectedFileProperty() {
+    public Property<TaggableFile> selectedFileProperty() {
         return this.selectedFile;
     }
 

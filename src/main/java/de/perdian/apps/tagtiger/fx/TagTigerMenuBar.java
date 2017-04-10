@@ -19,7 +19,7 @@ import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.handlers.files.UpdateFileNamesFromTagsAction;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -32,7 +32,7 @@ import javafx.scene.image.ImageView;
 
 class TagTigerMenuBar extends MenuBar {
 
-    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
+    private final Property<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
@@ -52,7 +52,7 @@ class TagTigerMenuBar extends MenuBar {
 
     }
 
-    ObjectProperty<TaggableFile> currentFileProperty() {
+    Property<TaggableFile> currentFileProperty() {
         return this.currentFile;
     }
 

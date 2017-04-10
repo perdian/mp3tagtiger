@@ -162,7 +162,7 @@ public class TagTigerApplication extends Application {
         fileSelectionPane.setMinWidth(175d);
         fileSelectionPane.availableFilesProperty().bindBidirectional(selection.availableFilesProperty());
         fileSelectionPane.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> selection.selectedFilesProperty().setAll(change.getList()));
-        fileSelectionPane.selectedFileProperty().addListener((o, oldValue, newValue) -> selection.currentFileProperty().set(newValue));
+        fileSelectionPane.selectedFileProperty().addListener((o, oldValue, newValue) -> selection.currentFileProperty().setValue(newValue));
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().add(directoryTreeView);
@@ -176,7 +176,7 @@ public class TagTigerApplication extends Application {
         selectionPane.setMinWidth(400d);
         selectionPane.setPrefWidth(400d);
 
-        selection.currentFileProperty().addListener((o, oldValue, newValue) -> fileSelectionPane.selectedFileProperty().set(newValue));
+        selection.currentFileProperty().addListener((o, oldValue, newValue) -> fileSelectionPane.selectedFileProperty().setValue(newValue));
         selection.currentDirectoryProperty().addListener((o, oldValue, newValue) -> directoryTreeView.selectDirectory(newValue));
 
         // Add listeners to connect the GUI components with the underlying

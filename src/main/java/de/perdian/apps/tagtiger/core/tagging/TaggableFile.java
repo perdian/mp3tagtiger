@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -52,7 +52,7 @@ public class TaggableFile {
     private final StringProperty genre = new SimpleStringProperty();
     private final StringProperty comment = new SimpleStringProperty();
     private final StringProperty composer = new SimpleStringProperty();
-    private final ObjectProperty<TagImageList> images = new SimpleObjectProperty<>();
+    private final Property<TagImageList> images = new SimpleObjectProperty<>();
 
     private final StringProperty fileName = new SimpleStringProperty();
     private final StringProperty fileExtension = new SimpleStringProperty();
@@ -199,7 +199,7 @@ public class TaggableFile {
     public StringProperty composerProperty() {
         return this.composer;
     }
-    public ObjectProperty<TagImageList> imagesProperty() {
+    public Property<TagImageList> imagesProperty() {
         return this.images;
     }
 

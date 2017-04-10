@@ -24,9 +24,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.imageio.ImageIO;
+
+import org.jaudiotagger.tag.datatype.Artwork;
+import org.jaudiotagger.tag.reference.PictureTypes;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -34,11 +39,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-
-import javax.imageio.ImageIO;
-
-import org.jaudiotagger.tag.datatype.Artwork;
-import org.jaudiotagger.tag.reference.PictureTypes;
 
 /**
  * Represents an image that is saved within a tag
@@ -49,7 +49,7 @@ import org.jaudiotagger.tag.reference.PictureTypes;
 public class TagImage {
 
     private Artwork artwork = null;
-    private final ObjectProperty<Image> image = new SimpleObjectProperty<>();
+    private final Property<Image> image = new SimpleObjectProperty<>();
     private final IntegerProperty imageSize = new SimpleIntegerProperty();
     private final StringProperty pictureType = new SimpleStringProperty();
     private final StringProperty description = new SimpleStringProperty();
@@ -61,7 +61,7 @@ public class TagImage {
 
     public TagImage(Artwork artwork) throws IOException {
         this.setArtwork(artwork);
-        this.imageProperty().set(new Image(new ByteArrayInputStream(artwork.getBinaryData())));
+        this.imageProperty().setValue(new Image(new ByteArrayInputStream(artwork.getBinaryData())));
         this.imageSizeProperty().set(artwork.getBinaryData().length);
         this.pictureTypeProperty().set(PictureTypes.getInstanceOf().getValueForId(artwork.getPictureType()));
         this.descriptionProperty().set(artwork.getDescription());
@@ -71,7 +71,7 @@ public class TagImage {
     public TagImage(File imageFile) throws Exception {
         try (InputStream imageFileStream = new BufferedInputStream(new FileInputStream(imageFile))) {
             Image image = new Image(imageFileStream);
-            this.imageProperty().set(image);
+            this.imageProperty().setValue(image);
             this.imageSizeProperty().set((int)imageFile.length());
             this.descriptionProperty().set(imageFile.getName());
             this.pictureTypeProperty().set(PictureTypes.DEFAULT_VALUE);
@@ -85,11 +85,11 @@ public class TagImage {
     }
 
     public Artwork toArtwork() throws IOException {
-        if (this.imageProperty().get() == null) {
+        if (this.imageProperty().getValue() == null) {
             return null;
         } else {
 
-            BufferedImage awtImage = SwingFXUtils.fromFXImage(this.imageProperty().get(), null);
+            BufferedImage awtImage = SwingFXUtils.fromFXImage(this.imageProperty().getValue(), null);
             ByteArrayOutputStream imageOutStream = new ByteArrayOutputStream();
             ImageIO.write(awtImage, "png", imageOutStream);
 
@@ -119,7 +119,7 @@ public class TagImage {
         this.artwork = artwork;
     }
 
-    public ObjectProperty<Image> imageProperty() {
+    public Property<Image> imageProperty() {
         return this.image;
     }
 

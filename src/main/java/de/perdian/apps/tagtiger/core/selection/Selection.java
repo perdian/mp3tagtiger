@@ -19,7 +19,7 @@ import java.io.File;
 
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -32,8 +32,8 @@ import javafx.collections.FXCollections;
 
 public class Selection {
 
-    private final ObjectProperty<File> currentDirectory = new SimpleObjectProperty<>();
-    private final ObjectProperty<TaggableFile> currentFile = new SimpleObjectProperty<>();
+    private final Property<File> currentDirectory = new SimpleObjectProperty<>();
+    private final Property<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> changedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -42,11 +42,11 @@ public class Selection {
         this.availableFilesProperty().addListener((o, oldValue, newValue) -> this.changedFilesProperty().clear());
     }
 
-    public ObjectProperty<File> currentDirectoryProperty() {
+    public Property<File> currentDirectoryProperty() {
         return this.currentDirectory;
     }
 
-    public ObjectProperty<TaggableFile> currentFileProperty() {
+    public Property<TaggableFile> currentFileProperty() {
         return this.currentFile;
     }
 
