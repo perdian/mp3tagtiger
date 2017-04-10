@@ -17,6 +17,14 @@ package de.perdian.apps.tagtiger.fx.panels.editor;
 
 import java.util.Arrays;
 
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.selection.Selection;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.handlers.selection.ChangeCurrentFileEventHandler;
+import de.perdian.apps.tagtiger.fx.panels.editor.components.CommonEditorTab;
+import de.perdian.apps.tagtiger.fx.panels.editor.components.ImagesEditorTab;
+import de.perdian.apps.tagtiger.fx.panels.editor.components.InformationEditorPane;
+import de.perdian.apps.tagtiger.fx.util.EditorComponentFactory;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -28,13 +36,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import de.perdian.apps.tagtiger.core.localization.Localization;
-import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.selection.ChangeCurrentFileEventHandler;
-import de.perdian.apps.tagtiger.fx.panels.editor.components.CommonEditorTab;
-import de.perdian.apps.tagtiger.fx.panels.editor.components.ImagesEditorTab;
-import de.perdian.apps.tagtiger.fx.panels.editor.components.InformationEditorPane;
-import de.perdian.apps.tagtiger.fx.util.EditorComponentFactory;
 
 public class EditorPane extends VBox {
 
@@ -42,7 +43,7 @@ public class EditorPane extends VBox {
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public EditorPane(Localization localization) {
+    public EditorPane(Selection selection, Localization localization) {
 
         EditorComponentFactory<TaggableFile> componentFactory = new EditorComponentFactory<>(this.currentFileProperty());
         componentFactory.addControlCustomizer(component -> component.addEventHandler(KeyEvent.KEY_PRESSED, new ChangeCurrentFileEventHandler<>(this.currentFileProperty(), this.availableFilesProperty(), new ChangeCurrentFileEventHandler.KeyEventDirectionFunction())));
@@ -52,9 +53,10 @@ public class EditorPane extends VBox {
         informationEditorPane.selectedFilesProperty().bind(this.selectedFilesProperty());
         informationEditorPane.availableFilesProperty().bind(this.availableFilesProperty());
 
-        CommonEditorTab commonEditorTab = new CommonEditorTab(componentFactory, localization);
+        CommonEditorTab commonEditorTab = new CommonEditorTab(componentFactory, selection, localization);
         commonEditorTab.currentFileProperty().bind(this.currentFileProperty());
         commonEditorTab.selectedFilesProperty().bind(this.selectedFilesProperty());
+        commonEditorTab.availableFilesProperty().bind(this.availableFilesProperty());
 
         ImagesEditorTab imagesEditorPane = new ImagesEditorTab(localization);
         imagesEditorPane.currentFileProperty().bind(this.currentFileProperty());

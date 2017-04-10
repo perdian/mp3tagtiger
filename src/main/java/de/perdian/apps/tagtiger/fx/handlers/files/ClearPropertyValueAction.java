@@ -13,30 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.handlers.batchupdate;
+package de.perdian.apps.tagtiger.fx.handlers.files;
 
 import java.util.function.Function;
 
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import javafx.beans.property.Property;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 
-public class ClearPropertyValuesActionEventHandler extends AbstractActionEventHandler {
+public class ClearPropertyValueAction extends AbstractTraversalAction {
 
     private Function<TaggableFile, Property<?>> propertyFunction = null;
 
-    public ClearPropertyValuesActionEventHandler(Property<TaggableFile> currentFileProperty, ObservableList<TaggableFile> otherFiles, Function<TaggableFile, Property<?>> propertyFunction) {
-        super(currentFileProperty, otherFiles);
+    public ClearPropertyValueAction(Function<TaggableFile, Property<?>> propertyFunction) {
         this.setPropertyFunction(propertyFunction);
     }
 
     @Override
-    public void handle(ActionEvent event) {
-        this.getOtherFiles().stream()
-        .forEach(otherFile-> {
-            this.getPropertyFunction().apply(otherFile).setValue(null);
-        });
+    protected void executeForFile(TaggableFile sourceFile, TaggableFile targetFile) {
+        Property<?> targetFileProperty = this.getPropertyFunction().apply(targetFile);
+        if (targetFileProperty.getValue() != null) {
+            targetFileProperty.setValue(null);
+        }
     }
 
     private Function<TaggableFile, Property<?>> getPropertyFunction() {

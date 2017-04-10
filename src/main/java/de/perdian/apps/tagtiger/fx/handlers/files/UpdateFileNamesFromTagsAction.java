@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.handlers.batchupdate;
+package de.perdian.apps.tagtiger.fx.handlers.files;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,17 +56,17 @@ import javafx.stage.Stage;
  * @author Christian Robert
  */
 
-public class UpdateFileNamesFromTagsActionEventHandler extends AbstractDialogActionEventHandler {
+public class UpdateFileNamesFromTagsAction extends AbstractDialogAction {
 
-    public UpdateFileNamesFromTagsActionEventHandler(Property<TaggableFile> currentFile, ObservableList<TaggableFile> otherFiles, Localization localization) {
-        super(currentFile, otherFiles, localization);
+    public UpdateFileNamesFromTagsAction(Localization localization) {
+        super(localization);
     }
 
     @Override
     @SuppressWarnings("unused")
-    protected BatchUpdateDialog createDialog() {
+    protected BatchUpdateDialog createDialog(Property<TaggableFile> sourceFileProperty, ObservableList<TaggableFile> targetFiles) {
 
-        ObservableList<UpdateFileNamesFromTagsItem> items = FXCollections.observableArrayList(this.getOtherFiles().stream().map(UpdateFileNamesFromTagsItem::new).collect(Collectors.toList()));
+        ObservableList<UpdateFileNamesFromTagsItem> items = FXCollections.observableArrayList(targetFiles.stream().map(UpdateFileNamesFromTagsItem::new).collect(Collectors.toList()));
         StringProperty patternFieldProperty = new SimpleStringProperty();
 
         List<String> patternItems = Arrays.asList("${track} ${title}");
@@ -76,7 +76,7 @@ public class UpdateFileNamesFromTagsActionEventHandler extends AbstractDialogAct
         Bindings.bindBidirectional(patternFieldProperty, patternBox.editorProperty().get().textProperty());
         HBox.setHgrow(patternBox, Priority.ALWAYS);
 
-        Button executeButton = new Button(this.getLocalization().executeRename(), new ImageView(new Image(UpdateFileNamesFromTagsActionEventHandler.class.getClassLoader().getResourceAsStream("icons/16/save.png"))));
+        Button executeButton = new Button(this.getLocalization().executeRename(), new ImageView(new Image(UpdateFileNamesFromTagsAction.class.getClassLoader().getResourceAsStream("icons/16/save.png"))));
         executeButton.setDisable(true);
         patternFieldProperty.addListener((o, oldValue, newValue) -> executeButton.setDisable(newValue.length() <= 0));
 
@@ -100,7 +100,7 @@ public class UpdateFileNamesFromTagsActionEventHandler extends AbstractDialogAct
         dialog.setLegendPane(this.createLegendPane());
 
         // Add listeners
-        this.getOtherFiles().addListener(new WeakListChangeListener<TaggableFile>((Change<? extends TaggableFile> change) -> items.setAll(change.getList().stream().map(UpdateFileNamesFromTagsItem::new).collect(Collectors.toList()))));
+        targetFiles.addListener(new WeakListChangeListener<TaggableFile>((Change<? extends TaggableFile> change) -> items.setAll(change.getList().stream().map(UpdateFileNamesFromTagsItem::new).collect(Collectors.toList()))));
         patternFieldProperty.addListener((o, oldValue, newValue) -> this.computeNewFileNames(items, newValue));
         executeButton.setOnAction(event -> {
             this.updateNewFileNames(items);

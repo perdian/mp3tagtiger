@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.handlers.batchupdate;
+package de.perdian.apps.tagtiger.fx.handlers.files;
 
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import de.perdian.apps.tagtiger.core.localization.Localization;
-import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 
 /**
  * Shows a dialog to update a specific set of files
@@ -33,19 +32,18 @@ import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
  * @author Christian Robert
  */
 
-public abstract class AbstractDialogActionEventHandler extends AbstractActionEventHandler {
+public abstract class AbstractDialogAction implements Action {
 
     private Localization localization = null;
 
-    public AbstractDialogActionEventHandler(Property<TaggableFile> currentFile, ObservableList<TaggableFile> otherFiles, Localization localization) {
-        super(currentFile, otherFiles);
+    public AbstractDialogAction(Localization localization) {
         this.setLocalization(localization);
     }
 
     @Override
-    public void handle(ActionEvent event) {
+    public void execute(Property<TaggableFile> sourceFileProperty, ObservableList<TaggableFile> targetFiles) {
 
-        BatchUpdateDialog dialog = this.createDialog();
+        BatchUpdateDialog dialog = this.createDialog(sourceFileProperty, targetFiles);
 
         VBox contentPane = new VBox(10);
         contentPane.setPadding(new Insets(10, 10, 10, 10));
@@ -62,7 +60,7 @@ public abstract class AbstractDialogActionEventHandler extends AbstractActionEve
 
     }
 
-    protected abstract BatchUpdateDialog createDialog();
+    protected abstract BatchUpdateDialog createDialog(Property<TaggableFile> sourceFileProperty, ObservableList<TaggableFile> targetFiles);
 
     public static class BatchUpdateDialog {
 

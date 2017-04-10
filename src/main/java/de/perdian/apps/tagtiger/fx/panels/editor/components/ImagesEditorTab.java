@@ -17,6 +17,13 @@ package de.perdian.apps.tagtiger.fx.panels.editor.components;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.perdian.apps.tagtiger.core.localization.Localization;
+import de.perdian.apps.tagtiger.core.tagging.TagImage;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.handlers.files.CopyPropertyValueAction;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -36,14 +43,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.perdian.apps.tagtiger.core.localization.Localization;
-import de.perdian.apps.tagtiger.core.tagging.TagImage;
-import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.CopyPropertyValueActionEventHandler;
-
 public class ImagesEditorTab extends Tab {
 
     private static final Logger log = LoggerFactory.getLogger(ImagesEditorTab.class);
@@ -60,7 +59,7 @@ public class ImagesEditorTab extends Tab {
 
         Button copyImagesButton = new Button(localization.copyImages());
         copyImagesButton.setGraphic(new ImageView(new Image(ImagesEditorTab.class.getClassLoader().getResourceAsStream("icons/16/copy.png"))));
-        copyImagesButton.setOnAction(new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::imagesProperty, new CopyPropertyValueActionEventHandler.CopyImagesPropertyConsumer()));
+        copyImagesButton.setOnAction(new CopyPropertyValueAction<>(TaggableFile::imagesProperty, (targetProperty, targetValue) -> targetProperty.getValue().updateTagImages(targetValue.getTagImages())).asEventHandler(this.currentFileProperty(), this.selectedFilesProperty()));
         copyImagesButton.setTooltip(new Tooltip(localization.copyImagesToOtherFiles()));
 
         Button removeImagesButton = new Button(localization.clearImages());

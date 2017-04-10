@@ -208,7 +208,7 @@ public class TagTigerApplication extends Application {
     }
 
     private Parent createEditorPane(Selection selection, JobExecutor jobExecutor, Localization localization) {
-        EditorPane editorPane = new EditorPane(localization);
+        EditorPane editorPane = new EditorPane(selection, localization);
         editorPane.setMinWidth(400d);
         editorPane.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(editorPane, Priority.ALWAYS);

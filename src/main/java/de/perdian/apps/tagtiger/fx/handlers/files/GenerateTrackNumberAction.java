@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.handlers.batchupdate;
+package de.perdian.apps.tagtiger.fx.handlers.files;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 
 /**
  * Generates the track index from the position of a file within the list of
@@ -29,16 +28,12 @@ import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
  * @author Christian Robert
  */
 
-public class GenerateTrackNumberActionEventHandler extends AbstractActionEventHandler {
-
-    public GenerateTrackNumberActionEventHandler(Property<TaggableFile> currentFileProperty, ObservableList<TaggableFile> otherFiles) {
-        super(currentFileProperty, otherFiles);
-    }
+public class GenerateTrackNumberAction implements Action {
 
     @Override
-    public void handle(ActionEvent event) {
+    public void execute(Property<TaggableFile> sourceFileProperty, ObservableList<TaggableFile> targetFiles) {
         AtomicInteger counter = new AtomicInteger(1);
-        this.getOtherFiles().forEach(file -> file.trackNumberProperty().setValue(String.valueOf(counter.getAndIncrement())));
+        targetFiles.forEach(file -> file.trackNumberProperty().setValue(String.valueOf(counter.getAndIncrement())));
     }
 
 }

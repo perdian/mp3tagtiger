@@ -19,7 +19,8 @@ import java.util.List;
 
 import de.perdian.apps.tagtiger.core.localization.Localization;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.batchupdate.CopyPropertyValueActionEventHandler;
+import de.perdian.apps.tagtiger.fx.handlers.files.CopyPropertyValueAction;
+import de.perdian.apps.tagtiger.fx.panels.editor.support.ComponentBuilder;
 import de.perdian.apps.tagtiger.fx.util.EditorComponentFactory;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -64,10 +65,10 @@ public class InformationEditorPane extends TitledPane {
 
         Label fileExtensionLabel = new Label(".");
         fileExtensionLabel.setPadding(new Insets(0, 2, 0, 2));
-        Pane fileExtensionFieldWrapper = ComponentBuilder.create()
+        Pane fileExtensionFieldWrapper = ComponentBuilder.create(this.currentFileProperty(), this.selectedFilesProperty(), this.availableFilesProperty())
             .control(componentFactory.createTextField(TaggableFile::fileExtensionProperty))
-            .disableProperty(disableProperty)
-            .button(true, "icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), new CopyPropertyValueActionEventHandler<>(this.currentFileProperty(), this.selectedFilesProperty(), TaggableFile::fileExtensionProperty, null))
+            .actionsDisabledProperty(disableProperty)
+            .primaryAction("icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), new CopyPropertyValueAction<>(TaggableFile::fileExtensionProperty))
             .buildControlPane();
         fileExtensionFieldWrapper.setPrefWidth(90);
         GridPane.setHgrow(fileExtensionFieldWrapper, Priority.NEVER);

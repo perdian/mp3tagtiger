@@ -16,6 +16,9 @@
 package de.perdian.apps.tagtiger.core.selection;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -40,6 +43,16 @@ public class Selection {
 
     public Selection() {
         this.availableFilesProperty().addListener((o, oldValue, newValue) -> this.changedFilesProperty().clear());
+    }
+
+    /**
+     * Select all files within the currently selected directory
+     */
+    public void selectAllFilesInDirectory() {
+
+        List<TaggableFile> allFilesInDirectory = this.availableFilesProperty().get();
+        this.selectedFilesProperty().setAll(Optional.ofNullable(allFilesInDirectory).orElseGet(Collections::emptyList));
+
     }
 
     public ObjectProperty<File> currentDirectoryProperty() {

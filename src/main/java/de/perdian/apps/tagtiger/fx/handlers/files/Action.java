@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Christian Robert
+ * Copyright 2014-2017 Christian Robert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.handlers.batchupdate;
+package de.perdian.apps.tagtiger.fx.handlers.files;
 
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import javafx.event.EventHandler;
 
-public class GenerateTrackCountActionEventHandler extends AbstractActionEventHandler {
+public interface Action {
 
-    public GenerateTrackCountActionEventHandler(Property<TaggableFile> currentFileProperty, ObservableList<TaggableFile> otherFiles) {
-        super(currentFileProperty, otherFiles);
-    }
+    void execute(Property<TaggableFile> sourceFileProperty, ObservableList<TaggableFile> targetFiles);
 
-    @Override
-    public void handle(ActionEvent event) {
-        this.getOtherFiles().forEach(file -> file.tracksTotalProperty().setValue(String.valueOf(this.getOtherFiles().size())));
+    default EventHandler<ActionEvent> asEventHandler(Property<TaggableFile> sourceFileProperty, ObservableList<TaggableFile> targetFiles) {
+        return event -> this.execute(sourceFileProperty, targetFiles);
     }
 
 }
