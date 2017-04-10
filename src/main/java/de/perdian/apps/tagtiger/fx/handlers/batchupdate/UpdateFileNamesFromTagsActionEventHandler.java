@@ -162,10 +162,6 @@ public class UpdateFileNamesFromTagsActionEventHandler extends AbstractDialogAct
 
     }
 
-    // -------------------------------------------------------------------------
-    // --- Action handling -----------------------------------------------------
-    // -------------------------------------------------------------------------
-
     private void computeNewFileNames(List<UpdateFileNamesFromTagsItem> items, String fileNamePattern) {
         for (UpdateFileNamesFromTagsItem item : items) {
 

@@ -43,10 +43,6 @@ public class PreferencesLookup {
         return this.getProperties().getProperty(key, defaultValue);
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     Properties getProperties() {
         return this.properties;
     }

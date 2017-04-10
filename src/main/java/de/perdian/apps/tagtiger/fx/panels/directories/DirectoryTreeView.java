@@ -131,10 +131,6 @@ public class DirectoryTreeView extends TreeView<Directory> {
 
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     public ObjectProperty<File> selectedDirectoryProperty() {
         return this.selectedDirectory;
     }

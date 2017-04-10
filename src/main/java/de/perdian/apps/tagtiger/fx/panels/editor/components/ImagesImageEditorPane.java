@@ -86,10 +86,6 @@ class ImagesImageEditorPane extends HBox {
 
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     BooleanProperty changedProperty() {
         return this.changed;
     }

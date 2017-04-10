@@ -98,10 +98,6 @@ public class InformationEditorPane extends TitledPane {
         Platform.runLater(() -> targetLabel.setText(targetLabelContent.toString()));
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     public ObjectProperty<TaggableFile> currentFileProperty() {
         return this.currentFile;
     }

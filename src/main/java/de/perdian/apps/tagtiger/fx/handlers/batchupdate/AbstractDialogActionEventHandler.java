@@ -64,20 +64,12 @@ public abstract class AbstractDialogActionEventHandler extends AbstractActionEve
 
     protected abstract BatchUpdateDialog createDialog();
 
-    // -------------------------------------------------------------------------
-    // --- Inner classes -------------------------------------------------------
-    // -------------------------------------------------------------------------
-
     public static class BatchUpdateDialog {
 
         private int dialogPrefWidth = 500;
         private String dialogTitle = null;
         private Parent actionPane = null;
         private Parent legendPane = null;
-
-        // -------------------------------------------------------------------------
-        // --- Property access methods ---------------------------------------------
-        // -------------------------------------------------------------------------
 
         public String getDialogTitle() {
             return this.dialogTitle;
@@ -108,10 +100,6 @@ public abstract class AbstractDialogActionEventHandler extends AbstractActionEve
         }
 
     }
-
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
 
     protected Localization getLocalization() {
         return this.localization;

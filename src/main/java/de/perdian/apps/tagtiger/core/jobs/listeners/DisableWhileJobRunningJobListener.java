@@ -40,10 +40,6 @@ public class DisableWhileJobRunningJobListener implements JobListener {
         }
     }
 
-    // ---------------------------------------------------------------------
-    // --- Property access methods -----------------------------------------
-    // ---------------------------------------------------------------------
-
     private Property<Boolean> getDisableProperty() {
         return this.disableProperty;
     }

@@ -112,10 +112,6 @@ public class TagImage {
         return result.append("]").toString();
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     public Artwork getArtwork() {
         return this.artwork;
     }

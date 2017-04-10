@@ -38,10 +38,6 @@ public class MessageDistributor {
         this.getConsumers().forEach(consumer -> consumer.accept(message));
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     public void addConsumer(Consumer<Message> consumer) {
         this.getConsumers().add(consumer);
     }

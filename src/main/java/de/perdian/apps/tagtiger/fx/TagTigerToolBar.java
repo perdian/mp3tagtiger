@@ -93,10 +93,6 @@ class TagTigerToolBar extends ToolBar {
 
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     EventHandler<ActionEvent> getOnSaveAction() {
         return this.onSaveActionProperty().get();
     }

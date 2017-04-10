@@ -52,10 +52,6 @@ class TagTigerMenuBar extends MenuBar {
 
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     ObjectProperty<TaggableFile> currentFileProperty() {
         return this.currentFile;
     }

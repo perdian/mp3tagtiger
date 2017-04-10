@@ -31,10 +31,6 @@ class EditorComponentWrapper<T, U> {
     private ChangeListener<?> beanPropertyChangeListener = null;
     private Function<T, Property<U>> beanPropertySupplier = null;
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     ChangeListener<?> getBeanPropertyChangeListener() {
         return this.beanPropertyChangeListener;
     }

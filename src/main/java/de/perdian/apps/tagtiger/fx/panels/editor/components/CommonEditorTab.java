@@ -137,10 +137,6 @@ public class CommonEditorTab extends Tab {
 
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     public ObjectProperty<TaggableFile> currentFileProperty() {
         return this.currentFile;
     }

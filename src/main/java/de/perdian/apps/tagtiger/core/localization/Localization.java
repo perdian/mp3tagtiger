@@ -15,7 +15,6 @@
  */
 package de.perdian.apps.tagtiger.core.localization;
 
-
 /**
  * Interface to provide methods for accessing localized values
  *

@@ -63,10 +63,6 @@ public class FileSelectionPane extends VBox {
 
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     public ListProperty<TaggableFile> availableFilesProperty() {
         return this.availableFiles;
     }

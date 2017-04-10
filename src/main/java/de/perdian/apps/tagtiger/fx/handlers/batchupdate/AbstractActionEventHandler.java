@@ -38,10 +38,6 @@ public abstract class AbstractActionEventHandler implements EventHandler<ActionE
         this.setOtherFiles(otherFiles);
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     protected Property<TaggableFile> getCurrentFileProperty() {
         return this.currentFileProperty;
     }

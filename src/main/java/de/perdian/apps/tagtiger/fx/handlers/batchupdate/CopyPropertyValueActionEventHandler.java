@@ -48,10 +48,6 @@ public class CopyPropertyValueActionEventHandler<T> extends AbstractActionEventH
             });
     }
 
-    // -------------------------------------------------------------------------
-    // --- Inner classes -------------------------------------------------------
-    // -------------------------------------------------------------------------
-
     public static class CopyImagesPropertyConsumer implements BiConsumer<Property<TagImageList>, TagImageList> {
 
         @Override
@@ -60,10 +56,6 @@ public class CopyPropertyValueActionEventHandler<T> extends AbstractActionEventH
         }
 
     }
-
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
 
     private Function<TaggableFile, Property<T>> getPropertyFunction() {
         return this.propertyFunction;

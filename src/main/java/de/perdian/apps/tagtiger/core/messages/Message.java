@@ -22,10 +22,6 @@ public class Message {
     private String contentText = null;
     private MessageType messageType = MessageType.ERROR;
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     public String getTitle() {
         return this.title;
     }

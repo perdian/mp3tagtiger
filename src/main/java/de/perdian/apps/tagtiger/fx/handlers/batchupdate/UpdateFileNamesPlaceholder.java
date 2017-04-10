@@ -61,10 +61,6 @@ enum UpdateFileNamesPlaceholder {
         return this.getResolverFunction().apply(this.getPropertyFunction().apply(file).getValue(), file);
     }
 
-    // -------------------------------------------------------------------------
-    // --- Helper functions ----------------------------------------------------
-    // -------------------------------------------------------------------------
-
     private static String resolveDefault(String value, TaggableFile file) {
         return value;
     }
@@ -77,10 +73,6 @@ enum UpdateFileNamesPlaceholder {
         }
         return resultValue.toString();
     }
-
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
 
     String getPlaceholder() {
         return this.placeholder;

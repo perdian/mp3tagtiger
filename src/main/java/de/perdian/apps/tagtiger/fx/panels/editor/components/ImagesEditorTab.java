@@ -105,10 +105,6 @@ public class ImagesEditorTab extends Tab {
 
     }
 
-    // -------------------------------------------------------------------------
-    // --- Inner classes -------------------------------------------------------
-    // -------------------------------------------------------------------------
-
     class ImageListCell extends ListCell<TagImage> {
 
         private Localization localization = null;
@@ -134,10 +130,6 @@ public class ImagesEditorTab extends Tab {
             }
         }
 
-        // ---------------------------------------------------------------------
-        // --- Property access methods -----------------------------------------
-        // ---------------------------------------------------------------------
-
         private Localization getLocalization() {
             return this.localization;
         }
@@ -146,10 +138,6 @@ public class ImagesEditorTab extends Tab {
         }
 
     }
-
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
 
     public ListProperty<TagImage> imagesProperty() {
         return this.images;

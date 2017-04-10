@@ -54,10 +54,6 @@ class DirectoryTreeItem extends TreeItem<Directory> {
 
     }
 
-    // -------------------------------------------------------------------------
-    // --- Lazy loading extensions ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     void reloadChildren() {
         this.setChildrenLoaded(false);
         this.getChildren().clear();
@@ -110,10 +106,6 @@ class DirectoryTreeItem extends TreeItem<Directory> {
         this.setChildrenLoaded(true);
 
     }
-
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
 
     private FileFilter getChildrenFilter() {
         return this.childrenFilter;

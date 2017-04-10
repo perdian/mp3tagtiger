@@ -16,7 +16,7 @@
 package de.perdian.apps.tagtiger.core.jobs;
 
 /**
- * Listener that will be notified upon changes within the exeuction of a job
+ * Listener that will be notified upon changes within the execution of a job
  *
  * @author Christian Robert
  */

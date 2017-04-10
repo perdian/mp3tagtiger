@@ -159,10 +159,6 @@ public class EditorComponentFactory<T> {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     private ObjectProperty<T> getBeanProperty() {
         return this.beanProperty;
     }

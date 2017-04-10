@@ -61,12 +61,8 @@ public class JobContext {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     /**
-     * Checks if the curren job is active, meaning whether it has overall
+     * Checks if the current job is active, meaning whether it has overall
      * control over the GUI and is the main job whose progress is being
      * displayed
      */

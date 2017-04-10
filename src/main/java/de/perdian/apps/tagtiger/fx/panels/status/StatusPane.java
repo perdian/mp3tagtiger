@@ -69,10 +69,6 @@ public class StatusPane extends HBox implements JobListener {
 
     }
 
-    // -------------------------------------------------------------------------
-    // --- ProgressListener ----------------------------------------------------
-    // -------------------------------------------------------------------------
-
     @Override
     public void jobStarted(Job job) {
         Platform.runLater(() -> {
@@ -106,10 +102,6 @@ public class StatusPane extends HBox implements JobListener {
             });
         }
     }
-
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
 
     public ObjectProperty<EventHandler<ActionEvent>> onCancelActionProperty() {
         return this.onCancelAction;

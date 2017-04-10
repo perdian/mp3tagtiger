@@ -77,10 +77,6 @@ public class EditorPane extends VBox {
 
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     public ObjectProperty<TaggableFile> currentFileProperty() {
         return this.currentFile;
     }

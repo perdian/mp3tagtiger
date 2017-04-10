@@ -31,10 +31,6 @@ class UpdateFileNamesFromTagsItem {
         this.setNewFileName(new SimpleStringProperty(file.fileNameProperty().get()));
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     Property<String> getCurrentFileName() {
         return this.currentFileName;
     }

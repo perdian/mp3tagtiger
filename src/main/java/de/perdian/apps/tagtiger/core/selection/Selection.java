@@ -42,10 +42,6 @@ public class Selection {
         this.availableFilesProperty().addListener((o, oldValue, newValue) -> this.changedFilesProperty().clear());
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     public ObjectProperty<File> currentDirectoryProperty() {
         return this.currentDirectory;
     }

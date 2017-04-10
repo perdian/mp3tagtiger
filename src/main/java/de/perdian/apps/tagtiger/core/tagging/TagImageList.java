@@ -56,10 +56,6 @@ public class TagImageList {
         this.changedProperty().set(true);
     }
 
-    // -------------------------------------------------------------------------
-    // --- Property access methods ---------------------------------------------
-    // -------------------------------------------------------------------------
-
     public ObservableList<TagImage> getTagImages() {
         return this.tagImages;
     }
