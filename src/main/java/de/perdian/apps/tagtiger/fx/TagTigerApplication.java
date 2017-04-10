@@ -18,23 +18,6 @@ package de.perdian.apps.tagtiger.fx;
 import java.io.File;
 import java.util.Collections;
 
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.collections.ListChangeListener.Change;
-import javafx.geometry.Insets;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +35,22 @@ import de.perdian.apps.tagtiger.fx.panels.directories.DirectoryTreeView;
 import de.perdian.apps.tagtiger.fx.panels.editor.EditorPane;
 import de.perdian.apps.tagtiger.fx.panels.files.FileSelectionPane;
 import de.perdian.apps.tagtiger.fx.panels.status.StatusPane;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.collections.ListChangeListener.Change;
+import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 /**
  * The main JavaFX application that makes up the TagTiger application
@@ -208,7 +207,7 @@ public class TagTigerApplication extends Application {
     }
 
     private Parent createEditorPane(Selection selection, JobExecutor jobExecutor, Localization localization) {
-        EditorPane editorPane = new EditorPane(selection, localization);
+        EditorPane editorPane = new EditorPane(localization);
         editorPane.setMinWidth(400d);
         editorPane.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(editorPane, Priority.ALWAYS);

@@ -18,7 +18,6 @@ package de.perdian.apps.tagtiger.fx.panels.editor.components;
 import org.jaudiotagger.tag.reference.GenreTypes;
 
 import de.perdian.apps.tagtiger.core.localization.Localization;
-import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.handlers.files.ClearPropertyValueAction;
 import de.perdian.apps.tagtiger.fx.handlers.files.CopyPropertyValueAction;
@@ -45,7 +44,7 @@ public class CommonEditorTab extends Tab {
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public CommonEditorTab(EditorComponentFactory<TaggableFile> componentFactory, Selection selection, Localization localization) {
+    public CommonEditorTab(EditorComponentFactory<TaggableFile> componentFactory, Localization localization) {
 
         BooleanProperty disableProperty = new SimpleBooleanProperty(true);
         this.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> disableProperty.setValue(change.getList().size() <= 1));
