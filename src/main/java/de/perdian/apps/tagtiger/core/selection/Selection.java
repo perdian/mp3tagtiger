@@ -16,16 +16,13 @@
 package de.perdian.apps.tagtiger.core.selection;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 
 /**
  * Wrapper around a list of selected files
@@ -43,16 +40,6 @@ public class Selection {
 
     public Selection() {
         this.availableFilesProperty().addListener((o, oldValue, newValue) -> this.changedFilesProperty().clear());
-    }
-
-    /**
-     * Select all files within the currently selected directory
-     */
-    public void selectAllFilesInDirectory() {
-
-        List<TaggableFile> allFilesInDirectory = this.availableFilesProperty().get();
-        this.selectedFilesProperty().setAll(Optional.ofNullable(allFilesInDirectory).orElseGet(Collections::emptyList));
-
     }
 
     public ObjectProperty<File> currentDirectoryProperty() {
