@@ -29,14 +29,10 @@ import javax.imageio.ImageIO;
 import org.jaudiotagger.tag.datatype.Artwork;
 import org.jaudiotagger.tag.reference.PictureTypes;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
@@ -50,21 +46,21 @@ public class TagImage {
 
     private Artwork artwork = null;
     private final Property<Image> image = new SimpleObjectProperty<>();
-    private final IntegerProperty imageSize = new SimpleIntegerProperty();
-    private final StringProperty pictureType = new SimpleStringProperty();
-    private final StringProperty description = new SimpleStringProperty();
-    private final BooleanProperty changed = new SimpleBooleanProperty();
+    private final Property<Integer> imageSize = new SimpleObjectProperty<>();
+    private final Property<String> pictureType = new SimpleStringProperty();
+    private final Property<String> description = new SimpleStringProperty();
+    private final Property<Boolean> changed = new SimpleBooleanProperty();
 
     public TagImage() {
-        this.pictureTypeProperty().set(PictureTypes.DEFAULT_VALUE);
+        this.pictureTypeProperty().setValue(PictureTypes.DEFAULT_VALUE);
     }
 
     public TagImage(Artwork artwork) throws IOException {
         this.setArtwork(artwork);
         this.imageProperty().setValue(new Image(new ByteArrayInputStream(artwork.getBinaryData())));
-        this.imageSizeProperty().set(artwork.getBinaryData().length);
-        this.pictureTypeProperty().set(PictureTypes.getInstanceOf().getValueForId(artwork.getPictureType()));
-        this.descriptionProperty().set(artwork.getDescription());
+        this.imageSizeProperty().setValue(artwork.getBinaryData().length);
+        this.pictureTypeProperty().setValue(PictureTypes.getInstanceOf().getValueForId(artwork.getPictureType()));
+        this.descriptionProperty().setValue(artwork.getDescription());
         this.registerListeners();
     }
 
@@ -72,19 +68,20 @@ public class TagImage {
         try (InputStream imageFileStream = new BufferedInputStream(new FileInputStream(imageFile))) {
             Image image = new Image(imageFileStream);
             this.imageProperty().setValue(image);
-            this.imageSizeProperty().set((int)imageFile.length());
-            this.descriptionProperty().set(imageFile.getName());
-            this.pictureTypeProperty().set(PictureTypes.DEFAULT_VALUE);
+            this.imageSizeProperty().setValue((int)imageFile.length());
+            this.descriptionProperty().setValue(imageFile.getName());
+            this.pictureTypeProperty().setValue(PictureTypes.DEFAULT_VALUE);
             this.registerListeners();
         }
     }
+
     private void registerListeners() {
-        this.imageProperty().addListener((o, oldValue, newValue) -> this.changedProperty().set(true));
-        this.pictureTypeProperty().addListener((o, oldValue, newValue) -> this.changedProperty().set(true));
-        this.descriptionProperty().addListener((o, oldValue, newValue) -> this.changedProperty().set(true));
+        this.imageProperty().addListener((o, oldValue, newValue) -> this.changedProperty().setValue(true));
+        this.pictureTypeProperty().addListener((o, oldValue, newValue) -> this.changedProperty().setValue(true));
+        this.descriptionProperty().addListener((o, oldValue, newValue) -> this.changedProperty().setValue(true));
     }
 
-    public Artwork toArtwork() throws IOException {
+    Artwork toArtwork() throws IOException {
         if (this.imageProperty().getValue() == null) {
             return null;
         } else {
@@ -93,10 +90,10 @@ public class TagImage {
             ByteArrayOutputStream imageOutStream = new ByteArrayOutputStream();
             ImageIO.write(awtImage, "png", imageOutStream);
 
-            Integer pictureTypeId = PictureTypes.getInstanceOf().getIdForValue(this.pictureTypeProperty().get());
+            Integer pictureTypeId = PictureTypes.getInstanceOf().getIdForValue(this.pictureTypeProperty().getValue());
             Artwork artwork = this.getArtwork() == null ? new Artwork() : this.getArtwork();
             artwork.setBinaryData(imageOutStream.toByteArray());
-            artwork.setDescription(this.descriptionProperty().get());
+            artwork.setDescription(this.descriptionProperty().getValue());
             artwork.setMimeType("image/png");
             artwork.setPictureType(pictureTypeId == null ? PictureTypes.DEFAULT_ID : pictureTypeId.intValue());
             return artwork;
@@ -108,11 +105,11 @@ public class TagImage {
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append(this.getClass().getSimpleName());
-        result.append("[description=").append(this.descriptionProperty().get());
+        result.append("[description=").append(this.descriptionProperty().getValue());
         return result.append("]").toString();
     }
 
-    public Artwork getArtwork() {
+    Artwork getArtwork() {
         return this.artwork;
     }
     private void setArtwork(Artwork artwork) {
@@ -123,19 +120,19 @@ public class TagImage {
         return this.image;
     }
 
-    public IntegerProperty imageSizeProperty() {
+    public Property<Integer> imageSizeProperty() {
         return this.imageSize;
     }
 
-    public StringProperty pictureTypeProperty() {
+    public Property<String> pictureTypeProperty() {
         return this.pictureType;
     }
 
-    public StringProperty descriptionProperty() {
+    public Property<String> descriptionProperty() {
         return this.description;
     }
 
-    public BooleanProperty changedProperty() {
+    public Property<Boolean> changedProperty() {
         return this.changed;
     }
 

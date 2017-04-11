@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.handlers.others;
+package de.perdian.apps.tagtiger.fx.listener;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;

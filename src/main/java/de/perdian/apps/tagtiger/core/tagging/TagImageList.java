@@ -20,7 +20,6 @@ import java.util.List;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -30,16 +29,11 @@ public class TagImageList {
     private ObservableList<TagImage> tagImages = null;
     private final BooleanProperty changed = new SimpleBooleanProperty();
 
-    public TagImageList(List<TagImage> tagImages, ChangeListener<Object> changeListener) {
-
-        ObservableList<TagImage> observableTagImages = FXCollections.observableArrayList();
+    public TagImageList(List<TagImage> tagImages) {
+        ObservableList<TagImage> observableTagImages = FXCollections.observableArrayList(tagImages);
         observableTagImages.addListener((Change<? extends TagImage> change) -> change.getList().forEach(tagImage -> tagImage.changedProperty().addListener((o, oldValue, newValue) -> this.changedProperty().set(true))));
-        observableTagImages.setAll(tagImages);
         observableTagImages.addListener((Change<? extends TagImage> change) -> this.changedProperty().set(true));
-
-        this.changedProperty().addListener(changeListener);
         this.setTagImages(observableTagImages);
-
     }
 
     @Override

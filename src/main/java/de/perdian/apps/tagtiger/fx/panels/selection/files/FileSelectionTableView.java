@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.panels.files;
+package de.perdian.apps.tagtiger.fx.panels.selection.files;
 
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.localization.Localization;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
@@ -23,8 +25,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.localization.Localization;
 
 class FileSelectionTableView extends TableView<TaggableFile> {
 
@@ -54,7 +54,7 @@ class FileSelectionTableView extends TableView<TaggableFile> {
 
         TableColumn<TaggableFile, String> fileNameColumn = new TableColumn<>(localization.fileName());
         fileNameColumn.setSortable(false);
-        fileNameColumn.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().getFile().getName()));
+        fileNameColumn.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().toString()));
         fileNameColumn.setMaxWidth(Double.MAX_VALUE);
         this.getColumns().add(fileNameColumn);
 
