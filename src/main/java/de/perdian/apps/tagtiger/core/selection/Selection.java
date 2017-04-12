@@ -16,6 +16,8 @@
 package de.perdian.apps.tagtiger.core.selection;
 
 import java.io.File;
+import java.util.List;
+import java.util.Objects;
 
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import javafx.beans.property.ListProperty;
@@ -39,7 +41,23 @@ public class Selection {
     private final ListProperty<TaggableFile> changedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public Selection() {
-        this.availableFilesProperty().addListener((o, oldValue, newValue) -> this.changedFilesProperty().clear());
+        this.availableFilesProperty().addListener(this::onAvailableFilesChanged);
+        this.currentFileProperty().addListener(this::onCurrentFileChanged);
+    }
+
+    private void onAvailableFilesChanged(Object source, List<TaggableFile> oldValue, List<TaggableFile> newValue) {
+        this.changedFilesProperty().clear();
+    }
+
+    private void onCurrentFileChanged(Object source, TaggableFile oldValue, TaggableFile newValue) {
+        if (!Objects.equals(oldValue, newValue)) {
+            if (oldValue != null) {
+                oldValue.activeProperty().setValue(Boolean.FALSE);
+            }
+            if (newValue != null) {
+                newValue.activeProperty().setValue(Boolean.TRUE);
+            }
+        }
     }
 
     public Property<File> currentDirectoryProperty() {

@@ -125,8 +125,6 @@ interface TaggablePropertyAccessor<T> {
 
         @Override
         public void writeValue(Tag targetTag, TagImageList value) {
-            // TODO Auto-generated method stub
-
         }
 
         @Override

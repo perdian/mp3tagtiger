@@ -15,15 +15,18 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.selection.files;
 
+import com.sun.javafx.scene.control.skin.TableViewSkin;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
+
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
-import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -38,29 +41,33 @@ public class FileSelectionPane extends VBox {
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final Property<TaggableFile> selectedFile = new SimpleObjectProperty<>();
+    private FileSelectionTableView fileSelectionTableView = null;
 
     public FileSelectionPane(Localization localization) {
 
-        FileSelectionTableView filesTable = new FileSelectionTableView(localization);
-        filesTable.itemsProperty().bind(this.availableFilesProperty());
-        filesTable.getSelectionModel().getSelectedItems().addListener((Change<? extends TaggableFile> change) -> this.selectedFilesProperty().setAll(change.getList()));
-        filesTable.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.selectedFileProperty().setValue(newValue));
-        VBox.setVgrow(filesTable, Priority.ALWAYS);
+        FileSelectionTableView fileSelectionTableView = new FileSelectionTableView(localization);
+        fileSelectionTableView.itemsProperty().bind(this.availableFilesProperty());
+        fileSelectionTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        fileSelectionTableView.getSelectionModel().getSelectedItems().addListener((Change<? extends TaggableFile> change) -> this.selectedFilesProperty().setAll(change.getList()));
+        fileSelectionTableView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.selectedFileProperty().setValue(newValue));
+        VBox.setVgrow(fileSelectionTableView, Priority.ALWAYS);
+        this.setFileSelectionTableView(fileSelectionTableView);
 
-        this.getChildren().addAll(filesTable);
+        this.getChildren().addAll(fileSelectionTableView);
 
-        this.selectedFileProperty().addListener((o, oldValue, newValue) -> {
-            if (!this.selectedFilesProperty().contains(newValue)) {
-            	Platform.runLater(() -> {
-	            	try {
-	            		filesTable.getSelectionModel().clearAndSelect(this.availableFilesProperty().indexOf(newValue));
-	            	} catch (Exception e) {
-	            		// Ignore here
-	            	}
-            	});
-            }
-        });
+    }
 
+    public void scrollTo(TaggableFile file) {
+        TableViewSkin<?> tableViewSkin = (TableViewSkin<?>)this.getFileSelectionTableView().getSkin();
+        VirtualFlow<?> virtualFlow = (VirtualFlow<?>)tableViewSkin.getChildren().get(1);
+        int firstCellIndex = virtualFlow.getFirstVisibleCell().getIndex();
+        int lastCellIndex = virtualFlow.getLastVisibleCell().getIndex();
+        int fileIndex = this.getFileSelectionTableView().getItems().indexOf(file);
+        if (fileIndex <= firstCellIndex) {
+            this.getFileSelectionTableView().scrollTo(Math.max(0, fileIndex - 1));
+        } else if (fileIndex > 0 && fileIndex >= lastCellIndex) {
+            this.getFileSelectionTableView().scrollTo(fileIndex);
+        }
     }
 
     public ListProperty<TaggableFile> availableFilesProperty() {
@@ -73,6 +80,13 @@ public class FileSelectionPane extends VBox {
 
     public Property<TaggableFile> selectedFileProperty() {
         return this.selectedFile;
+    }
+
+    private FileSelectionTableView getFileSelectionTableView() {
+        return this.fileSelectionTableView;
+    }
+    private void setFileSelectionTableView(FileSelectionTableView fileSelectionTableView) {
+        this.fileSelectionTableView = fileSelectionTableView;
     }
 
 }

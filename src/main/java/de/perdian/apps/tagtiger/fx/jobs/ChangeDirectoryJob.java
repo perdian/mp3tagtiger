@@ -46,51 +46,52 @@ public class ChangeDirectoryJob implements Job {
 
     @Override
     public void execute(JobContext context) {
+        if (this.getSelectedDirectory() != null) {
 
-        log.info("Changing current directory to: {}", this.getSelectedDirectory().getAbsolutePath());
+            log.info("Changing current directory to: {}", this.getSelectedDirectory().getAbsolutePath());
 
-        if (this.getSelectedDirectory() == null) {
+            if (this.getSelectedDirectory() == null) {
 
-            Platform.runLater(() -> this.getTargetSelection().availableFilesProperty().clear());
+                Platform.runLater(() -> this.getTargetSelection().availableFilesProperty().clear());
 
-        } else {
+            } else {
 
-            context.updateProgress(this.getLocalization().analyzingFilesFromDirectory(this.getSelectedDirectory().getName()), -1, -1);
-            Platform.runLater(() -> this.getTargetSelection().availableFilesProperty().clear());
+                context.updateProgress(this.getLocalization().analyzingFilesFromDirectory(this.getSelectedDirectory().getName()), -1, -1);
+                Platform.runLater(() -> this.getTargetSelection().availableFilesProperty().clear());
 
-            List<File> sourceFiles = this.resolveSourceFiles(context);
-            log.debug("Collected {} files from directory: {}", sourceFiles.size(), this.getSelectedDirectory().getName());
-            context.updateProgress(this.getLocalization().startProcessingOfFiles(sourceFiles.size()), -1, -1);
+                List<File> sourceFiles = this.resolveSourceFiles(context);
+                log.debug("Collected {} files from directory: {}", sourceFiles.size(), this.getSelectedDirectory().getName());
+                context.updateProgress(this.getLocalization().startProcessingOfFiles(sourceFiles.size()), -1, -1);
 
-            List<TaggableFile> taggableFiles = new ArrayList<>(sourceFiles.size());
-            for (int i = 0; i < sourceFiles.size() && context.isActive() && !context.isCancelled(); i++) {
-                File sourceFile = sourceFiles.get(i);
-                context.updateProgress(this.getLocalization().processingFile(sourceFile.getName()), i + 1, sourceFiles.size());
-                try {
-                    TaggableFile taggableFile = new TaggableFile(sourceFile);
-                    taggableFile.dirtyProperty().addListener((o, oldValue, newValue) -> {
-                        List<TaggableFile> targetList = this.getTargetSelection().changedFilesProperty();
-                        Platform.runLater(() -> {
-                            if (newValue != null && newValue.booleanValue()) {
-                                targetList.add(taggableFile);
-                            } else {
-                                targetList.remove(taggableFile);
-                            }
+                List<TaggableFile> taggableFiles = new ArrayList<>(sourceFiles.size());
+                for (int i = 0; i < sourceFiles.size() && context.isActive() && !context.isCancelled(); i++) {
+                    File sourceFile = sourceFiles.get(i);
+                    context.updateProgress(this.getLocalization().processingFile(sourceFile.getName()), i + 1, sourceFiles.size());
+                    try {
+                        TaggableFile taggableFile = new TaggableFile(sourceFile);
+                        taggableFile.dirtyProperty().addListener((o, oldValue, newValue) -> {
+                            List<TaggableFile> targetList = this.getTargetSelection().changedFilesProperty();
+                            Platform.runLater(() -> {
+                                if (newValue != null && newValue.booleanValue()) {
+                                    targetList.add(taggableFile);
+                                } else {
+                                    targetList.remove(taggableFile);
+                                }
+                            });
                         });
-                    });
-                    taggableFiles.add(taggableFile);
-                } catch (Exception e) {
-                    log.warn("Cannot read file: {}", sourceFile.getAbsolutePath(), e);
+                        taggableFiles.add(taggableFile);
+                    } catch (Exception e) {
+                        log.warn("Cannot read file: {}", sourceFile.getAbsolutePath(), e);
+                    }
                 }
-            }
-            log.debug("Processed {} files from directory: {}", taggableFiles.size(), this.getSelectedDirectory().getName());
+                log.debug("Processed {} files from directory: {}", taggableFiles.size(), this.getSelectedDirectory().getName());
 
-            if (context.isActive() && !context.isCancelled()) {
-                Platform.runLater(() -> this.getTargetSelection().availableFilesProperty().setAll(taggableFiles));
-            }
+                if (context.isActive() && !context.isCancelled()) {
+                    Platform.runLater(() -> this.getTargetSelection().availableFilesProperty().setAll(taggableFiles));
+                }
 
+            }
         }
-
     }
 
     private List<File> resolveSourceFiles(JobContext context) {

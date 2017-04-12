@@ -39,6 +39,7 @@ public class TaggableFile {
     private File systemFile = null;
     private AudioFile audioFile = null;
     private Property<Boolean> dirty = new SimpleBooleanProperty();
+    private Property<Boolean> active = new SimpleBooleanProperty();
     private Map<TaggableProperty, Property<?>> properties = new EnumMap<>(TaggableProperty.class);
     private Property<String> fileName = new SimpleStringProperty();
     private Property<String> fileExtension = new SimpleStringProperty();
@@ -88,13 +89,6 @@ public class TaggableFile {
         newFileName.append(this.fileNameProperty().getValue());
         newFileName.append(".").append(this.fileExtensionProperty().getValue());
 
-        File currentSystemFile = this.getSystemFile().getCanonicalFile();
-        long originalTimestamp = currentSystemFile.lastModified();
-        File newSystemFile = new File(currentSystemFile.getParentFile(), newFileName.toString());
-        if (!newSystemFile.equals(currentSystemFile)) {
-            currentSystemFile.renameTo(newSystemFile);
-        }
-
         AudioFile audioFile = this.getAudioFile();
         Tag targetTag = audioFile.getTagOrCreateAndSetDefault();
         for (TaggableProperty taggableProperty : TaggableProperty.values()) {
@@ -103,14 +97,21 @@ public class TaggableFile {
             taggablePropertyAccessor.writeValue(targetTag, taggablePropertyValue.getValue());
         }
 
-        audioFile.setFile(newSystemFile);
         audioFile.setTag(targetTag);
         try {
             AudioFileIO.write(audioFile);
         } catch (Exception e) {
-            throw new IOException("Cannot write MP3 tag into file at: " + newSystemFile.getAbsolutePath(), e);
+            throw new IOException("Cannot write MP3 tag into file at: " + audioFile.getFile().getAbsolutePath(), e);
+        }
+
+        File currentSystemFile = this.getSystemFile().getCanonicalFile();
+        long originalTimestamp = currentSystemFile.lastModified();
+        File newSystemFile = new File(currentSystemFile.getParentFile(), newFileName.toString());
+        if (!newSystemFile.equals(currentSystemFile)) {
+            currentSystemFile.renameTo(newSystemFile);
         }
         newSystemFile.setLastModified(originalTimestamp);
+        audioFile.setFile(newSystemFile);
         this.dirtyProperty().setValue(false);
 
     }
@@ -118,6 +119,10 @@ public class TaggableFile {
     @Override
     public String toString() {
         return this.getSystemFile().getName();
+    }
+
+    public String toExtendedString() {
+        return this.getSystemFile().getAbsolutePath();
     }
 
     File getSystemFile() {
@@ -144,6 +149,9 @@ public class TaggableFile {
         this.properties = properties;
     }
 
+    public Property<Boolean> activeProperty() {
+        return this.active;
+    }
     public Property<Boolean> dirtyProperty() {
         return this.dirty;
     }

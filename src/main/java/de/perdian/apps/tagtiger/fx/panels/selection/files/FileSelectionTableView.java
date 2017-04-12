@@ -52,6 +52,24 @@ class FileSelectionTableView extends TableView<TaggableFile> {
         changedColumn.setMaxWidth(24);
         this.getColumns().add(changedColumn);
 
+        Image editIconImage = new Image(this.getClass().getClassLoader().getResourceAsStream("icons/16/edit.png"));
+        TableColumn<TaggableFile, Boolean> activeColumn = new TableColumn<>();
+        activeColumn.setSortable(false);
+        activeColumn.setCellValueFactory(p -> p.getValue().activeProperty());
+        activeColumn.setCellFactory(item -> {
+            TableCell<TaggableFile, Boolean> tableCell = new TableCell<TaggableFile, Boolean>() {
+                @Override protected void updateItem(Boolean item, boolean empty) {
+                    if (!empty) {
+                        this.setGraphic(item.booleanValue() ? new Label("", new ImageView(editIconImage)) : null);
+                    }
+                }
+            };
+            return tableCell;
+        });
+        activeColumn.setMinWidth(24);
+        activeColumn.setMaxWidth(24);
+        this.getColumns().add(activeColumn);
+
         TableColumn<TaggableFile, String> fileNameColumn = new TableColumn<>(localization.fileName());
         fileNameColumn.setSortable(false);
         fileNameColumn.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().toString()));
