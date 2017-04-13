@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -139,8 +140,14 @@ public class TaggableFile {
         this.audioFile = audioFile;
     }
 
-    public Property<?> property(TaggableProperty property) {
-        return this.getProperties().get(property);
+    public Property<String> property(TaggableProperty property) {
+        return this.property(property, String.class);
+    }
+    @SuppressWarnings("unchecked")
+    public <T> Property<T> property(TaggableProperty property, Class<T> targetClass) {
+        return Optional.ofNullable(this.getProperties().get(property))
+            .map(result -> (Property<T>)result)
+            .orElseThrow(() -> new IllegalArgumentException("Cannot find property for key: " + property));
     }
     Map<TaggableProperty, Property<?>> getProperties() {
         return this.properties;

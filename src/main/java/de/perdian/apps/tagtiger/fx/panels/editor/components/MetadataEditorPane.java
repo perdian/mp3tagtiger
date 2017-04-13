@@ -17,8 +17,10 @@ package de.perdian.apps.tagtiger.fx.panels.editor.components;
 
 import java.util.List;
 
+import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.listeners.DisableWhileJobRunningJobListener;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
 import de.perdian.apps.tagtiger.fx.support.EditorComponentBuilderFactory;
 import javafx.application.Platform;
@@ -29,9 +31,9 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
-public class InformationEditorPane extends TitledPane {
+public class MetadataEditorPane extends TitledPane {
 
-    public InformationEditorPane(EditorComponentBuilderFactory<TaggableFile> componentBuilderFactory, Selection selection, Localization localization) {
+    public MetadataEditorPane(EditorComponentBuilderFactory componentBuilderFactory, Selection selection, Localization localization, JobExecutor jobExecutor) {
 
         Label indexLabel = new Label();
         indexLabel.setMinWidth(65);
@@ -39,6 +41,7 @@ public class InformationEditorPane extends TitledPane {
 
         selection.currentFileProperty().addListener((o, oldValue, newValue) -> this.handleIndexLabelChange(indexLabel, newValue, selection.availableFilesProperty().getValue()));
         selection.availableFilesProperty().addListener((o, oldValue, newValue) -> this.handleIndexLabelChange(indexLabel, selection.currentFileProperty().getValue(), newValue));
+        jobExecutor.addListener(new DisableWhileJobRunningJobListener(this.disableProperty()));
 
         Parent fileNameComponent = componentBuilderFactory.componentBuilder(file -> file.fileNameProperty())
             .useTextField()
@@ -48,10 +51,8 @@ public class InformationEditorPane extends TitledPane {
         Label fileExtensionLabel = new Label(".");
         fileExtensionLabel.setPadding(new Insets(0, 2, 0, 2));
         Parent fileExtensionComponent = componentBuilderFactory.componentBuilder(file -> file.fileExtensionProperty())
-            .useTextField(textField -> {
-                textField.setPrefWidth(90);
-            })
-//            .primaryAction("icons/16/copy.png", localization.copyToAllOtherSelectedFiles(), new CopyPropertyValueAction<>(TaggableFile::fileExtensionProperty))
+            .useTextField(textField -> textField.setPrefWidth(60))
+            .actionCopyPropertyValue()
             .build();
         GridPane.setHgrow(fileExtensionComponent, Priority.NEVER);
 
@@ -68,7 +69,6 @@ public class InformationEditorPane extends TitledPane {
         this.setText(localization.mp3File());
         this.setCollapsible(false);
         this.setExpanded(true);
-        this.setDisable(true);
 
     }
 

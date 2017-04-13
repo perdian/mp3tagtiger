@@ -21,36 +21,51 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import de.perdian.apps.tagtiger.core.selection.Selection;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
+import de.perdian.apps.tagtiger.fx.localization.Localization;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Control;
 
-public class EditorComponentBuilderFactory<T> {
+public class EditorComponentBuilderFactory {
 
-    private Property<T> mainObjectProperty = null;
+    private Property<TaggableFile> mainObjectProperty = null;
     private Property<Boolean> disabledProperty = null;
     private List<Consumer<Control>> controlCustomizers = null;
+    private Selection selection = null;
+    private Localization localization = null;
 
-    public EditorComponentBuilderFactory(Property<T> mainObjectProperty) {
+    public EditorComponentBuilderFactory(Property<TaggableFile> mainObjectProperty, Selection selection, Localization localization) {
+
+        Property<Boolean> disabledProperty = new SimpleBooleanProperty(true);
+        mainObjectProperty.addListener((o, oldValue, newValue) -> disabledProperty.setValue(newValue == null));
+
         this.setMainObjectProperty(mainObjectProperty);
-        this.setDisabledProperty(new SimpleBooleanProperty());
+        this.setSelection(selection);
+        this.setLocalization(localization);
+        this.setDisabledProperty(disabledProperty);
         this.setControlCustomizers(new ArrayList<>());
+
     }
 
-    public EditorComponentBuilder<T> componentBuilder(Function<T, Property<String>> propertyResolver) {
-        EditorComponentBuilder<T> componentBuilder = new EditorComponentBuilder<>(this.createEditProperty(propertyResolver));
+    public EditorComponentBuilder componentBuilder(Function<TaggableFile, Property<String>> propertyResolver) {
+        EditorComponentBuilder componentBuilder = new EditorComponentBuilder(this.createEditProperty(propertyResolver));
+        componentBuilder.setPropertyResolver(propertyResolver);
         componentBuilder.setDisabledProperty(this.getDisabledProperty());
         componentBuilder.setControlCustomizers(this.getControlCustomizers());
+        componentBuilder.setSelection(this.getSelection());
+        componentBuilder.setLocalization(this.getLocalization());
         return componentBuilder;
     }
 
-    private Property<String> createEditProperty(Function<T, Property<String>> propertyResolver) {
+    private Property<String> createEditProperty(Function<TaggableFile, Property<String>> propertyResolver) {
 
         Property<String> editProperty = new SimpleStringProperty();
         editProperty.addListener((o, oldValue, newValue) -> {
-            T mainObject = this.getMainObjectProperty().getValue();
+            TaggableFile mainObject = this.getMainObjectProperty().getValue();
             if (!Objects.equals(oldValue, newValue) && mainObject != null) {
                 propertyResolver.apply(mainObject).setValue(newValue);
             }
@@ -79,10 +94,10 @@ public class EditorComponentBuilderFactory<T> {
 
     }
 
-    private Property<T> getMainObjectProperty() {
+    private Property<TaggableFile> getMainObjectProperty() {
         return this.mainObjectProperty;
     }
-    private void setMainObjectProperty(Property<T> mainObjectProperty) {
+    private void setMainObjectProperty(Property<TaggableFile> mainObjectProperty) {
         this.mainObjectProperty = mainObjectProperty;
     }
 
@@ -99,8 +114,22 @@ public class EditorComponentBuilderFactory<T> {
     public Property<Boolean> getDisabledProperty() {
         return this.disabledProperty;
     }
-    public void setDisabledProperty(Property<Boolean> disabledProperty) {
+    private void setDisabledProperty(Property<Boolean> disabledProperty) {
         this.disabledProperty = disabledProperty;
+    }
+
+    private Selection getSelection() {
+        return this.selection;
+    }
+    private void setSelection(Selection selection) {
+        this.selection = selection;
+    }
+
+    private Localization getLocalization() {
+        return this.localization;
+    }
+    private void setLocalization(Localization localization) {
+        this.localization = localization;
     }
 
 }

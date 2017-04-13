@@ -15,30 +15,25 @@
  */
 package de.perdian.apps.tagtiger.core.tagging;
 
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.reference.GenreTypes;
 
 import de.perdian.apps.tagtiger.core.tagging.TaggablePropertyAccessor.FieldKeyPropertyAccessor;
 import de.perdian.apps.tagtiger.core.tagging.TaggablePropertyAccessor.ImagesPropertyAccessor;
 
 public enum TaggableProperty {
 
-    TITLE(new FieldKeyPropertyAccessor(FieldKey.TITLE, Function.identity(), Function.identity())),
-    ARTIST(new FieldKeyPropertyAccessor(FieldKey.ARTIST, Function.identity(), Function.identity())),
-    ALBUM(new FieldKeyPropertyAccessor(FieldKey.ALBUM, Function.identity(), Function.identity())),
-    ALBUM_ARTIST(new FieldKeyPropertyAccessor(FieldKey.ALBUM_ARTIST, Function.identity(), Function.identity())),
-    YEAR(new FieldKeyPropertyAccessor(FieldKey.YEAR, Function.identity(), Function.identity())),
-    TRACK_NUMBER(new FieldKeyPropertyAccessor(FieldKey.TRACK, Function.identity(), Function.identity())),
-    TRACKS_TOTAL(new FieldKeyPropertyAccessor(FieldKey.TRACK_TOTAL, Function.identity(), Function.identity())),
-    DISC_NUMBER(new FieldKeyPropertyAccessor(FieldKey.DISC_NO, Function.identity(), Function.identity())),
-    DISCS_TOTAL(new FieldKeyPropertyAccessor(FieldKey.DISC_TOTAL, Function.identity(), Function.identity())),
-    GENRE(new FieldKeyPropertyAccessor(FieldKey.GENRE, new ToPropertyGenreConverterFunction(), new ToStorageGenreConverterFunction())),
-    COMMENT(new FieldKeyPropertyAccessor(FieldKey.COMMENT, Function.identity(), Function.identity())),
-    COMPOSER(new FieldKeyPropertyAccessor(FieldKey.COMPOSER, Function.identity(), Function.identity())),
+    TITLE(new FieldKeyPropertyAccessor(FieldKey.TITLE, TaggablePropertyHelper.TO_STRING_FUNCTION, TaggablePropertyHelper.TO_STRING_FUNCTION)),
+    ARTIST(new FieldKeyPropertyAccessor(FieldKey.ARTIST, TaggablePropertyHelper.TO_STRING_FUNCTION, TaggablePropertyHelper.TO_STRING_FUNCTION)),
+    ALBUM(new FieldKeyPropertyAccessor(FieldKey.ALBUM, TaggablePropertyHelper.TO_STRING_FUNCTION, TaggablePropertyHelper.TO_STRING_FUNCTION)),
+    ALBUM_ARTIST(new FieldKeyPropertyAccessor(FieldKey.ALBUM_ARTIST, TaggablePropertyHelper.TO_STRING_FUNCTION, TaggablePropertyHelper.TO_STRING_FUNCTION)),
+    YEAR(new FieldKeyPropertyAccessor(FieldKey.YEAR, TaggablePropertyHelper.TO_LENIENT_INTEGER_FUNCTION, TaggablePropertyHelper.TO_LENIENT_INTEGER_FUNCTION)),
+    TRACK_NUMBER(new FieldKeyPropertyAccessor(FieldKey.TRACK, TaggablePropertyHelper.TO_LENIENT_INTEGER_FUNCTION, TaggablePropertyHelper.TO_LENIENT_INTEGER_FUNCTION)),
+    TRACKS_TOTAL(new FieldKeyPropertyAccessor(FieldKey.TRACK_TOTAL, TaggablePropertyHelper.TO_LENIENT_INTEGER_FUNCTION, TaggablePropertyHelper.TO_LENIENT_INTEGER_FUNCTION)),
+    DISC_NUMBER(new FieldKeyPropertyAccessor(FieldKey.DISC_NO, TaggablePropertyHelper.TO_LENIENT_INTEGER_FUNCTION, TaggablePropertyHelper.TO_LENIENT_INTEGER_FUNCTION)),
+    DISCS_TOTAL(new FieldKeyPropertyAccessor(FieldKey.DISC_TOTAL, TaggablePropertyHelper.TO_LENIENT_INTEGER_FUNCTION, TaggablePropertyHelper.TO_LENIENT_INTEGER_FUNCTION)),
+    GENRE(new FieldKeyPropertyAccessor(FieldKey.GENRE, TaggablePropertyHelper.TO_PROPERTY_GENRE_CONVERTER_FUNCTION, TaggablePropertyHelper.TO_STORAGE_GENRE_CONVERTER_FUNCTION)),
+    COMMENT(new FieldKeyPropertyAccessor(FieldKey.COMMENT, TaggablePropertyHelper.TO_STRING_FUNCTION, TaggablePropertyHelper.TO_STRING_FUNCTION)),
+    COMPOSER(new FieldKeyPropertyAccessor(FieldKey.COMPOSER, TaggablePropertyHelper.TO_STRING_FUNCTION, TaggablePropertyHelper.TO_STRING_FUNCTION)),
     IMAGES(new ImagesPropertyAccessor());
 
     private TaggablePropertyAccessor<?> propertyAccessor = null;
@@ -52,31 +47,6 @@ public enum TaggableProperty {
     }
     private void setPropertyAccessor(TaggablePropertyAccessor<?> propertyAccessor) {
         this.propertyAccessor = propertyAccessor;
-    }
-
-    static class ToPropertyGenreConverterFunction implements Function<String, String> {
-
-        @Override
-        public String apply(String tagValue) {
-            Pattern idPattern = Pattern.compile("\\(([0-9]+)\\)");
-            Matcher idMatcher = idPattern.matcher(tagValue == null ? "" : tagValue);
-            if (idMatcher.matches()) {
-                return GenreTypes.getInstanceOf().getValueForId(Integer.parseInt(idMatcher.group(1)));
-            } else {
-                return tagValue;
-            }
-        }
-
-    }
-
-    static class ToStorageGenreConverterFunction implements Function<String, String> {
-
-        @Override
-        public String apply(String sourceValue) {
-            Integer idForValue = sourceValue == null ? null : GenreTypes.getInstanceOf().getIdForName(sourceValue);
-            return idForValue != null ? ("(" + idForValue.toString() + ")") : sourceValue;
-        }
-
     }
 
 }
