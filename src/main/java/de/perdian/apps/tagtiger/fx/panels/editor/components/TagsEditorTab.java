@@ -18,7 +18,7 @@ package de.perdian.apps.tagtiger.fx.panels.editor.components;
 import org.jaudiotagger.tag.reference.GenreTypes;
 
 import de.perdian.apps.tagtiger.core.selection.Selection;
-import de.perdian.apps.tagtiger.core.tagging.TaggableProperty;
+import de.perdian.apps.tagtiger.core.tagging.TaggablePropertyKey;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
 import de.perdian.apps.tagtiger.fx.support.EditorComponentBuilderFactory;
 import de.perdian.apps.tagtiger.fx.support.actions.EnumerateTracksAction;
@@ -39,49 +39,49 @@ class TagsEditorTab extends Tab {
 
         int currentRowIndex = 0;
 
-        Parent titleComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggableProperty.TITLE))
+        Parent titleComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggablePropertyKey.TITLE))
             .useTextField()
             .actionCopyPropertyValue()
             .build();
-        Parent artistComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggableProperty.ARTIST))
+        Parent artistComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggablePropertyKey.ARTIST))
             .useTextField()
             .actionCopyPropertyValue()
             .build();
-        Parent albumComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggableProperty.ALBUM))
+        Parent albumComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggablePropertyKey.ALBUM))
             .useTextField()
             .actionCopyPropertyValue()
             .build();
-        Parent discComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggableProperty.DISC_NUMBER))
+        Parent discComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggablePropertyKey.DISC_NUMBER))
             .useNumericTextField()
             .actionCopyPropertyValue()
             .build();
-        Parent albumArtistComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggableProperty.ALBUM_ARTIST))
+        Parent albumArtistComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggablePropertyKey.ALBUM_ARTIST))
             .useTextField()
             .actionCopyPropertyValue()
             .build();
-        Parent yearComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggableProperty.YEAR))
+        Parent yearComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggablePropertyKey.YEAR))
             .useNumericTextField()
             .actionCopyPropertyValue()
             .build();
-        Parent trackComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggableProperty.TRACK_NUMBER))
-            .useNumericTextField()
-            .action("icons/16/add.png", localization.enumerateTracks(), new EnumerateTracksAction())
-            .actionClearPropertyValues()
-            .build();
-        Parent tracksComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggableProperty.TRACKS_TOTAL))
+        Parent trackComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggablePropertyKey.TRACK_NUMBER))
             .useNumericTextField()
             .action("icons/16/add.png", localization.enumerateTracks(), new EnumerateTracksAction())
             .actionClearPropertyValues()
             .build();
-        Parent genreComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggableProperty.GENRE))
+        Parent tracksComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggablePropertyKey.TRACKS_TOTAL))
+            .useNumericTextField()
+            .action("icons/16/add.png", localization.enumerateTracks(), new EnumerateTracksAction())
+            .actionClearPropertyValues()
+            .build();
+        Parent genreComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggablePropertyKey.GENRE))
             .useComboBox(GenreTypes.getInstanceOf().getAlphabeticalValueList())
             .actionCopyPropertyValue()
             .build();
-        Parent commentComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggableProperty.COMMENT))
+        Parent commentComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggablePropertyKey.COMMENT))
             .useTextField()
             .actionCopyPropertyValue()
             .build();
-        Parent composerComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggableProperty.COMPOSER))
+        Parent composerComponent = componentBuilderFactory.componentBuilder(file -> file.property(TaggablePropertyKey.COMPOSER))
             .useTextField()
             .actionCopyPropertyValue()
             .build();

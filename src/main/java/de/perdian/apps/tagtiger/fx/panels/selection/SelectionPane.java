@@ -32,6 +32,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -64,20 +65,28 @@ public class SelectionPane extends BorderPane {
         saveChangedFilesButton.setOnAction(event -> jobExecutor.executeJob(new SaveChangedFilesJob(selection, localization)));
         selection.changedFilesProperty().addListener((o, oldValue, newValue) -> saveChangedFilesButton.setDisable(newValue == null || newValue.isEmpty()));
 
-        Button reloadFileButton = new Button(localization.reload());
-        reloadFileButton.setGraphic(new ImageView(new Image(SelectionPane.class.getClassLoader().getResourceAsStream("icons/16/refresh.png"))));
-        reloadFileButton.setOnAction(event -> {
+        Button reloadButton = new Button();
+        reloadButton.setTooltip(new Tooltip(localization.reload()));
+        reloadButton.setGraphic(new ImageView(new Image(SelectionPane.class.getClassLoader().getResourceAsStream("icons/16/refresh.png"))));
+        reloadButton.setOnAction(event -> {
             File currentDirectoryProperty = selection.currentDirectoryProperty().getValue();
             selection.currentDirectoryProperty().setValue(null);
             selection.currentDirectoryProperty().setValue(currentDirectoryProperty);
         });
-        jobExecutor.addListener(new DisableWhileJobRunningJobListener(reloadFileButton.disableProperty()));
+        jobExecutor.addListener(new DisableWhileJobRunningJobListener(reloadButton.disableProperty()));
+
+        Button selectAllButton = new Button();
+        selectAllButton.setTooltip(new Tooltip(localization.selectAllFiles()));
+        selectAllButton.setGraphic(new ImageView(new Image(SelectionPane.class.getClassLoader().getResourceAsStream("icons/16/select-all.png"))));
+        selectAllButton.setOnAction(actino -> fileSelectionPane.selectAll());
+        jobExecutor.addListener(new DisableWhileJobRunningJobListener(selectAllButton.disableProperty()));
+        HBox leftButtonBox = new HBox(5, reloadButton, selectAllButton);
 
         ListChangeListener<TaggableFile> saveChangedFileChaneListener = c -> saveChangedFilesButton.setDisable(c.getList().isEmpty());
         selection.changedFilesProperty().addListener(saveChangedFileChaneListener);
         BorderPane buttonPane = new BorderPane();
         buttonPane.setPadding(new Insets(5, 5, 5, 5));
-        buttonPane.setLeft(reloadFileButton);
+        buttonPane.setLeft(leftButtonBox);
         buttonPane.setRight(saveChangedFilesButton);
 
         BorderPane rightPanel = new BorderPane();

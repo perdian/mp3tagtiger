@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -30,9 +32,9 @@ import org.jaudiotagger.tag.datatype.Artwork;
 import org.jaudiotagger.tag.reference.PictureTypes;
 
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
@@ -45,14 +47,18 @@ import javafx.scene.image.Image;
 public class TagImage {
 
     private Artwork artwork = null;
+    private final List<ChangeListener<Object>> changeListeners = new CopyOnWriteArrayList<>();
     private final Property<Image> image = new SimpleObjectProperty<>();
     private final Property<Integer> imageSize = new SimpleObjectProperty<>();
     private final Property<String> pictureType = new SimpleStringProperty();
     private final Property<String> description = new SimpleStringProperty();
-    private final Property<Boolean> changed = new SimpleBooleanProperty();
 
-    public TagImage() {
-        this.pictureTypeProperty().setValue(PictureTypes.DEFAULT_VALUE);
+    public TagImage(TagImage sourceImage) {
+        this.imageProperty().setValue(sourceImage.imageProperty().getValue());
+        this.imageSizeProperty().setValue(sourceImage.imageSizeProperty().getValue());
+        this.pictureTypeProperty().setValue(sourceImage.pictureTypeProperty().getValue());
+        this.descriptionProperty().setValue(sourceImage.descriptionProperty().getValue());
+        this.registerListeners();
     }
 
     public TagImage(Artwork artwork) throws IOException {
@@ -76,9 +82,10 @@ public class TagImage {
     }
 
     private void registerListeners() {
-        this.imageProperty().addListener((o, oldValue, newValue) -> this.changedProperty().setValue(true));
-        this.pictureTypeProperty().addListener((o, oldValue, newValue) -> this.changedProperty().setValue(true));
-        this.descriptionProperty().addListener((o, oldValue, newValue) -> this.changedProperty().setValue(true));
+        ChangeListener<Object> delegatingChangeListener = (o, oldValue, newValue) -> this.getChangeListeners().forEach(listener -> listener.changed(o, oldValue, newValue));
+        this.imageProperty().addListener(delegatingChangeListener);
+        this.pictureTypeProperty().addListener(delegatingChangeListener);
+        this.descriptionProperty().addListener(delegatingChangeListener);
     }
 
     Artwork toArtwork() throws IOException {
@@ -132,8 +139,14 @@ public class TagImage {
         return this.description;
     }
 
-    public Property<Boolean> changedProperty() {
-        return this.changed;
+    public void addChangeListener(ChangeListener<Object> changeListener) {
+        this.getChangeListeners().add(changeListener);
+    }
+    public void removeChangeListener(ChangeListener<Object> changeListener) {
+        this.getChangeListeners().remove(changeListener);
+    }
+    private List<ChangeListener<Object>> getChangeListeners() {
+        return this.changeListeners;
     }
 
 }

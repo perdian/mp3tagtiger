@@ -303,4 +303,8 @@ public interface Localization {
         return "Clear all value";
     }
 
+    default String selectAllFiles() {
+        return "Select all files";
+    }
+
 }

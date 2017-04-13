@@ -25,6 +25,7 @@ import java.util.Optional;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.datatype.Artwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,39 +34,50 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 public class TaggableFile {
 
     private static final Logger log = LoggerFactory.getLogger(TaggableFile.class);
+
     private File systemFile = null;
     private AudioFile audioFile = null;
     private Property<Boolean> dirty = new SimpleBooleanProperty();
     private Property<Boolean> active = new SimpleBooleanProperty();
-    private Map<TaggableProperty, Property<?>> properties = new EnumMap<>(TaggableProperty.class);
+    private Map<TaggablePropertyKey, Property<String>> properties = new EnumMap<>(TaggablePropertyKey.class);
+    private Property<TagImageList> images = new SimpleObjectProperty<>();
     private Property<String> fileName = new SimpleStringProperty();
     private Property<String> fileExtension = new SimpleStringProperty();
 
-    @SuppressWarnings("unchecked")
     public TaggableFile(File systemFile) throws IOException {
         try {
 
             log.trace("Reading tag information from file: {}", systemFile.getAbsolutePath());
             AudioFile audioFile = AudioFileIO.read(systemFile);
             Tag audioFileTag = audioFile.getTagOrCreateDefault();
+            ChangeListener<Object> changeListener = new MarkDirtyChangeListener();
 
-            ChangeListener<Object> changeListener = (o, oldValue, newValue) -> {
-                if (!Objects.equals(oldValue, newValue)) {
-                    this.dirtyProperty().setValue(Boolean.TRUE);
-                }
-            };
-
-            for (TaggableProperty taggableProperty : TaggableProperty.values()) {
-                TaggablePropertyAccessor<Object> taggablePropertyAccessor = (TaggablePropertyAccessor<Object>)taggableProperty.getPropertyAccessor();
-                Property<Object> taggablePropertyValue = new SimpleObjectProperty<>();
-                taggablePropertyValue.setValue(taggablePropertyAccessor.readTagValue(audioFileTag));
-                taggablePropertyAccessor.installChangeListener(taggablePropertyValue, changeListener);
-                this.getProperties().put(taggableProperty, taggablePropertyValue);
+            for (TaggablePropertyKey taggablePropertyKey : TaggablePropertyKey.values()) {
+                Property<String> taggableProperty = new SimpleStringProperty();
+                taggableProperty.setValue(taggablePropertyKey.readTagValue(audioFileTag));
+                taggableProperty.addListener(changeListener);
+                this.getProperties().put(taggablePropertyKey, taggableProperty);
             }
+
+            TagImageList tagImageList = new TagImageList(audioFileTag);
+            tagImageList.addChangeListener(changeListener);
+            this.imagesProperty().setValue(tagImageList);
+            this.imagesProperty().addListener(changeListener);
+            this.imagesProperty().addListener((o, oldValue, newValue) -> {
+                if (!Objects.equals(oldValue, newValue)) {
+                    if (oldValue != null) {
+                        oldValue.removeChangeListener(changeListener);
+                    }
+                    if (newValue != null) {
+                        newValue.addChangeListener(changeListener);
+                    }
+                }
+            });
 
             this.setSystemFile(systemFile);
             this.setAudioFile(audioFile);
@@ -83,7 +95,6 @@ public class TaggableFile {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void writeIntoFile() throws IOException {
 
         StringBuilder newFileName = new StringBuilder();
@@ -92,10 +103,29 @@ public class TaggableFile {
 
         AudioFile audioFile = this.getAudioFile();
         Tag targetTag = audioFile.getTagOrCreateAndSetDefault();
-        for (TaggableProperty taggableProperty : TaggableProperty.values()) {
-            TaggablePropertyAccessor<Object> taggablePropertyAccessor = (TaggablePropertyAccessor<Object>)taggableProperty.getPropertyAccessor();
-            Property<?> taggablePropertyValue = this.getProperties().get(taggableProperty);
-            taggablePropertyAccessor.writeValue(targetTag, taggablePropertyValue.getValue());
+        for (TaggablePropertyKey taggableProperty : TaggablePropertyKey.values()) {
+            Property<String> taggablePropertyValue = this.getProperties().get(taggableProperty);
+            taggableProperty.writeValue(targetTag, taggablePropertyValue.getValue());
+        }
+
+        TagImageList imageList = this.imagesProperty().getValue();
+        if (imageList.isDirty()) {
+
+            // Delete the artwork so that we'll re-add it again
+            targetTag.deleteArtworkField();
+
+            imageList.getTagImages().forEach(tagImage -> {
+                try {
+                    Artwork artwork = tagImage.toArtwork();
+                    if (artwork != null) {
+                        targetTag.addField(artwork);
+                    }
+                } catch (Exception e) {
+                    log.warn("Cannot update artwork with image value: " + imageList, e);
+                }
+            });
+            imageList.setDirty(false);
+
         }
 
         audioFile.setTag(targetTag);
@@ -117,6 +147,17 @@ public class TaggableFile {
 
     }
 
+    class MarkDirtyChangeListener implements ChangeListener<Object> {
+
+        @Override
+        public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+            if (!Objects.equals(oldValue, newValue)) {
+                TaggableFile.this.dirtyProperty().setValue(Boolean.TRUE);
+            }
+        }
+
+    }
+
     @Override
     public String toString() {
         return this.getSystemFile().getName();
@@ -126,7 +167,7 @@ public class TaggableFile {
         return this.getSystemFile().getAbsolutePath();
     }
 
-    File getSystemFile() {
+    public File getSystemFile() {
         return this.systemFile;
     }
     void setSystemFile(File systemFile) {
@@ -140,22 +181,20 @@ public class TaggableFile {
         this.audioFile = audioFile;
     }
 
-    public Property<String> property(TaggableProperty property) {
-        return this.property(property, String.class);
-    }
-    @SuppressWarnings("unchecked")
-    public <T> Property<T> property(TaggableProperty property, Class<T> targetClass) {
+    public Property<String> property(TaggablePropertyKey property) {
         return Optional.ofNullable(this.getProperties().get(property))
-            .map(result -> (Property<T>)result)
             .orElseThrow(() -> new IllegalArgumentException("Cannot find property for key: " + property));
     }
-    Map<TaggableProperty, Property<?>> getProperties() {
+    Map<TaggablePropertyKey, Property<String>> getProperties() {
         return this.properties;
     }
-    void setProperties(Map<TaggableProperty, Property<?>> properties) {
+    void setProperties(Map<TaggablePropertyKey, Property<String>> properties) {
         this.properties = properties;
     }
 
+    public Property<TagImageList> imagesProperty() {
+        return this.images;
+    }
     public Property<Boolean> activeProperty() {
         return this.active;
     }

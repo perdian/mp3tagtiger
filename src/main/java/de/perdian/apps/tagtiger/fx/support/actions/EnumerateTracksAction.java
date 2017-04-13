@@ -18,7 +18,7 @@ package de.perdian.apps.tagtiger.fx.support.actions;
 import java.util.List;
 
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.core.tagging.TaggableProperty;
+import de.perdian.apps.tagtiger.core.tagging.TaggablePropertyKey;
 import de.perdian.apps.tagtiger.fx.support.EditorComponentAction;
 import javafx.beans.property.Property;
 
@@ -27,8 +27,8 @@ public class EnumerateTracksAction implements EditorComponentAction {
     @Override
     public void execute(Property<TaggableFile> sourceFileProperty, List<TaggableFile> targetFiles, List<TaggableFile> allFiles) {
         for (int i=0; i < targetFiles.size(); i++) {
-            targetFiles.get(i).property(TaggableProperty.TRACK_NUMBER).setValue(String.valueOf(i+1));
-            targetFiles.get(i).property(TaggableProperty.TRACKS_TOTAL).setValue(String.valueOf(targetFiles.size()));
+            targetFiles.get(i).property(TaggablePropertyKey.TRACK_NUMBER).setValue(String.valueOf(i+1));
+            targetFiles.get(i).property(TaggablePropertyKey.TRACKS_TOTAL).setValue(String.valueOf(targetFiles.size()));
         }
     }
 

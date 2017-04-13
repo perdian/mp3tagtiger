@@ -70,6 +70,10 @@ public class FileSelectionPane extends VBox {
         }
     }
 
+    public void selectAll() {
+        this.getFileSelectionTableView().getSelectionModel().selectAll();
+    }
+
     public ListProperty<TaggableFile> availableFilesProperty() {
         return this.availableFiles;
     }
