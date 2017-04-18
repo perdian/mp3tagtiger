@@ -18,6 +18,8 @@ package de.perdian.apps.tagtiger.fx.panels.selection.files;
 import com.sun.javafx.scene.control.skin.TableViewSkin;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
 
+import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
+import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
 import javafx.beans.property.ListProperty;
@@ -27,8 +29,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
 
 /**
  * Displays a list of selected files that are in use by the user
@@ -36,28 +37,35 @@ import javafx.scene.layout.VBox;
  * @author Christian Robert
  */
 
-public class FileSelectionPane extends VBox {
+public class FileSelectionPane extends BorderPane {
 
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final Property<TaggableFile> selectedFile = new SimpleObjectProperty<>();
     private FileSelectionTableView fileSelectionTableView = null;
 
-    public FileSelectionPane(Localization localization) {
+    public FileSelectionPane(Selection selection, Localization localization, JobExecutor jobExecutor) {
 
         FileSelectionTableView fileSelectionTableView = new FileSelectionTableView(localization);
         fileSelectionTableView.itemsProperty().bind(this.availableFilesProperty());
         fileSelectionTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         fileSelectionTableView.getSelectionModel().getSelectedItems().addListener((Change<? extends TaggableFile> change) -> this.selectedFilesProperty().setAll(change.getList()));
         fileSelectionTableView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.selectedFileProperty().setValue(newValue));
-        VBox.setVgrow(fileSelectionTableView, Priority.ALWAYS);
         this.setFileSelectionTableView(fileSelectionTableView);
 
-        this.getChildren().addAll(fileSelectionTableView);
+        selection.currentFileProperty().addListener((o, oldValue, newValue) -> {
+            if (newValue != null) {
+                this.scrollTo(newValue);
+            }
+        });
+
+        this.setTop(new FileSelectionTopButtonPane(fileSelectionTableView, selection, localization, jobExecutor));
+        this.setCenter(fileSelectionTableView);
+        this.setBottom(new FileSelectionBottomButtonPane(selection, localization, jobExecutor));
 
     }
 
-    public void scrollTo(TaggableFile file) {
+    private void scrollTo(TaggableFile file) {
         TableViewSkin<?> tableViewSkin = (TableViewSkin<?>)this.getFileSelectionTableView().getSkin();
         VirtualFlow<?> virtualFlow = (VirtualFlow<?>)tableViewSkin.getChildren().get(1);
         int firstCellIndex = virtualFlow.getFirstVisibleCell().getIndex();
@@ -68,10 +76,6 @@ public class FileSelectionPane extends VBox {
         } else if (fileIndex > 0 && fileIndex >= lastCellIndex) {
             this.getFileSelectionTableView().scrollTo(fileIndex);
         }
-    }
-
-    public void selectAll() {
-        this.getFileSelectionTableView().getSelectionModel().selectAll();
     }
 
     public ListProperty<TaggableFile> availableFilesProperty() {

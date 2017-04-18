@@ -20,21 +20,15 @@ import java.io.File;
 import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.jobs.SaveChangedFilesJob;
 import de.perdian.apps.tagtiger.fx.listeners.DisableWhileJobRunningJobListener;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
 import de.perdian.apps.tagtiger.fx.panels.selection.directories.DirectoryTreeView;
 import de.perdian.apps.tagtiger.fx.panels.selection.files.FileSelectionPane;
 import javafx.application.Platform;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -47,53 +41,14 @@ public class SelectionPane extends BorderPane {
         directoryTreeView.setMinWidth(225d);
         directoryTreeView.selectedDirectoryProperty().addListener((o, oldValue, newValue) -> selection.currentDirectoryProperty().setValue(newValue));
 
-        FileSelectionPane fileSelectionPane = new FileSelectionPane(localization);
+        FileSelectionPane fileSelectionPane = new FileSelectionPane(selection, localization, jobExecutor);
         fileSelectionPane.setMinWidth(300d);
         fileSelectionPane.availableFilesProperty().bindBidirectional(selection.availableFilesProperty());
         fileSelectionPane.selectedFilesProperty().addListener((Change<? extends TaggableFile> change) -> selection.selectedFilesProperty().setAll(change.getList()));
         fileSelectionPane.selectedFileProperty().addListener((o, oldValue, newValue) -> selection.currentFileProperty().setValue(newValue));
         jobExecutor.addListener(new DisableWhileJobRunningJobListener(fileSelectionPane.disableProperty()));
-        selection.currentFileProperty().addListener((o, oldValue, newValue) -> {
-            if (newValue != null) {
-                fileSelectionPane.scrollTo(newValue);
-            }
-        });
 
-        Button saveChangedFilesButton = new Button(localization.saveChangedFiles());
-        saveChangedFilesButton.setGraphic(new ImageView(new Image(SelectionPane.class.getClassLoader().getResourceAsStream("icons/16/save.png"))));
-        saveChangedFilesButton.setDisable(selection.changedFilesProperty().isEmpty());
-        saveChangedFilesButton.setOnAction(event -> jobExecutor.executeJob(new SaveChangedFilesJob(selection, localization)));
-        selection.changedFilesProperty().addListener((o, oldValue, newValue) -> saveChangedFilesButton.setDisable(newValue == null || newValue.isEmpty()));
-
-        Button reloadButton = new Button();
-        reloadButton.setTooltip(new Tooltip(localization.reload()));
-        reloadButton.setGraphic(new ImageView(new Image(SelectionPane.class.getClassLoader().getResourceAsStream("icons/16/refresh.png"))));
-        reloadButton.setOnAction(event -> {
-            File currentDirectoryProperty = selection.currentDirectoryProperty().getValue();
-            selection.currentDirectoryProperty().setValue(null);
-            selection.currentDirectoryProperty().setValue(currentDirectoryProperty);
-        });
-        jobExecutor.addListener(new DisableWhileJobRunningJobListener(reloadButton.disableProperty()));
-
-        Button selectAllButton = new Button();
-        selectAllButton.setTooltip(new Tooltip(localization.selectAllFiles()));
-        selectAllButton.setGraphic(new ImageView(new Image(SelectionPane.class.getClassLoader().getResourceAsStream("icons/16/select-all.png"))));
-        selectAllButton.setOnAction(actino -> fileSelectionPane.selectAll());
-        jobExecutor.addListener(new DisableWhileJobRunningJobListener(selectAllButton.disableProperty()));
-        HBox leftButtonBox = new HBox(5, reloadButton, selectAllButton);
-
-        ListChangeListener<TaggableFile> saveChangedFileChaneListener = c -> saveChangedFilesButton.setDisable(c.getList().isEmpty());
-        selection.changedFilesProperty().addListener(saveChangedFileChaneListener);
-        BorderPane buttonPane = new BorderPane();
-        buttonPane.setPadding(new Insets(5, 5, 5, 5));
-        buttonPane.setLeft(leftButtonBox);
-        buttonPane.setRight(saveChangedFilesButton);
-
-        BorderPane rightPanel = new BorderPane();
-        rightPanel.setTop(buttonPane);
-        rightPanel.setCenter(fileSelectionPane);
-
-        SplitPane splitPane = new SplitPane(directoryTreeView, rightPanel);
+        SplitPane splitPane = new SplitPane(directoryTreeView, fileSelectionPane);
         splitPane.setDividerPositions(0.4d);
 
         TextField directoryField = new TextField();
