@@ -85,6 +85,32 @@ public class TagImageList {
         return result.append("]").toString();
     }
 
+    @Override
+    public int hashCode() {
+        return this.getTagImages().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof TagImageList) {
+            TagImageList thatList = (TagImageList)that;
+            if (this.getTagImages().size() != thatList.getTagImages().size()) {
+                return false;
+            } else {
+                for (int i=0; i < this.getTagImages().size(); i++) {
+                    if (!this.getTagImages().get(i).equals(thatList.getTagImages().get(i))) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
     public ObservableList<TagImage> getTagImages() {
         return this.tagImages;
     }

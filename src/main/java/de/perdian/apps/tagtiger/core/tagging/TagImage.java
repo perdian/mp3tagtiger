@@ -23,11 +23,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jaudiotagger.tag.datatype.Artwork;
 import org.jaudiotagger.tag.reference.PictureTypes;
 
@@ -88,23 +91,34 @@ public class TagImage {
         this.descriptionProperty().addListener(delegatingChangeListener);
     }
 
-    Artwork toArtwork() throws IOException {
+    Artwork toArtwork() {
         if (this.imageProperty().getValue() == null) {
             return null;
         } else {
 
-            BufferedImage awtImage = SwingFXUtils.fromFXImage(this.imageProperty().getValue(), null);
-            ByteArrayOutputStream imageOutStream = new ByteArrayOutputStream();
-            ImageIO.write(awtImage, "png", imageOutStream);
-
             Integer pictureTypeId = PictureTypes.getInstanceOf().getIdForValue(this.pictureTypeProperty().getValue());
             Artwork artwork = this.getArtwork() == null ? new Artwork() : this.getArtwork();
-            artwork.setBinaryData(imageOutStream.toByteArray());
+            artwork.setBinaryData(this.toPngBytes());
             artwork.setDescription(this.descriptionProperty().getValue());
             artwork.setMimeType("image/png");
             artwork.setPictureType(pictureTypeId == null ? PictureTypes.DEFAULT_ID : pictureTypeId.intValue());
             return artwork;
 
+        }
+    }
+
+    byte[] toPngBytes() {
+        try {
+            if (this.imageProperty().getValue() == null) {
+                return null;
+            } else {
+                BufferedImage awtImage = SwingFXUtils.fromFXImage(this.imageProperty().getValue(), null);
+                ByteArrayOutputStream imageOutStream = new ByteArrayOutputStream();
+                ImageIO.write(awtImage, "png", imageOutStream);
+                return imageOutStream.toByteArray();
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Cannot encode image as PNG", e);
         }
     }
 
@@ -114,6 +128,46 @@ public class TagImage {
         result.append(this.getClass().getSimpleName());
         result.append("[description=").append(this.descriptionProperty().getValue());
         return result.append("]").toString();
+    }
+
+    @Override
+    public int hashCode() {
+        HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+        hashCodeBuilder.append(this.imageProperty().getValue());
+        hashCodeBuilder.append(this.imageSizeProperty().getValue());
+        hashCodeBuilder.append(this.pictureTypeProperty().getValue());
+        hashCodeBuilder.append(this.descriptionProperty().getValue());
+        return hashCodeBuilder.toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof TagImage) {
+            TagImage thatImage = (TagImage)that;
+            EqualsBuilder equalsBuilder = new EqualsBuilder();
+            equalsBuilder.append(this.imageSizeProperty().getValue(), thatImage.imageSizeProperty().getValue());
+            equalsBuilder.append(this.pictureTypeProperty().getValue(), thatImage.pictureTypeProperty().getValue());
+            equalsBuilder.append(this.descriptionProperty().getValue(), thatImage.descriptionProperty().getValue());
+            return equalsBuilder.isEquals() && this.equalsImageContent(thatImage);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean equalsImageContent(TagImage thatImage) {
+        byte[] thisBytes = this.toPngBytes();
+        byte[] thatBytes = thatImage.toPngBytes();
+        if (thisBytes == null && thatBytes == null) {
+            return true;
+        } else if (thisBytes == null || thatBytes == null) {
+            return false;
+        } else if (thisBytes.length != thatBytes.length) {
+            return false;
+        } else {
+            return Arrays.equals(thisBytes, thatBytes);
+        }
     }
 
     Artwork getArtwork() {
