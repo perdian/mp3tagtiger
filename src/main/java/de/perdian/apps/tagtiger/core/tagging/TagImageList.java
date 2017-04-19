@@ -15,30 +15,65 @@
  */
 package de.perdian.apps.tagtiger.core.tagging;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import org.jaudiotagger.tag.Tag;
+
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 public class TagImageList {
 
     private ObservableList<TagImage> tagImages = null;
-    private final BooleanProperty changed = new SimpleBooleanProperty();
+    private List<ChangeListener<Object>> changeListeners = new CopyOnWriteArrayList<>();
+    private boolean dirty = false;
 
-    public TagImageList(List<TagImage> tagImages, ChangeListener<Object> changeListener) {
+    public TagImageList(TagImageList sourceList) {
+        ChangeListener<Object> distributionChangeListener = new DelegatingChangeListener();
+        ObservableList<TagImage> newImageList = FXCollections.observableArrayList();
+        for (TagImage sourceImage : sourceList.getTagImages()) {
+            TagImage newImage = new TagImage(sourceImage);
+            newImage.addChangeListener(distributionChangeListener);
+            newImageList.add(newImage);
+        }
+        this.setTagImages(newImageList);
+        this.setDirty(true);
+    }
 
-        ObservableList<TagImage> observableTagImages = FXCollections.observableArrayList();
-        observableTagImages.addListener((Change<? extends TagImage> change) -> change.getList().forEach(tagImage -> tagImage.changedProperty().addListener((o, oldValue, newValue) -> this.changedProperty().set(true))));
-        observableTagImages.setAll(tagImages);
-        observableTagImages.addListener((Change<? extends TagImage> change) -> this.changedProperty().set(true));
+    TagImageList(Tag sourceTag) {
 
-        this.changedProperty().addListener(changeListener);
+        ChangeListener<Object> distributionChangeListener = new DelegatingChangeListener();
+
+        List<TagImage> tagImages = TagImageHelper.loadTagImages(sourceTag);
+        tagImages.forEach(tagImage -> tagImage.addChangeListener(distributionChangeListener));
+
+        ListChangeListener<TagImage> tagImagesChangeListener = change -> {
+            while (change.next()) {
+                distributionChangeListener.changed(null, null, change.getList());
+                change.getAddedSubList().forEach(image -> image.addChangeListener(distributionChangeListener));
+                change.getRemoved().forEach(image -> image.removeChangeListener(distributionChangeListener));
+            }
+        };
+        ObservableList<TagImage> observableTagImages = FXCollections.observableArrayList(tagImages);
+        observableTagImages.addListener(tagImagesChangeListener);
         this.setTagImages(observableTagImages);
+
+    }
+
+    class DelegatingChangeListener implements ChangeListener<Object> {
+
+        @Override
+        public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+            if (!Objects.equals(oldValue, newValue)) {
+                TagImageList.this.getChangeListeners().forEach(listener -> listener.changed(observable, oldValue, newValue));
+                TagImageList.this.setDirty(true);
+            }
+        }
 
     }
 
@@ -47,13 +82,33 @@ public class TagImageList {
         StringBuilder result = new StringBuilder();
         result.append(this.getClass().getSimpleName());
         result.append("[tagImages=").append(this.getTagImages());
-        result.append(",changed=").append(this.changedProperty().get());
         return result.append("]").toString();
     }
 
-    public void updateTagImages(Collection<TagImage> newImages) {
-        this.getTagImages().setAll(newImages);
-        this.changedProperty().set(true);
+    @Override
+    public int hashCode() {
+        return this.getTagImages().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof TagImageList) {
+            TagImageList thatList = (TagImageList)that;
+            if (this.getTagImages().size() != thatList.getTagImages().size()) {
+                return false;
+            } else {
+                for (int i=0; i < this.getTagImages().size(); i++) {
+                    if (!this.getTagImages().get(i).equals(thatList.getTagImages().get(i))) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        } else {
+            return false;
+        }
     }
 
     public ObservableList<TagImage> getTagImages() {
@@ -63,8 +118,24 @@ public class TagImageList {
         this.tagImages = tagImages;
     }
 
-    public BooleanProperty changedProperty() {
-        return this.changed;
+    public void addChangeListener(ChangeListener<Object> changeListener) {
+        this.getChangeListeners().add(changeListener);
+    }
+    public void removeChangeListener(ChangeListener<Object> changeListener) {
+        this.getChangeListeners().remove(changeListener);
+    }
+    List<ChangeListener<Object>> getChangeListeners() {
+        return this.changeListeners;
+    }
+    void setChangeListeners(List<ChangeListener<Object>> changeListeners) {
+        this.changeListeners = changeListeners;
+    }
+
+    boolean isDirty() {
+        return this.dirty;
+    }
+    void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Christian Robert
+ * Copyright 2014-2017 Christian Robert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,15 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TagImage;
+import de.perdian.apps.tagtiger.core.tagging.TagImageList;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
-import de.perdian.apps.tagtiger.fx.handlers.files.CopyPropertyValueAction;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
+import de.perdian.apps.tagtiger.fx.support.EditorComponentBuilderFactory;
+import de.perdian.apps.tagtiger.fx.support.actions.CopyPropertyValueAction;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.geometry.Insets;
@@ -43,24 +44,27 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 
-public class ImagesEditorTab extends Tab {
+class ImagesEditorTab extends Tab {
 
     private static final Logger log = LoggerFactory.getLogger(ImagesEditorTab.class);
 
     private final ListProperty<TagImage> images = new SimpleListProperty<>(FXCollections.observableArrayList());
-    private final Property<TaggableFile> currentFile = new SimpleObjectProperty<>();
-    private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public ImagesEditorTab(Localization localization) {
+    ImagesEditorTab(EditorComponentBuilderFactory componentBuilderFactory, Selection selection, Localization localization) {
+
+        selection.currentFileProperty().addListener((o, oldValue, newValue) -> this.imagesProperty().set(newValue == null ? null : newValue.imagesProperty().getValue().getTagImages()));
 
         ListView<TagImage> listView = new ListView<>();
         listView.setCellFactory(e -> new ImageListCell(localization));
         this.imagesProperty().addListener((Change<? extends TagImage> change) -> listView.itemsProperty().get().setAll(change.getList()));
 
+        CopyPropertyValueAction<TagImageList> copyPropertyValuesAction = new CopyPropertyValueAction<>(TaggableFile::imagesProperty, (property, value) -> property.setValue(new TagImageList(value)));
         Button copyImagesButton = new Button(localization.copyImages());
+        copyImagesButton.setDisable(true);
         copyImagesButton.setGraphic(new ImageView(new Image(ImagesEditorTab.class.getClassLoader().getResourceAsStream("icons/16/copy.png"))));
-        copyImagesButton.setOnAction(new CopyPropertyValueAction<>(TaggableFile::imagesProperty, (targetProperty, targetValue) -> targetProperty.getValue().updateTagImages(targetValue.getTagImages())).asEventHandler(this.currentFileProperty(), this.selectedFilesProperty()));
+        copyImagesButton.setOnAction(event -> copyPropertyValuesAction.execute(selection.currentFileProperty(), selection.selectedFilesProperty(), selection.availableFilesProperty()));
         copyImagesButton.setTooltip(new Tooltip(localization.copyImagesToOtherFiles()));
+        selection.selectedFilesProperty().addListener((o, oldValue, newValue) -> copyImagesButton.setDisable(newValue == null || newValue.size() <= 1));
 
         Button removeImagesButton = new Button(localization.clearImages());
         removeImagesButton.setGraphic(new ImageView(new Image(ImagesEditorTab.class.getClassLoader().getResourceAsStream("icons/16/delete.png"))));
@@ -73,7 +77,7 @@ public class ImagesEditorTab extends Tab {
         addImageButton.setGraphic(new ImageView(new Image(ImagesEditorTab.class.getClassLoader().getResourceAsStream("icons/16/add.png"))));
         addImageButton.setTooltip(new Tooltip(localization.addImage()));
         addImageButton.setOnAction(event -> {
-            File tagFile = this.currentFileProperty().getValue().getFile();
+            File tagFile = selection.currentFileProperty().getValue().getSystemFile();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle(localization.openImage());
             fileChooser.setInitialDirectory(tagFile.getParentFile());
@@ -116,13 +120,8 @@ public class ImagesEditorTab extends Tab {
         protected void updateItem(TagImage item, boolean empty) {
             super.updateItem(item, empty);
             if (item != null) {
-                ImagesImageEditorPane imagePane = new ImagesImageEditorPane(item, this.getLocalization());
+                ImagesEditorImagePane imagePane = new ImagesEditorImagePane(item, this.getLocalization());
                 imagePane.setOnDeleteActionHandler(event -> ImagesEditorTab.this.imagesProperty().get().remove(item));
-                imagePane.changedProperty().addListener((o, oldValue, newValue) -> {
-                    if (newValue) {
-                        item.changedProperty().set(true);
-                    }
-                });
                 this.setGraphic(imagePane);
             } else {
                 this.setGraphic(null);
@@ -140,14 +139,6 @@ public class ImagesEditorTab extends Tab {
 
     public ListProperty<TagImage> imagesProperty() {
         return this.images;
-    }
-
-    public Property<TaggableFile> currentFileProperty() {
-        return this.currentFile;
-    }
-
-    public ListProperty<TaggableFile> selectedFilesProperty() {
-        return this.selectedFiles;
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Christian Robert
+ * Copyright 2014-2017 Christian Robert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,185 +16,197 @@
 package de.perdian.apps.tagtiger.core.tagging;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.datatype.Artwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 public class TaggableFile {
 
     private static final Logger log = LoggerFactory.getLogger(TaggableFile.class);
 
-    private File file = null;
+    private File systemFile = null;
     private AudioFile audioFile = null;
+    private Property<Boolean> dirty = new SimpleBooleanProperty();
+    private Property<Boolean> active = new SimpleBooleanProperty();
+    private Map<TaggablePropertyKey, Property<String>> properties = new EnumMap<>(TaggablePropertyKey.class);
+    private Property<TagImageList> images = new SimpleObjectProperty<>();
+    private Property<String> fileName = new SimpleStringProperty();
+    private Property<String> fileExtension = new SimpleStringProperty();
 
-    private final StringProperty title = new SimpleStringProperty();
-    private final StringProperty artist = new SimpleStringProperty();
-    private final StringProperty album = new SimpleStringProperty();
-    private final StringProperty albumArtist = new SimpleStringProperty();
-    private final StringProperty discNumber = new SimpleStringProperty();
-    private final StringProperty discsTotal = new SimpleStringProperty();
-    private final StringProperty year = new SimpleStringProperty();
-    private final StringProperty trackNumber = new SimpleStringProperty();
-    private final StringProperty tracksTotal = new SimpleStringProperty();
-    private final StringProperty genre = new SimpleStringProperty();
-    private final StringProperty comment = new SimpleStringProperty();
-    private final StringProperty composer = new SimpleStringProperty();
-    private final Property<TagImageList> images = new SimpleObjectProperty<>();
+    public TaggableFile(File systemFile) throws IOException {
+        try {
 
-    private final StringProperty fileName = new SimpleStringProperty();
-    private final StringProperty fileExtension = new SimpleStringProperty();
-    private final BooleanProperty dirty = new SimpleBooleanProperty(false);
+            log.trace("Reading tag information from file: {}", systemFile.getAbsolutePath());
+            AudioFile audioFile = AudioFileIO.read(systemFile);
+            Tag audioFileTag = audioFile.getTagOrCreateDefault();
+            ChangeListener<Object> changeListener = new MarkDirtyChangeListener();
 
-    public TaggableFile(File file) throws Exception {
+            for (TaggablePropertyKey taggablePropertyKey : TaggablePropertyKey.values()) {
+                Property<String> taggableProperty = new SimpleStringProperty();
+                taggableProperty.setValue(taggablePropertyKey.readTagValue(audioFileTag));
+                taggableProperty.addListener(changeListener);
+                this.getProperties().put(taggablePropertyKey, taggableProperty);
+            }
 
-        ChangeListener<Object> markAsDirtyChangeListener = TaggableFileHelper.createMarkDirtyChangeListener(this.dirtyProperty());
+            TagImageList tagImageList = new TagImageList(audioFileTag);
+            tagImageList.addChangeListener(changeListener);
+            this.imagesProperty().setValue(tagImageList);
+            this.imagesProperty().addListener(changeListener);
+            this.imagesProperty().addListener((o, oldValue, newValue) -> {
+                if (!Objects.equals(oldValue, newValue)) {
+                    if (oldValue != null) {
+                        oldValue.removeChangeListener(changeListener);
+                    }
+                    if (newValue != null) {
+                        newValue.addChangeListener(changeListener);
+                    }
+                }
+            });
 
-        log.trace("Reading tag information from file: {}", file.getAbsolutePath());
-        AudioFile audioFile = AudioFileIO.read(file);
-        Tag tag = audioFile.getTagOrCreateDefault();
-        this.setFile(file);
-        this.setAudioFile(audioFile);
+            this.setSystemFile(systemFile);
+            this.setAudioFile(audioFile);
 
-        // Update all the internal tag objects with the values read from the tag
-        // available in the file that we just read
-        TaggableFileHelper.initializePropertyFromStringTag(this.titleProperty(), tag, FieldKey.TITLE, markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromStringTag(this.artistProperty(), tag, FieldKey.ARTIST, markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromStringTag(this.albumProperty(), tag, FieldKey.ALBUM, markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromStringTag(this.albumArtistProperty(), tag, FieldKey.ALBUM_ARTIST, markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromStringTag(this.yearProperty(), tag, FieldKey.YEAR, markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromStringTag(this.trackNumberProperty(), tag, FieldKey.TRACK, markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromStringTag(this.tracksTotalProperty(), tag, FieldKey.TRACK_TOTAL, markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromStringTag(this.discNumberProperty(), tag, FieldKey.DISC_NO, markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromStringTag(this.discsTotalProperty(), tag, FieldKey.DISC_TOTAL, markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromGenreTag(this.genreProperty(), tag, FieldKey.GENRE, markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromStringTag(this.commentProperty(), tag, FieldKey.COMMENT, markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromStringTag(this.composerProperty(), tag, FieldKey.COMPOSER, markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromImagesTag(this.imagesProperty(), tag, markAsDirtyChangeListener);
+            // Finally we extract the file name and extension information from the
+            // file so that the user may change this as well
+            int extensionSeparator = systemFile.getName().lastIndexOf(".");
+            this.fileNameProperty().setValue(extensionSeparator < 0 ? systemFile.getName() : systemFile.getName().substring(0, extensionSeparator));
+            this.fileNameProperty().addListener(changeListener);
+            this.fileExtensionProperty().setValue(extensionSeparator < 0 || extensionSeparator >= systemFile.getName().length() - 1 ? null : systemFile.getName().substring(extensionSeparator + 1));
+            this.fileExtensionProperty().addListener(changeListener);
 
-        // Finally we extract the file name and extension information from the
-        // file so that the user may change this as well
-        int extensionSeparator = file.getName().lastIndexOf(".");
-        TaggableFileHelper.initializePropertyFromStringValue(this.fileNameProperty(), extensionSeparator < 0 ? file.getName() : file.getName().substring(0, extensionSeparator), markAsDirtyChangeListener);
-        TaggableFileHelper.initializePropertyFromStringValue(this.fileExtensionProperty(), extensionSeparator < 0 || extensionSeparator >= file.getName().length() - 1 ? null : file.getName().substring(extensionSeparator + 1), markAsDirtyChangeListener);
-
+        } catch (Exception e) {
+            throw new IOException("Cannot read MP3 content from file at: " + systemFile.getAbsolutePath(), e);
+        }
     }
 
-    public void writeIntoFile() throws Exception {
+    public void writeIntoFile() throws IOException {
 
         StringBuilder newFileName = new StringBuilder();
-        newFileName.append(this.fileNameProperty().get());
-        newFileName.append(".").append(this.fileExtensionProperty().get());
+        newFileName.append(this.fileNameProperty().getValue());
+        newFileName.append(".").append(this.fileExtensionProperty().getValue());
 
-        File currentSystemFile = this.getFile().getCanonicalFile();
+        AudioFile audioFile = this.getAudioFile();
+        Tag targetTag = audioFile.getTagOrCreateAndSetDefault();
+        for (TaggablePropertyKey taggableProperty : TaggablePropertyKey.values()) {
+            Property<String> taggablePropertyValue = this.getProperties().get(taggableProperty);
+            taggableProperty.writeValue(targetTag, taggablePropertyValue.getValue());
+        }
+
+        TagImageList imageList = this.imagesProperty().getValue();
+        if (imageList.isDirty()) {
+
+            // Delete the artwork so that we'll re-add it again
+            targetTag.deleteArtworkField();
+
+            imageList.getTagImages().forEach(tagImage -> {
+                try {
+                    Artwork artwork = tagImage.toArtwork();
+                    if (artwork != null) {
+                        targetTag.addField(artwork);
+                    }
+                } catch (Exception e) {
+                    log.warn("Cannot update artwork with image value: " + imageList, e);
+                }
+            });
+            imageList.setDirty(false);
+
+        }
+
+        audioFile.setTag(targetTag);
+        try {
+            AudioFileIO.write(audioFile);
+        } catch (Exception e) {
+            throw new IOException("Cannot write MP3 tag into file at: " + audioFile.getFile().getAbsolutePath(), e);
+        }
+
+        File currentSystemFile = this.getSystemFile().getCanonicalFile();
         long originalTimestamp = currentSystemFile.lastModified();
         File newSystemFile = new File(currentSystemFile.getParentFile(), newFileName.toString());
         if (!newSystemFile.equals(currentSystemFile)) {
             currentSystemFile.renameTo(newSystemFile);
+            audioFile.setFile(newSystemFile);
+            this.setSystemFile(newSystemFile);
         }
-
-        AudioFile audioFile = this.getAudioFile();
-        Tag targetTag = audioFile.getTagOrCreateAndSetDefault();
-        TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.TITLE, this.titleProperty());
-        TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.ARTIST, this.artistProperty());
-        TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.ALBUM, this.albumProperty());
-        TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.ALBUM_ARTIST, this.albumArtistProperty());
-        TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.YEAR, this.yearProperty());
-        TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.TRACK, this.trackNumberProperty());
-        TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.TRACK_TOTAL, this.tracksTotalProperty());
-        TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.DISC_NO, this.discNumberProperty());
-        TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.DISC_TOTAL, this.discsTotalProperty());
-        TaggableFileHelper.updateTagFromGenreProperty(targetTag, this.genreProperty());
-        TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.COMMENT, this.commentProperty());
-        TaggableFileHelper.updateTagFromStringProperty(targetTag, FieldKey.COMPOSER, this.composerProperty());
-        TaggableFileHelper.updateTagFromTagImageListProperty(targetTag, this.imagesProperty());
-
-        audioFile.setFile(newSystemFile);
-        audioFile.setTag(targetTag);
-        AudioFileIO.write(audioFile);
         newSystemFile.setLastModified(originalTimestamp);
         this.dirtyProperty().setValue(false);
 
     }
 
+    class MarkDirtyChangeListener implements ChangeListener<Object> {
+
+        @Override
+        public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+            if (!Objects.equals(oldValue, newValue)) {
+                TaggableFile.this.dirtyProperty().setValue(Boolean.TRUE);
+            }
+        }
+
+    }
+
     @Override
     public String toString() {
-        return this.getFile().getName();
+        return this.getSystemFile().getName();
     }
 
-    public File getFile() {
-        return this.file;
-    }
-    private void setFile(File file) {
-        this.file = file;
+    public String toExtendedString() {
+        return this.getSystemFile().getAbsolutePath();
     }
 
-    private AudioFile getAudioFile() {
+    public File getSystemFile() {
+        return this.systemFile;
+    }
+    void setSystemFile(File systemFile) {
+        this.systemFile = systemFile;
+    }
+
+    AudioFile getAudioFile() {
         return this.audioFile;
     }
-    private void setAudioFile(AudioFile audioFile) {
+    void setAudioFile(AudioFile audioFile) {
         this.audioFile = audioFile;
     }
 
-    public StringProperty fileNameProperty() {
-        return this.fileName;
+    public Property<String> property(TaggablePropertyKey property) {
+        return Optional.ofNullable(this.getProperties().get(property))
+            .orElseThrow(() -> new IllegalArgumentException("Cannot find property for key: " + property));
     }
-    public StringProperty fileExtensionProperty() {
-        return this.fileExtension;
+    Map<TaggablePropertyKey, Property<String>> getProperties() {
+        return this.properties;
     }
-    public BooleanProperty dirtyProperty() {
-        return this.dirty;
+    void setProperties(Map<TaggablePropertyKey, Property<String>> properties) {
+        this.properties = properties;
     }
 
-    public StringProperty titleProperty() {
-        return this.title;
-    }
-    public StringProperty artistProperty() {
-        return this.artist;
-    }
-    public StringProperty albumProperty() {
-        return this.album;
-    }
-    public StringProperty albumArtistProperty() {
-        return this.albumArtist;
-    }
-    public StringProperty discNumberProperty() {
-        return this.discNumber;
-    }
-    public StringProperty discsTotalProperty() {
-        return this.discsTotal;
-    }
-    public StringProperty yearProperty() {
-        return this.year;
-    }
-    public StringProperty trackNumberProperty() {
-        return this.trackNumber;
-    }
-    public StringProperty tracksTotalProperty() {
-        return this.tracksTotal;
-    }
-    public StringProperty genreProperty() {
-        return this.genre;
-    }
-    public StringProperty commentProperty() {
-        return this.comment;
-    }
-    public StringProperty composerProperty() {
-        return this.composer;
-    }
     public Property<TagImageList> imagesProperty() {
         return this.images;
+    }
+    public Property<Boolean> activeProperty() {
+        return this.active;
+    }
+    public Property<Boolean> dirtyProperty() {
+        return this.dirty;
+    }
+    public Property<String> fileNameProperty() {
+        return this.fileName;
+    }
+    public Property<String> fileExtensionProperty() {
+        return this.fileExtension;
     }
 
 }

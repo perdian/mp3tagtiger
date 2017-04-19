@@ -33,7 +33,6 @@ class PreferencesLoader {
     private static final Logger log = LoggerFactory.getLogger(PreferencesLoader.class);
 
     static Properties loadProperties() {
-
         Properties properties = new Properties();
         try {
             File preferencesFile = PreferencesLoader.resolvePreferencesFile(false);
@@ -49,7 +48,6 @@ class PreferencesLoader {
             log.warn("Cannot load preferences", e);
         }
         return properties;
-
     }
 
     static void writeProperties(Properties properties) {
