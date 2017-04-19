@@ -140,9 +140,10 @@ public class TaggableFile {
         File newSystemFile = new File(currentSystemFile.getParentFile(), newFileName.toString());
         if (!newSystemFile.equals(currentSystemFile)) {
             currentSystemFile.renameTo(newSystemFile);
+            audioFile.setFile(newSystemFile);
+            this.setSystemFile(newSystemFile);
         }
         newSystemFile.setLastModified(originalTimestamp);
-        audioFile.setFile(newSystemFile);
         this.dirtyProperty().setValue(false);
 
     }
