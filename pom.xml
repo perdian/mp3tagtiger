@@ -27,7 +27,6 @@
         <commons-lang3.version>3.5</commons-lang3.version>
         <log4j.version>1.2.17</log4j.version>
         <jaudiotagger.version>2.0.3</jaudiotagger.version>
-        <openjfx-dialogs.version>1.0.3</openjfx-dialogs.version>
         <slf4j.version>1.7.25</slf4j.version>
     </properties>
 
@@ -61,11 +60,6 @@
             <groupId>org</groupId>
             <artifactId>jaudiotagger</artifactId>
             <version>${jaudiotagger.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.controlsfx</groupId>
-            <artifactId>openjfx-dialogs</artifactId>
-            <version>${openjfx-dialogs.version}</version>
         </dependency>
     </dependencies>
 
