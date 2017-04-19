@@ -18,7 +18,7 @@ package de.perdian.apps.tagtiger.fx.panels.selection.files;
 import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
-import de.perdian.apps.tagtiger.fx.panels.tools.updatefilenames.UpdateFileNamesEventHandler;
+import de.perdian.apps.tagtiger.fx.panels.tools.updatefilenames.UpdateFileNamesOpenDialogEventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -31,7 +31,7 @@ class FileSelectionBottomButtonPane extends HBox {
     FileSelectionBottomButtonPane(Selection selection, Localization localization, JobExecutor jobExecutor) {
 
         Button updateFileNamesButton = new Button(localization.updateFileNames());
-        updateFileNamesButton.setOnAction(new UpdateFileNamesEventHandler(selection, localization));
+        updateFileNamesButton.setOnAction(new UpdateFileNamesOpenDialogEventHandler(selection, localization));
         updateFileNamesButton.setDisable(true);
         updateFileNamesButton.setGraphic(new ImageView(new Image(FileSelectionBottomButtonPane.class.getClassLoader().getResourceAsStream("icons/16/file-list.png"))));
         selection.selectedFilesProperty().addListener((o, oldValue, newValue) -> updateFileNamesButton.setDisable(newValue == null || newValue.isEmpty()));
