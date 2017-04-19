@@ -116,14 +116,14 @@
             </build>
         </profile>
         <profile>
-            <id>osx-bundle</id>
+            <id>macos-bundle</id>
             <build>
                 <resources>
                     <resource>
                         <directory>src/main/resources</directory>
                     </resource>
                     <resource>
-                        <directory>src/bundle/osx/resources</directory>
+                        <directory>src/bundle/macos/resources</directory>
                     </resource>
                 </resources>
                 <plugins>
@@ -143,7 +143,7 @@
                                     <include>CREDITS.txt</include>
                                 </additionalResource>
                                 <additionalResource>
-                                    <directory>${project.basedir}/src/bundle/osx/distribution</directory>
+                                    <directory>${project.basedir}/src/bundle/macos/distribution</directory>
                                 </additionalResource>
                             </additionalResources>
                         </configuration>
