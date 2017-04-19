@@ -15,9 +15,7 @@
  */
 package de.perdian.apps.tagtiger.fx.jobs;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -67,14 +65,12 @@ public class SaveChangedFilesJob implements Job {
             context.updateProgress(this.getLocalization().savingFile(file.toString()), i, changedFiles.size());
 
             log.debug("Saving MP3 file: {}", file.toExtendedString());
-            Map<TaggableFile, Exception> errorsDuringSave = new LinkedHashMap<>();
             try {
                 if (file.dirtyProperty().getValue()) {
                     file.writeIntoFile();
                 }
             } catch (Exception e) {
                 log.error("Cannot save file {}", file.toExtendedString(), e);
-                errorsDuringSave.put(file, e);
             }
 
         }
