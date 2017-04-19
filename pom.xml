@@ -67,11 +67,6 @@
             <artifactId>openjfx-dialogs</artifactId>
             <version>${openjfx-dialogs.version}</version>
         </dependency>
-		<dependency>
-		    <groupId>com.aquafx-project</groupId>
-		    <artifactId>aquafx</artifactId>
-		    <version>0.2</version>
-		</dependency>
     </dependencies>
 
     <build>
