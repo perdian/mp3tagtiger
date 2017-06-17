@@ -57,7 +57,7 @@ class UpdateFileNamesComputeChangeListener implements ChangeListener<String> {
             String substitutionEvaluationResult = substitutor.replace(newFileNamePattern);
             String substitutionSanitizedResult = this.sanitizeFileName(substitutionEvaluationResult);
 
-            if (!Objects.equals(substitutionSanitizedResult, item.getNewFileName().getValue())) {
+            if (substitutionSanitizedResult != null && !substitutionSanitizedResult.isEmpty() && !Objects.equals(substitutionSanitizedResult, item.getNewFileName().getValue())) {
                 item.getNewFileName().setValue(substitutionSanitizedResult);
             }
 
@@ -86,7 +86,7 @@ class UpdateFileNamesComputeChangeListener implements ChangeListener<String> {
 
         @Override
         public String apply(String value) {
-            StringBuilder resultValue = new StringBuilder(value);
+            StringBuilder resultValue = new StringBuilder(value == null ? "" : value);
             for (UpdateFileNamesItem item : UpdateFileNamesComputeChangeListener.this.getItems()) {
                 String itemTrackValue = item.getFile().property(TaggablePropertyKey.TRACK_NUMBER).getValue();
                 int itemTrackValueLength = itemTrackValue == null ? 0 : itemTrackValue.length();
