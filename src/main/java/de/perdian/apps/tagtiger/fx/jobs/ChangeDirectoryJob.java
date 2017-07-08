@@ -116,7 +116,7 @@ public class ChangeDirectoryJob implements Job {
                 return true;
             } else {
                 String fileName = file.getName().toLowerCase();
-                return fileName.endsWith(".mp3");
+                return fileName.endsWith(".mp3") || fileName.endsWith(".m4a");
             }
         }
 
