@@ -29,6 +29,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -37,6 +38,8 @@ import javafx.scene.text.Font;
 
 class UpdateTagsEditorPane extends VBox {
 
+    private UpdateTagsPatternPane currentDetailPane = null;
+
     UpdateTagsEditorPane(Selection selection, Localization localization) {
 
         Property<Pattern> regexPatternProperty = new SimpleObjectProperty<>();
@@ -44,6 +47,11 @@ class UpdateTagsEditorPane extends VBox {
         regexApplyButton.setDisable(true);
         regexApplyButton.setMaxHeight(Double.MAX_VALUE);
         TextField regexField = new TextField();
+        regexField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                regexApplyButton.fire();
+            }
+        });
         GridPane.setHgrow(regexField, Priority.ALWAYS);
         TextArea regexResultArea = new TextArea(localization.noRegularExpressionSetYet());
         regexResultArea.setEditable(false);
@@ -63,9 +71,11 @@ class UpdateTagsEditorPane extends VBox {
         topTitledPane.setCollapsible(false);
 
         BorderPane detailsWrapperPane = new BorderPane(new Label(localization.noRegularExpressionSetYet()));
-        detailsWrapperPane.setPadding(new Insets(5, 5, 5, 5));
+        detailsWrapperPane.setPadding(new Insets(10, 10, 10, 10));
         TitledPane detailsTitledPane = new TitledPane(localization.details(), detailsWrapperPane);
         detailsTitledPane.setCollapsible(false);
+        detailsTitledPane.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(detailsTitledPane, Priority.ALWAYS);
 
         this.getChildren().addAll(topTitledPane, detailsTitledPane);
         this.setSpacing(5);
@@ -95,21 +105,38 @@ class UpdateTagsEditorPane extends VBox {
             }
         });
 
-        regexPatternProperty.addListener((o, oldValue, newValue) -> {
-            if (newValue == null) {
+        regexApplyButton.setOnAction(event -> {
+            if (regexField.textProperty().getValueSafe().isEmpty()) {
                 Platform.runLater(() -> {
                     detailsWrapperPane.getChildren().clear();
                     detailsWrapperPane.setCenter(new Label(localization.noRegularExpressionSetYet()));
                 });
             } else {
-                UpdateTagsPatternPane patternPane = new UpdateTagsPatternPane(newValue, selection, localization);
-                Platform.runLater(() -> {
-                    detailsWrapperPane.getChildren().clear();
-                    detailsWrapperPane.setCenter(patternPane);
-                });
+                Pattern newPattern = regexPatternProperty.getValue();
+                int newNumberOfGroups = newPattern.matcher("").groupCount();
+                UpdateTagsPatternPane currentDetailPane = this.getCurrentDetailPane();
+                if (currentDetailPane == null || currentDetailPane.getTagItemList().size() != newNumberOfGroups) {
+                    UpdateTagsPatternPane newDetailPane = new UpdateTagsPatternPane(regexPatternProperty.getValue(), selection, localization);
+                    Platform.runLater(() -> {
+                        detailsWrapperPane.getChildren().clear();
+                        detailsWrapperPane.setCenter(newDetailPane);
+                        this.setCurrentDetailPane(newDetailPane);
+                    });
+                } else {
+                    currentDetailPane.getPattern().setValue(newPattern);
+                }
             }
         });
 
+regexField.textProperty().setValue("(.*?) - (.*?)");
+
+    }
+
+    private UpdateTagsPatternPane getCurrentDetailPane() {
+        return this.currentDetailPane;
+    }
+    private void setCurrentDetailPane(UpdateTagsPatternPane currentDetailPane) {
+        this.currentDetailPane = currentDetailPane;
     }
 
 }

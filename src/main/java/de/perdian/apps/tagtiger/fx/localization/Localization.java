@@ -347,4 +347,8 @@ public interface Localization {
         return "Compilation result";
     }
 
+    default String match() {
+        return "Match";
+    }
+
 }

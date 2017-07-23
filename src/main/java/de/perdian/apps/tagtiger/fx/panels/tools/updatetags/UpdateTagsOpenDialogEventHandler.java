@@ -15,7 +15,13 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.tools.updatetags;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import de.perdian.apps.tagtiger.core.selection.Selection;
+import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -32,7 +38,20 @@ public class UpdateTagsOpenDialogEventHandler implements EventHandler<ActionEven
 public static class DummyApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        List<TaggableFile> sourceFiles = Arrays.stream(new File(System.getProperty("user.home"), "Downloads").listFiles())
+            .map(systemFile -> {
+                try {
+                    return new TaggableFile(systemFile);
+                } catch (Exception e) {
+                    return null;
+                }
+            })
+            .filter(file -> file != null)
+            .collect(Collectors.toList());
+
         Selection selection = new Selection();
+        selection.selectedFilesProperty().setAll(sourceFiles);
         Localization localization = new Localization() { };
         primaryStage.setScene(new Scene(new UpdateTagsEditorPane(selection, localization)));
         primaryStage.setOnCloseRequest(event -> System.exit(0));
