@@ -19,16 +19,22 @@ import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
 import de.perdian.apps.tagtiger.fx.panels.tools.updatefilenames.UpdateFileNamesOpenDialogEventHandler;
+import de.perdian.apps.tagtiger.fx.panels.tools.updatetags.UpdateTagsOpenDialogEventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.BorderPane;
 
-class FileSelectionBottomButtonPane extends HBox {
+class FileSelectionBottomButtonPane extends BorderPane {
 
     FileSelectionBottomButtonPane(Selection selection, Localization localization, JobExecutor jobExecutor) {
+
+        Button updateTagsButton = new Button(localization.updateTags());
+        updateTagsButton.setOnAction(new UpdateTagsOpenDialogEventHandler(selection, localization));
+        updateTagsButton.setDisable(true);
+        updateTagsButton.setGraphic(new ImageView(new Image(FileSelectionBottomButtonPane.class.getClassLoader().getResourceAsStream("icons/16/file-list.png"))));
+        selection.selectedFilesProperty().addListener((o, oldValue, newValue) -> updateTagsButton.setDisable(newValue == null || newValue.isEmpty()));
 
         Button updateFileNamesButton = new Button(localization.updateFileNames());
         updateFileNamesButton.setOnAction(new UpdateFileNamesOpenDialogEventHandler(selection, localization));
@@ -36,10 +42,9 @@ class FileSelectionBottomButtonPane extends HBox {
         updateFileNamesButton.setGraphic(new ImageView(new Image(FileSelectionBottomButtonPane.class.getClassLoader().getResourceAsStream("icons/16/file-list.png"))));
         selection.selectedFilesProperty().addListener((o, oldValue, newValue) -> updateFileNamesButton.setDisable(newValue == null || newValue.isEmpty()));
 
-        this.getChildren().add(updateFileNamesButton);
+        this.setLeft(updateTagsButton);
+        this.setRight(updateFileNamesButton);
         this.setPadding(new Insets(5, 5, 5, 5));
-        this.setAlignment(Pos.CENTER_RIGHT);
-        this.setSpacing(5);
 
     }
 

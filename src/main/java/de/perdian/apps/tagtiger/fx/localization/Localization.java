@@ -259,6 +259,10 @@ public interface Localization {
         return "Actions";
     }
 
+    default String updateTags() {
+        return "Update tags";
+    }
+
     default String updateFileNames() {
         return "Update file names";
     }
@@ -305,6 +309,42 @@ public interface Localization {
 
     default String selectAllFiles() {
         return "Select all files";
+    }
+
+    default String regularExpression() {
+        return "Regular expression";
+    }
+
+    default String details() {
+        return "Details";
+    }
+
+    default String noRegularExpressionSetYet() {
+        return "No regular expression set yet";
+    }
+
+    default String regularExpressionValid() {
+        return "Regular expression valid";
+    }
+
+    default String regularExpressionInvalid() {
+        return "Regular expression invalid";
+    }
+
+    default String regularExpressionMustContainAtLeastOneGroup() {
+        return "Regular expression must contain at least one group";
+    }
+
+    default String group() {
+        return "Group";
+    }
+
+    default String apply() {
+        return "Apply";
+    }
+
+    default String compilationResult() {
+        return "Compilation result";
     }
 
 }
