@@ -259,6 +259,10 @@ public interface Localization {
         return "Actions";
     }
 
+    default String extractTags() {
+        return "Extract tags";
+    }
+
     default String updateFileNames() {
         return "Update file names";
     }
@@ -287,6 +291,10 @@ public interface Localization {
         return "Execute rename";
     }
 
+    default String executeExtraction() {
+        return "Execute extraction";
+    }
+
     default String copyImages() {
         return "Copy images";
     }
@@ -305,6 +313,54 @@ public interface Localization {
 
     default String selectAllFiles() {
         return "Select all files";
+    }
+
+    default String regularExpression() {
+        return "Regular expression";
+    }
+
+    default String noRegularExpressionSetYet() {
+        return "No regular expression set yet";
+    }
+
+    default String regularExpressionValid() {
+        return "Regular expression valid";
+    }
+
+    default String regularExpressionInvalid() {
+        return "Regular expression invalid";
+    }
+
+    default String regularExpressionMustContainAtLeastOneGroup() {
+        return "Regular expression must contain at least one group";
+    }
+
+    default String regularExpressionNotEvaluatedYet() {
+        return "Regular expression not evaluated yet";
+    }
+
+    default String group() {
+        return "Group";
+    }
+
+    default String apply() {
+        return "Apply";
+    }
+
+    default String compilationResult() {
+        return "Compilation result";
+    }
+
+    default String match() {
+        return "Match";
+    }
+
+    default String preview() {
+        return "Preview";
+    }
+
+    default String extractionRules() {
+        return "Extraction rules";
     }
 
 }
