@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StrSubstitutor;
 
 import de.perdian.apps.tagtiger.core.tagging.TaggablePropertyKey;
 import javafx.beans.value.ChangeListener;
