@@ -15,9 +15,10 @@
  */
 package de.perdian.apps.tagtiger.core.tagging;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import de.perdian.apps.tagtiger.fx.localization.Localization;
 
@@ -27,14 +28,33 @@ public class TaggablePropertyKeyWrapper {
     private String title = null;
 
     public static List<TaggablePropertyKeyWrapper> of(Collection<TaggablePropertyKey> keys, Localization localization) {
-        return keys.stream()
+        List<TaggablePropertyKeyWrapper> resultList = new ArrayList<>();
+        resultList.add(new TaggablePropertyKeyWrapper(null, ""));
+        keys.stream()
             .map(key -> new TaggablePropertyKeyWrapper(key, key.getTitleKey().apply(localization)))
-            .collect(Collectors.toList());
+            .forEach(resultList::add);
+        return resultList;
     }
 
     private TaggablePropertyKeyWrapper(TaggablePropertyKey key, String title) {
         this.setKey(key);
         this.setTitle(title);
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof TaggablePropertyKeyWrapper) {
+            return Objects.equals(this.getKey(), ((TaggablePropertyKeyWrapper)that).getKey());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getKey().hashCode();
     }
 
     @Override

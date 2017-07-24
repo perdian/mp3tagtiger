@@ -19,7 +19,7 @@ import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
 import de.perdian.apps.tagtiger.fx.panels.tools.updatefilenames.UpdateFileNamesOpenDialogEventHandler;
-import de.perdian.apps.tagtiger.fx.panels.tools.updatetags.UpdateTagsOpenDialogEventHandler;
+import de.perdian.apps.tagtiger.fx.panels.tools.updatetags.UpdateTagsDialogEventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -30,8 +30,8 @@ class FileSelectionBottomButtonPane extends BorderPane {
 
     FileSelectionBottomButtonPane(Selection selection, Localization localization, JobExecutor jobExecutor) {
 
-        Button updateTagsButton = new Button(localization.updateTags());
-        updateTagsButton.setOnAction(new UpdateTagsOpenDialogEventHandler(selection, localization));
+        Button updateTagsButton = new Button(localization.extractTags());
+        updateTagsButton.setOnAction(new UpdateTagsDialogEventHandler(selection, localization));
         updateTagsButton.setDisable(true);
         updateTagsButton.setGraphic(new ImageView(new Image(FileSelectionBottomButtonPane.class.getClassLoader().getResourceAsStream("icons/16/file-list.png"))));
         selection.selectedFilesProperty().addListener((o, oldValue, newValue) -> updateTagsButton.setDisable(newValue == null || newValue.isEmpty()));
