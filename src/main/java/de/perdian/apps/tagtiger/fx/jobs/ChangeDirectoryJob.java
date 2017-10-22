@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -97,6 +99,7 @@ public class ChangeDirectoryJob implements Job {
     private List<File> resolveSourceFiles(JobContext context) {
         List<File> targetList = new ArrayList<>();
         this.appendSourceFilesFromDirectory(this.getSelectedDirectory(), targetList, true, context);
+        Collections.sort(targetList, Comparator.comparing(File::getName));
         return targetList;
     }
 
