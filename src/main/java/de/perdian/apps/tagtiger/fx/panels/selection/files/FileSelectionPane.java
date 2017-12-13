@@ -15,9 +15,6 @@
  */
 package de.perdian.apps.tagtiger.fx.panels.selection.files;
 
-import com.sun.javafx.scene.control.skin.TableViewSkin;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
-
 import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
@@ -29,6 +26,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.skin.TableViewSkin;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.layout.BorderPane;
 
 /**

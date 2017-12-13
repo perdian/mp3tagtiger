@@ -39,7 +39,7 @@ class FileSelectionTableView extends TableView<TaggableFile> {
         changedColumn.setSortable(false);
         changedColumn.setCellValueFactory(p -> p.getValue().dirtyProperty());
         changedColumn.setCellFactory(item -> {
-            TableCell<TaggableFile, Boolean> tableCell = new TableCell<TaggableFile, Boolean>() {
+            TableCell<TaggableFile, Boolean> tableCell = new TableCell<>() {
                 @Override protected void updateItem(Boolean item, boolean empty) {
                     if (!empty) {
                         this.setGraphic(item.booleanValue() ? new Label("", new ImageView(flagIconImage)) : null);
@@ -57,7 +57,7 @@ class FileSelectionTableView extends TableView<TaggableFile> {
         activeColumn.setSortable(false);
         activeColumn.setCellValueFactory(p -> p.getValue().activeProperty());
         activeColumn.setCellFactory(item -> {
-            TableCell<TaggableFile, Boolean> tableCell = new TableCell<TaggableFile, Boolean>() {
+            TableCell<TaggableFile, Boolean> tableCell = new TableCell<>() {
                 @Override protected void updateItem(Boolean item, boolean empty) {
                     if (!empty) {
                         this.setGraphic(item.booleanValue() ? new Label("", new ImageView(editIconImage)) : null);

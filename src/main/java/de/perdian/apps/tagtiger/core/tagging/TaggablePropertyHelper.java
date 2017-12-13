@@ -23,7 +23,7 @@ import org.jaudiotagger.tag.reference.GenreTypes;
 
 class TaggablePropertyHelper {
 
-    static final Function<String, String> TO_LENIENT_INTEGER_FUNCTION = new Function<String, String>() {
+    static final Function<String, String> TO_LENIENT_INTEGER_FUNCTION = new Function<>() {
 
         @Override
         public String apply(String value) {
@@ -36,7 +36,7 @@ class TaggablePropertyHelper {
 
     };
 
-    static final Function<String, String> TO_STRING_FUNCTION = new Function<String, String>() {
+    static final Function<String, String> TO_STRING_FUNCTION = new Function<>() {
 
         @Override
         public String apply(String value) {
@@ -45,7 +45,7 @@ class TaggablePropertyHelper {
 
     };
 
-    static final Function<String, String> TO_PROPERTY_GENRE_CONVERTER_FUNCTION = new Function<String, String>() {
+    static final Function<String, String> TO_PROPERTY_GENRE_CONVERTER_FUNCTION = new Function<>() {
 
         @Override
         public String apply(String tagValue) {
@@ -60,7 +60,7 @@ class TaggablePropertyHelper {
 
     };
 
-    static final Function<String, String> TO_STORAGE_GENRE_CONVERTER_FUNCTION = new Function<String, String>() {
+    static final Function<String, String> TO_STORAGE_GENRE_CONVERTER_FUNCTION = new Function<>() {
 
         @Override
         public String apply(String sourceValue) {
