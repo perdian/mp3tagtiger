@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import org.apache.commons.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 
 import de.perdian.apps.tagtiger.core.tagging.TaggablePropertyKey;
 import javafx.beans.value.ChangeListener;
@@ -53,7 +53,7 @@ class UpdateFileNamesComputeChangeListener implements ChangeListener<String> {
                 replacementValues.put(propertyKey.getName(), convertedValue);
             }
 
-            StrSubstitutor substitutor = new StrSubstitutor(replacementValues);
+            StringSubstitutor substitutor = new StringSubstitutor(replacementValues);
             String substitutionEvaluationResult = substitutor.replace(newFileNamePattern);
             String substitutionSanitizedResult = this.sanitizeFileName(substitutionEvaluationResult);
 
