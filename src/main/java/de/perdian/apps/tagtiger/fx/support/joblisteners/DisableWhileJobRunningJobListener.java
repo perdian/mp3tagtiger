@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Christian Robert
+ * Copyright 2014-2018 Christian Robert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
  */
 package de.perdian.apps.tagtiger.fx.support.joblisteners;
 
-import javafx.application.Platform;
-import javafx.beans.property.Property;
 import de.perdian.apps.tagtiger.core.jobs.Job;
 import de.perdian.apps.tagtiger.core.jobs.JobListener;
+import javafx.application.Platform;
+import javafx.beans.property.Property;
 
 public class DisableWhileJobRunningJobListener implements JobListener {
 

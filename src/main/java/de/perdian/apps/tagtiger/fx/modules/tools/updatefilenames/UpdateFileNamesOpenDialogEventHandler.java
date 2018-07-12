@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 Christian Robert
+ * Copyright 2014-2018 Christian Robert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package de.perdian.apps.tagtiger.fx.modules.tools.updatefilenames;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,7 +85,7 @@ public class UpdateFileNamesOpenDialogEventHandler implements EventHandler<Actio
         newFileNameColumn.setSortable(false);
         newFileNameColumn.setCellValueFactory(p -> p.getValue().getNewFileName());
         TableView<UpdateFileNamesItem> tableView = new TableView<>(FXCollections.observableArrayList(items));
-        tableView.getColumns().addAll(Arrays.asList(currentFileNameColumn, newFileNameColumn));
+        tableView.getColumns().addAll(List.of(currentFileNameColumn, newFileNameColumn));
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         BorderPane.setMargin(tableView, new Insets(5, 5, 5, 5));
 
@@ -107,7 +106,7 @@ public class UpdateFileNamesOpenDialogEventHandler implements EventHandler<Actio
         StringProperty patternFieldProperty = new SimpleStringProperty();
         patternFieldProperty.addListener(new UpdateFileNamesComputeChangeListener(items));
 
-        List<String> patternItems = Arrays.asList("${track} ${title}");
+        List<String> patternItems = List.of("${track} ${title}");
         ComboBox<String> patternBox = new ComboBox<>(FXCollections.observableArrayList(patternItems));
         patternBox.setEditable(true);
         patternBox.setMaxWidth(Double.MAX_VALUE);

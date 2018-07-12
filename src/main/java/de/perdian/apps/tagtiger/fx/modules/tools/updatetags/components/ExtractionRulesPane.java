@@ -15,7 +15,6 @@
  */
 package de.perdian.apps.tagtiger.fx.modules.tools.updatetags.components;
 
-import java.util.Arrays;
 import java.util.List;
 
 import de.perdian.apps.tagtiger.core.tagging.TaggablePropertyKey;
@@ -50,7 +49,7 @@ public class ExtractionRulesPane extends BorderPane {
                 this.setCenter(new Label(localization.regularExpressionMustContainAtLeastOneGroup()));
             } else {
 
-                List<TaggablePropertyKey> propertyKeys = Arrays.asList(TaggablePropertyKey.values());
+                List<TaggablePropertyKey> propertyKeys = List.of(TaggablePropertyKey.values());
                 ObservableList<TaggablePropertyKeyWrapper> propertyKeyWrappers = FXCollections.observableArrayList(TaggablePropertyKeyWrapper.of(propertyKeys, localization));
 
                 GridPane gridPane = new GridPane();
@@ -72,6 +71,7 @@ public class ExtractionRulesPane extends BorderPane {
                 }
                 this.getChildren().clear();
                 this.setCenter(gridPane);
+
             }
         });
 

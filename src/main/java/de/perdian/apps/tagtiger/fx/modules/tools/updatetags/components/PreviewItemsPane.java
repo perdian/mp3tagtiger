@@ -15,7 +15,7 @@
  */
 package de.perdian.apps.tagtiger.fx.modules.tools.updatetags.components;
 
-import java.util.Arrays;
+import java.util.List;
 
 import de.perdian.apps.tagtiger.core.tagging.TaggablePropertyKey;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
@@ -48,7 +48,7 @@ public class PreviewItemsPane extends BorderPane {
         newTitleColumn.setCellValueFactory(p -> p.getValue().property(TaggablePropertyKey.TITLE));
 
         TableView<PreviewItem> tableView = new TableView<>(previewItems);
-        tableView.getColumns().addAll(Arrays.asList(matchColumn, fileNameColumn, newArtistColumn, newTitleColumn));
+        tableView.getColumns().addAll(List.of(matchColumn, fileNameColumn, newArtistColumn, newTitleColumn));
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         this.setCenter(tableView);
 
