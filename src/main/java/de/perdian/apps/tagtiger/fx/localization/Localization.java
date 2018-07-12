@@ -319,6 +319,10 @@ public interface Localization {
         return "Regular expression";
     }
 
+    default String regularExpressionPattern() {
+        return "Regular expression pattern";
+    }
+
     default String noRegularExpressionSetYet() {
         return "No regular expression set yet";
     }
@@ -361,6 +365,10 @@ public interface Localization {
 
     default String extractionRules() {
         return "Extraction rules";
+    }
+
+    default String templates() {
+        return "Templates";
     }
 
 }

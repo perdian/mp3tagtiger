@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 Christian Robert
+ * Copyright 2014-2018 Christian Robert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.modules.tools.updatetags;
+package de.perdian.apps.tagtiger.fx.modules.tools.updatetags.model;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
 
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.core.tagging.TaggablePropertyKey;
@@ -28,10 +26,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-class UpdateTagsPreviewItem {
+public class PreviewItem {
 
-    private static final Image MATCH_YES_IMAGE = new Image(UpdateTagsPreviewItem.class.getClassLoader().getResourceAsStream("icons/16/match-yes.png"));
-    private static final Image MATCH_NO_IMAGE = new Image(UpdateTagsPreviewItem.class.getClassLoader().getResourceAsStream("icons/16/match-no.png"));
+    private static final Image MATCH_YES_IMAGE = new Image(PreviewItem.class.getClassLoader().getResourceAsStream("icons/16/match-yes.png"));
+    private static final Image MATCH_NO_IMAGE = new Image(PreviewItem.class.getClassLoader().getResourceAsStream("icons/16/match-no.png"));
 
     private TaggableFile sourceFile = null;
     private Property<String> fileName = null;
@@ -39,7 +37,7 @@ class UpdateTagsPreviewItem {
     private Property<Boolean> matches = null;
     private Property<ImageView> matchesImageView = null;
 
-    UpdateTagsPreviewItem(TaggableFile sourceFile) {
+    public PreviewItem(TaggableFile sourceFile) {
 
         Property<ImageView> matchesImageViewProperty = new SimpleObjectProperty<>();
         Property<Boolean> matchesProperty = new SimpleObjectProperty<>(null);
@@ -53,47 +51,39 @@ class UpdateTagsPreviewItem {
 
     }
 
-    void copyValuesToSourceFile() {
-        for (Map.Entry<TaggablePropertyKey, Property<String>> newValueEntry : this.getNewValueMap().entrySet()) {
-            if (!StringUtils.isEmpty(newValueEntry.getValue().getValue())) {
-                this.getSourceFile().property(newValueEntry.getKey()).setValue(newValueEntry.getValue().getValue());
-            }
-        }
-    }
-
-    Property<String> property(TaggablePropertyKey propertyKey) {
+    public Property<String> property(TaggablePropertyKey propertyKey) {
         return this.getNewValueMap().compute(propertyKey, (key, value) -> value == null ? new SimpleStringProperty() : value);
     }
 
-    private TaggableFile getSourceFile() {
+    public TaggableFile getSourceFile() {
         return this.sourceFile;
     }
     private void setSourceFile(TaggableFile sourceFile) {
         this.sourceFile = sourceFile;
     }
 
-    Property<String> getFileName() {
+    public Property<String> getFileName() {
         return this.fileName;
     }
     private void setFileName(Property<String> fileName) {
         this.fileName = fileName;
     }
 
-    Map<TaggablePropertyKey, Property<String>> getNewValueMap() {
+    public Map<TaggablePropertyKey, Property<String>> getNewValueMap() {
         return this.newValueMap;
     }
     private void setNewValueMap(Map<TaggablePropertyKey, Property<String>> newValueMap) {
         this.newValueMap = newValueMap;
     }
 
-    Property<Boolean> getMatches() {
+    public Property<Boolean> getMatches() {
         return this.matches;
     }
     private void setMatches(Property<Boolean> matches) {
         this.matches = matches;
     }
 
-    Property<ImageView> getMatchesImageView() {
+    public Property<ImageView> getMatchesImageView() {
         return this.matchesImageView;
     }
     private void setMatchesImageView(Property<ImageView> matchesImageView) {

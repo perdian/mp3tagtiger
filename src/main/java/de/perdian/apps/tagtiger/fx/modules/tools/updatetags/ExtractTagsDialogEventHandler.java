@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 Christian Robert
+ * Copyright 2014-2018 Christian Robert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,25 +23,30 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class UpdateTagsDialogEventHandler implements EventHandler<ActionEvent> {
+public class ExtractTagsDialogEventHandler implements EventHandler<ActionEvent> {
 
     private Selection selection = null;
     private Localization localization = null;
 
-    public UpdateTagsDialogEventHandler(Selection selection, Localization localization) {
+    public ExtractTagsDialogEventHandler(Selection selection, Localization localization) {
         this.setSelection(selection);
         this.setLocalization(localization);
     }
 
     @Override
     public void handle(ActionEvent event) {
+
+        ExtractTagsPane scenePane = new ExtractTagsPane(this.getSelection(), this.getLocalization());
+        scenePane.setPrefWidth(1024);
+
         Stage dialogStage = new Stage();
         dialogStage.setMinWidth(800);
-        dialogStage.setMinHeight(400);
+        dialogStage.setMinHeight(600);
         dialogStage.setTitle(this.getLocalization().extractTags());
         dialogStage.initModality(Modality.APPLICATION_MODAL);
-        dialogStage.setScene(new Scene(new UpdateTagsDialogPane(this.getSelection(), this.getLocalization())));
+        dialogStage.setScene(new Scene(scenePane));
         dialogStage.show();
+
     }
 
     private Selection getSelection() {
