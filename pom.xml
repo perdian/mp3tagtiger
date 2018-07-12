@@ -84,7 +84,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.perdian.apps.tagtiger.fx.TagTigerApplication</mainClass>
+                            <mainClass>de.perdian.apps.tagtiger.TagTigerApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -126,7 +126,7 @@
                         <artifactId>appbundle-maven-plugin</artifactId>
                         <version>1.2.0</version>
                         <configuration>
-                            <mainClass>de.perdian.apps.tagtiger.fx.TagTigerApplication</mainClass>
+                            <mainClass>de.perdian.apps.tagtiger.TagTigerApplication</mainClass>
                             <generateDiskImageFile>true</generateDiskImageFile>
                             <jvmVersion>9+</jvmVersion>
                             <iconFile>tagtiger.icns</iconFile>
