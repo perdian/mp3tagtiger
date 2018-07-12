@@ -44,7 +44,6 @@ public class TagTigerApplication extends Application {
     static {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
-//        AquaFx.style();
     }
 
     public static void main(String[] args) {
