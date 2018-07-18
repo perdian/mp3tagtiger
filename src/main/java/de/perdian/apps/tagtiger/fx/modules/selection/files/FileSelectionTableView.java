@@ -43,6 +43,8 @@ class FileSelectionTableView extends TableView<TaggableFile> {
                 @Override protected void updateItem(Boolean item, boolean empty) {
                     if (!empty) {
                         this.setGraphic(item.booleanValue() ? new Label("", new ImageView(flagIconImage)) : null);
+                    } else {
+                        this.setGraphic(null);
                     }
                 }
             };
@@ -61,6 +63,8 @@ class FileSelectionTableView extends TableView<TaggableFile> {
                 @Override protected void updateItem(Boolean item, boolean empty) {
                     if (!empty) {
                         this.setGraphic(item.booleanValue() ? new Label("", new ImageView(editIconImage)) : null);
+                    } else {
+                        this.setGraphic(null);
                     }
                 }
             };

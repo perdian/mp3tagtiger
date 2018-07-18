@@ -119,7 +119,7 @@ class ImagesEditorTab extends Tab {
         @Override
         protected void updateItem(TagImage item, boolean empty) {
             super.updateItem(item, empty);
-            if (item != null) {
+            if (!empty && item != null) {
                 ImagesEditorImagePane imagePane = new ImagesEditorImagePane(item, this.getLocalization());
                 imagePane.setOnDeleteActionHandler(event -> ImagesEditorTab.this.imagesProperty().get().remove(item));
                 this.setGraphic(imagePane);
