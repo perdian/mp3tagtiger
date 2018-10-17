@@ -67,7 +67,7 @@ class PreferencesLoader {
         File userDirectory = new File(System.getProperty("user.home"));
         File tagtigerDirectory = new File(userDirectory, ".tagtiger");
         File preferencesFile = new File(tagtigerDirectory, "preferences").getCanonicalFile();
-        if (!preferencesFile.exists()) {
+        if (!preferencesFile.exists() && createIfNotExisting) {
             if (!preferencesFile.getParentFile().exists()) {
                 preferencesFile.getParentFile().mkdirs();
             }
