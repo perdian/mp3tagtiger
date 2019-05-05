@@ -15,7 +15,7 @@
  */
 package de.perdian.apps.tagtiger.core.selection;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,7 +34,7 @@ import javafx.collections.FXCollections;
 
 public class Selection {
 
-    private final Property<File> currentDirectory = new SimpleObjectProperty<>();
+    private final Property<Path> currentDirectory = new SimpleObjectProperty<>();
     private final Property<TaggableFile> currentFile = new SimpleObjectProperty<>();
     private final ListProperty<TaggableFile> availableFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<TaggableFile> selectedFiles = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -60,7 +60,7 @@ public class Selection {
         }
     }
 
-    public Property<File> currentDirectoryProperty() {
+    public Property<Path> currentDirectoryProperty() {
         return this.currentDirectory;
     }
 

@@ -24,14 +24,26 @@
     </developers>
 
     <properties>
-        <commons-lang3.version>3.7</commons-lang3.version>
-        <commons-text.version>1.4</commons-text.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
+        <commons-text.version>1.6</commons-text.version>
+        <java.version>12</java.version>
+        <javafx.version>12</javafx.version>
         <logback.version>1.2.3</logback.version>
         <jaudiotagger.version>2.0.3</jaudiotagger.version>
-        <slf4j.version>1.7.25</slf4j.version>
+        <slf4j.version>1.7.26</slf4j.version>
     </properties>
 
     <dependencies>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-controls</artifactId>
+          <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-swing</artifactId>
+          <version>${javafx.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -70,17 +82,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    <source>9</source>
-                    <target>9</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -92,7 +104,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.2.1</version>
                 <configuration>
                     <finalName>tagtiger</finalName>
                 </configuration>
@@ -112,34 +124,21 @@
         <profile>
             <id>macos-bundle</id>
             <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                    </resource>
-                    <resource>
-                        <directory>src/bundle/macos/resources</directory>
-                    </resource>
-                </resources>
                 <plugins>
                     <plugin>
-                        <groupId>sh.tak.appbundler</groupId>
-                        <artifactId>appbundle-maven-plugin</artifactId>
-                        <version>1.2.0</version>
+                        <groupId>de.perdian.maven.plugins</groupId>
+                        <artifactId>macosappbundler-maven-plugin</artifactId>
+                        <version>1.1.0</version>
                         <configuration>
-                            <mainClass>de.perdian.apps.tagtiger.TagTigerApplication</mainClass>
-                            <generateDiskImageFile>true</generateDiskImageFile>
-                            <jvmVersion>9+</jvmVersion>
-                            <iconFile>tagtiger.icns</iconFile>
-                            <additionalResources>
-                                <additionalResource>
-                                    <directory>${project.basedir}</directory>
-                                    <include>LICENSE.txt</include>
-                                    <include>CREDITS.txt</include>
-                                </additionalResource>
-                                <additionalResource>
-                                    <directory>${project.basedir}/src/bundle/macos/distribution</directory>
-                                </additionalResource>
-                            </additionalResources>
+                            <plist>
+                                <CFBundleIconFile>src/bundle/macos/resources/tagtiger.icns</CFBundleIconFile>
+                                <JVMMainClassName>de.perdian.apps.tagtiger.TagTigerLauncher</JVMMainClassName>
+                                <JVMVersion>${java.version}+</JVMVersion>
+                                <JVMOptions>
+                                    <string>-Dapple.laf.useScreenMenuBar=true</string>
+                                    <string>-Xdock:name=${project.name}</string>
+                                </JVMOptions>
+                            </plist>
                         </configuration>
                         <executions>
                             <execution>

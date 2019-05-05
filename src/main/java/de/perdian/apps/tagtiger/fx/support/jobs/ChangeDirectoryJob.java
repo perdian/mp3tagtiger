@@ -17,6 +17,7 @@ package de.perdian.apps.tagtiger.fx.support.jobs;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,11 +37,11 @@ import javafx.application.Platform;
 public class ChangeDirectoryJob implements Job {
 
     private static final Logger log = LoggerFactory.getLogger(ChangeDirectoryJob.class);
-    private File selectedDirectory = null;
+    private Path selectedDirectory = null;
     private Selection targetSelection = null;
     private Localization localization = null;
 
-    public ChangeDirectoryJob(File selectedDirectory, Selection targetSelection, Localization localization) {
+    public ChangeDirectoryJob(Path selectedDirectory, Selection targetSelection, Localization localization) {
         this.setSelectedDirectory(selectedDirectory);
         this.setTargetSelection(targetSelection);
         this.setLocalization(localization);
@@ -50,7 +51,7 @@ public class ChangeDirectoryJob implements Job {
     public void execute(JobContext context) {
         if (this.getSelectedDirectory() != null) {
 
-            log.info("Changing current directory to: {}", this.getSelectedDirectory().getAbsolutePath());
+            log.info("Changing current directory to: {}", this.getSelectedDirectory().toAbsolutePath());
 
             if (this.getSelectedDirectory() == null) {
 
@@ -58,11 +59,11 @@ public class ChangeDirectoryJob implements Job {
 
             } else {
 
-                context.updateProgress(this.getLocalization().analyzingFilesFromDirectory(this.getSelectedDirectory().getName()), -1, -1);
+                context.updateProgress(this.getLocalization().analyzingFilesFromDirectory(this.getSelectedDirectory().getFileName().toString()), -1, -1);
                 Platform.runLater(() -> this.getTargetSelection().availableFilesProperty().clear());
 
                 List<File> sourceFiles = this.resolveSourceFiles(context);
-                log.debug("Collected {} files from directory: {}", sourceFiles.size(), this.getSelectedDirectory().getName());
+                log.debug("Collected {} files from directory: {}", sourceFiles.size(), this.getSelectedDirectory().getFileName().toString());
                 context.updateProgress(this.getLocalization().startProcessingOfFiles(sourceFiles.size()), -1, -1);
 
                 List<TaggableFile> taggableFiles = new ArrayList<>(sourceFiles.size());
@@ -86,7 +87,7 @@ public class ChangeDirectoryJob implements Job {
                         log.warn("Cannot read file: {}", sourceFile.getAbsolutePath(), e);
                     }
                 }
-                log.debug("Processed {} files from directory: {}", taggableFiles.size(), this.getSelectedDirectory().getName());
+                log.debug("Processed {} files from directory: {}", taggableFiles.size(), this.getSelectedDirectory().getFileName().toString());
 
                 if (context.isActive() && !context.isCancelled()) {
                     Platform.runLater(() -> this.getTargetSelection().availableFilesProperty().setAll(taggableFiles));
@@ -103,11 +104,11 @@ public class ChangeDirectoryJob implements Job {
         return targetList;
     }
 
-    private void appendSourceFilesFromDirectory(File sourceDirectory, List<File> targetFiles, boolean recursive, JobContext context) {
-        File[] sourceFiles = sourceDirectory == null ? null : sourceDirectory.listFiles(new Mp3FileFilter());
+    private void appendSourceFilesFromDirectory(Path sourceDirectory, List<File> targetFiles, boolean recursive, JobContext context) {
+        File[] sourceFiles = sourceDirectory == null ? null : sourceDirectory.toFile().listFiles(new Mp3FileFilter());
         if (sourceFiles != null && context.isActive()) {
             Arrays.stream(sourceFiles).filter(file -> file.isFile()).forEach(file -> targetFiles.add(file));
-            Arrays.stream(sourceFiles).filter(file -> file.isDirectory()).forEach(file -> this.appendSourceFilesFromDirectory(file, targetFiles, recursive, context));
+            Arrays.stream(sourceFiles).filter(file -> file.isDirectory()).forEach(file -> this.appendSourceFilesFromDirectory(file.toPath(), targetFiles, recursive, context));
         }
     }
 
@@ -125,10 +126,10 @@ public class ChangeDirectoryJob implements Job {
 
     }
 
-    private File getSelectedDirectory() {
+    private Path getSelectedDirectory() {
         return this.selectedDirectory;
     }
-    private void setSelectedDirectory(File selectedDirectory) {
+    private void setSelectedDirectory(Path selectedDirectory) {
         this.selectedDirectory = selectedDirectory;
     }
 

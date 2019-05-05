@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Christian Robert
+ * Copyright 2014-2019 Christian Robert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,59 +15,49 @@
  */
 package de.perdian.apps.tagtiger.fx.modules.selection.directories;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.LinkedList;
-import java.util.List;
+import java.nio.file.Path;
+import java.util.Map;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.perdian.apps.tagtiger.fx.localization.Localization;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-/**
- * A specialized {@code TreeView} implementation that is designed to display the
- * directory structure of the local file system. Since populating the tree
- * completely at startup would require a lot of resources (the whole filesystem
- * tree would have to be walked) the nodes are created on an as-needed base.
- *
- * @author Christian Robert
- */
+public class DirectoryTreeView extends TreeView<DirectoryPathWrapper> {
 
-public class DirectoryTreeView extends TreeView<Directory> {
+    private static final Logger log = LoggerFactory.getLogger(DirectoryTreeView.class);
 
-    private final Property<File> selectedDirectory = new SimpleObjectProperty<>();
+    private ObjectProperty<Path> selectedDirectoryProperty = null;
+    private Map<Path, DirectoryTreeItem> rootItems = null;
 
     public DirectoryTreeView(Localization localization) {
-        this(new DirectoryTreeDefaultFileFilter(), localization);
-    }
+        super(new TreeItem<>());
 
-    /**
-     * Creates a new view
-     *
-     * @param fileFilter
-     *     the filter that is used to determine which directories should be
-     *     shown
-     * @param localization
-     *     localization object to enable language specific values
-     */
-    public DirectoryTreeView(FileFilter fileFilter, Localization localization) {
+        Map<Path, DirectoryTreeItem> rootItems = DirectoryTreeHelper.computeRootItems();
+        rootItems.entrySet().forEach(entry -> this.getRoot().getChildren().add(entry.getValue()));
+        this.setRootItems(rootItems);
+
+        ObjectProperty<Path> selectedDirectoryProperty = new SimpleObjectProperty<>();
+        this.setSelectedDirectoryProperty(selectedDirectoryProperty);
 
         this.setShowRoot(false);
-        this.setRoot(DirectoryTreeItem.createRootItem(fileFilter));
         this.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         this.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> {
-            Directory selectedDirectory = newValue == null ? null : newValue.getValue();
-            File selectedFile = selectedDirectory == null ? null : selectedDirectory.getFile();
-            File currentlySelectedFile = this.selectedDirectoryProperty().getValue();
-            if (!Objects.equals(currentlySelectedFile, selectedFile)) {
-                this.selectedDirectoryProperty().setValue(selectedFile);
+            Path newSelectedPath = newValue == null ? null : newValue.getValue().getPath();
+            Path currentlySelectedPath = this.selectedDirectory().getValue();
+            if (!Objects.equals(currentlySelectedPath, newSelectedPath)) {
+                this.getSelectedDirectoryProperty().setValue(newSelectedPath);
             }
         });
 
@@ -79,45 +69,22 @@ public class DirectoryTreeView extends TreeView<Directory> {
 
     }
 
-    /**
-     * Selects a new directory within the current tree
-     *
-     * @param newDirectory
-     *     the new directory to be selected
-     */
-    public boolean selectDirectory(File newDirectory) {
-        if (!Objects.equals(this.selectedDirectoryProperty().getValue(), newDirectory)) {
+    public void selectDirectory(Path directory) {
+        if (directory != null) {
 
-            List<File> flattenedTreeFromRoot = new LinkedList<>();
-            for (File file = newDirectory; file != null; file = file.getParentFile()) {
-                flattenedTreeFromRoot.add(0, file);
+            // First we make sure that all the nodes leading up to the selected directory are visible and have their
+            // children loaded so they're correctly displayed in the UI
+            DirectoryTreeItem rootItem = this.getRootItems().get(directory.getRoot());
+            DirectoryTreeItem directoryItem = rootItem == null ? null : rootItem.ensureChildrenLoadedUntil(directory);
+            if (directoryItem != null) {
+
+                // Now we can open the tree until we have found or target item
+                log.debug("Opening tree until item: " + directoryItem.getValue().getPath());
+                DirectoryTreeHelper.computeItemsFromRoot(directoryItem).stream().forEach(item -> item.setExpanded(true));
+                this.getSelectionModel().select(directoryItem);
+
             }
 
-            DirectoryTreeItem parentTreeItem = (DirectoryTreeItem)this.getRoot();
-            for (File currentDirectory : flattenedTreeFromRoot) {
-                parentTreeItem = parentTreeItem.lookupChildForFile(currentDirectory);
-                if (parentTreeItem == null) {
-
-                    // We cannot find a match in the current file hierarchy, so
-                    // there is nothing we can do and simply return right away
-                    return false;
-
-                }
-            }
-
-            List<DirectoryTreeItem> flattenedTreeItemsFromRoot = new LinkedList<>();
-            for (DirectoryTreeItem treeItem = parentTreeItem; treeItem != null; treeItem = (DirectoryTreeItem)treeItem.getParent()) {
-                flattenedTreeItemsFromRoot.add(0, treeItem);
-            }
-
-            for (DirectoryTreeItem treeItem : flattenedTreeItemsFromRoot) {
-                treeItem.setExpanded(true);
-            }
-            this.getSelectionModel().select(parentTreeItem);
-            return true;
-
-        } else {
-            return true;
         }
     }
 
@@ -131,8 +98,22 @@ public class DirectoryTreeView extends TreeView<Directory> {
 
     }
 
-    public Property<File> selectedDirectoryProperty() {
-        return this.selectedDirectory;
+    public Property<Path> selectedDirectory() {
+        return this.selectedDirectoryProperty;
+    }
+
+    private ObjectProperty<Path> getSelectedDirectoryProperty() {
+        return this.selectedDirectoryProperty;
+    }
+    private void setSelectedDirectoryProperty(ObjectProperty<Path> selectedDirectoryProperty) {
+        this.selectedDirectoryProperty = selectedDirectoryProperty;
+    }
+
+    private Map<Path, DirectoryTreeItem> getRootItems() {
+        return this.rootItems;
+    }
+    private void setRootItems(Map<Path, DirectoryTreeItem> rootItems) {
+        this.rootItems = rootItems;
     }
 
 }

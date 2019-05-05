@@ -19,7 +19,6 @@ import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.preferences.PreferencesKey;
@@ -41,16 +40,6 @@ public class TagTigerApplication extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(TagTigerApplication.class);
 
-    static {
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-    }
-
-    public static void main(String[] args) {
-        log.info("Starting application");
-        Application.launch(TagTigerApplication.class);
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -60,7 +49,7 @@ public class TagTigerApplication extends Application {
         Localization localization = new Localization() {};
         Selection selection = new Selection();
         selection.currentDirectoryProperty().addListener((o, oldValue, newValue) -> jobExecutor.executeJob(new ChangeDirectoryJob(newValue, selection, localization)));
-        selection.currentDirectoryProperty().addListener((o, oldValue, newValue) -> preferences.setString(PreferencesKey.CURRENT_DIRECTORY, newValue == null ? null : newValue.getAbsolutePath()));
+        selection.currentDirectoryProperty().addListener((o, oldValue, newValue) -> preferences.setString(PreferencesKey.CURRENT_DIRECTORY, newValue == null ? null : newValue.toFile().getAbsolutePath()));
 
         log.info("Creating JavaFX UI");
         SelectionPane selectionPane = new SelectionPane(selection, localization, jobExecutor);
@@ -75,7 +64,7 @@ public class TagTigerApplication extends Application {
         String currentDirectoryValue = preferences.getString(PreferencesKey.CURRENT_DIRECTORY, null);
         File currentDirectory = currentDirectoryValue == null ? null : new File(currentDirectoryValue);
         if (currentDirectory != null && currentDirectory.exists() && currentDirectory.isDirectory()) {
-            selection.currentDirectoryProperty().setValue(currentDirectory);
+            selection.currentDirectoryProperty().setValue(currentDirectory.toPath());
         }
 
         log.info("Opening JavaFX stage");

@@ -15,7 +15,7 @@
  */
 package de.perdian.apps.tagtiger.fx.modules.selection.files;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.selection.Selection;
@@ -47,7 +47,7 @@ class FileSelectionTopButtonPane extends BorderPane {
         reloadButton.setTooltip(new Tooltip(localization.reload()));
         reloadButton.setGraphic(new ImageView(new Image(SelectionPane.class.getClassLoader().getResourceAsStream("icons/16/refresh.png"))));
         reloadButton.setOnAction(event -> {
-            File currentDirectoryProperty = selection.currentDirectoryProperty().getValue();
+            Path currentDirectoryProperty = selection.currentDirectoryProperty().getValue();
             selection.currentDirectoryProperty().setValue(null);
             selection.currentDirectoryProperty().setValue(currentDirectoryProperty);
         });

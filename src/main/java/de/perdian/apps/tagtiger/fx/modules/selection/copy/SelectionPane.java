@@ -39,7 +39,7 @@ public class SelectionPane extends BorderPane {
 
         DirectoryTreeView directoryTreeView = new DirectoryTreeView(localization);
         directoryTreeView.setMinWidth(225d);
-        directoryTreeView.selectedDirectoryProperty().addListener((o, oldValue, newValue) -> selection.currentDirectoryProperty().setValue(newValue));
+        directoryTreeView.selectedDirectory().addListener((o, oldValue, newValue) -> selection.currentDirectoryProperty().setValue(newValue));
 
         FileSelectionPane fileSelectionPane = new FileSelectionPane(selection, localization, jobExecutor);
         fileSelectionPane.setMinWidth(300d);
@@ -64,15 +64,15 @@ public class SelectionPane extends BorderPane {
         selection.currentFileProperty().addListener((o, oldValue, newValue) -> fileSelectionPane.selectedFileProperty().setValue(newValue));
         selection.currentDirectoryProperty().addListener((o, oldValue, newValue) -> directoryTreeView.selectDirectory(newValue));
 
-        directoryField.setOnAction(event -> directoryTreeView.selectDirectory(new File(((TextField)event.getSource()).getText())));
+        directoryField.setOnAction(event -> directoryTreeView.selectDirectory(new File(((TextField)event.getSource()).getText()).toPath()));
         directoryField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 Platform.runLater(() -> directoryField.selectAll());
             }
         });
-        directoryTreeView.selectedDirectoryProperty().addListener((observable, oldValue, newValue) -> {
+        directoryTreeView.selectedDirectory().addListener((observable, oldValue, newValue) -> {
             Platform.runLater(() -> {
-                directoryField.setText(newValue == null ? "" : newValue.getAbsolutePath());
+                directoryField.setText(newValue == null ? "" : newValue.toString());
                 if (directoryField.isFocused()) {
                     directoryField.selectAll();
                 }
