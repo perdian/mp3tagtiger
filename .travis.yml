@@ -2,6 +2,6 @@ language: java
 script:
   - mvn clean package -B
 sudo: false
-jdk: openjdk-ea
+jdk: openjdk13
 notifications:
   email: false
