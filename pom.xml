@@ -9,6 +9,14 @@
     <description>Editor for ID3 tags</description>
     <url>https://github.com/perdian/tagtiger</url>
 
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <scm>
         <url>https://github.com/perdian/tagtiger</url>
         <connection>scm:git:https://github.com/perdian/tagtiger.git</connection>
@@ -18,7 +26,7 @@
     <developers>
         <developer>
             <id>perdian</id>
-            <name>Christian Robert</name>
+            <name>Christian Seifert</name>
             <email>dev@perdian.de</email>
         </developer>
     </developers>

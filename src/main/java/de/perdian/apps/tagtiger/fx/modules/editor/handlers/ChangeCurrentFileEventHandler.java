@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Christian Robert
+ * Copyright 2014 Christian Seifert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import javafx.scene.input.KeyEvent;
 /**
  * Updates the selection to a specific record
  *
- * @author Christian Robert
+ * @author Christian Seifert
  */
 
 public class ChangeCurrentFileEventHandler<E extends Event> implements EventHandler<E> {

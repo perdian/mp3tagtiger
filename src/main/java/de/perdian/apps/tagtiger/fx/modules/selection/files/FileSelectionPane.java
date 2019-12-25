@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Christian Robert
+ * Copyright 2014 Christian Seifert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import javafx.scene.layout.BorderPane;
 /**
  * Displays a list of selected files that are in use by the user
  *
- * @author Christian Robert
+ * @author Christian Seifert
  */
 
 public class FileSelectionPane extends BorderPane {

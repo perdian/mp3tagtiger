@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Christian Robert
+ * Copyright 2014 Christian Seifert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package de.perdian.apps.tagtiger.fx.localization;
 /**
  * Interface to provide methods for accessing localized values
  *
- * @author Christian Robert
+ * @author Christian Seifert
  */
 
 public interface Localization {
