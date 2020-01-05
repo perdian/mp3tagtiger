@@ -1,6 +1,7 @@
 # MP3 TagTiger
 
-[![Travis build status](https://api.travis-ci.org/perdian/mp3tagtiger.svg)](https://travis-ci.org/perdian/mp3tagtiger)
+[![License](http://img.shields.io/:license-apache-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Build](https://img.shields.io/circleci/build/github/perdian/mp3tagtiger/master)](https://circleci.com/gh/perdian/mp3tagtiger)
 
 The MP3 TagTiger aims to be one of the best applications to use for editing metadata on MP3 files. Although many other applications are offering a similar functionality, I found their use to be rather cumbersome. It took me too long to reach the result I wanted (for example quickly changing the genre of all files within a directory) and as being a developer I started to implement my own solution.
 
