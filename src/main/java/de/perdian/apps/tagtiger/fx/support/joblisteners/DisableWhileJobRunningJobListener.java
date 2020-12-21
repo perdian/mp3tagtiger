@@ -15,8 +15,8 @@
  */
 package de.perdian.apps.tagtiger.fx.support.joblisteners;
 
-import de.perdian.apps.tagtiger.core.jobs.JobListener;
 import de.perdian.apps.tagtiger3.fx.jobs.Job;
+import de.perdian.apps.tagtiger3.fx.jobs.JobListener;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 

@@ -15,12 +15,14 @@
  */
 package de.perdian.apps.tagtiger3.fx.components.status;
 
+import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
+import de.perdian.commons.fx.preferences.Preferences;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
 public class StatusPane extends BorderPane {
 
-    public StatusPane() {
+    public StatusPane(Preferences preferences, JobExecutor jobExecutor) {
         this.setCenter(new Label("STATUS WILL BE DISPLAYED HERE!"));
     }
 

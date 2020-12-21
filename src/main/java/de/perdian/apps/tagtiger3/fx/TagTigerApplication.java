@@ -18,6 +18,7 @@ package de.perdian.apps.tagtiger3.fx;
 import de.perdian.apps.tagtiger3.fx.components.editor.EditorPane;
 import de.perdian.apps.tagtiger3.fx.components.selection.SelectionPane;
 import de.perdian.apps.tagtiger3.fx.components.status.StatusPane;
+import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import de.perdian.commons.fx.AbstractApplication;
 import javafx.geometry.Insets;
 import javafx.scene.control.SplitPane;
@@ -32,14 +33,16 @@ public class TagTigerApplication extends AbstractApplication {
     @Override
     protected Pane createMainPane() {
 
-        SelectionPane selectionPane = new SelectionPane(this.getPreferences());
+        JobExecutor jobExecutor = new JobExecutor();
+
+        SelectionPane selectionPane = new SelectionPane(this.getPreferences(), jobExecutor);
         EditorPane editorPane = new EditorPane();
         SplitPane mainSplitPane = new SplitPane(selectionPane, editorPane);
         mainSplitPane.setDividerPositions(0.3d);
         GridPane.setHgrow(mainSplitPane, Priority.ALWAYS);
         GridPane.setVgrow(mainSplitPane, Priority.ALWAYS);
 
-        StatusPane statusPane = new StatusPane();
+        StatusPane statusPane = new StatusPane(this.getPreferences(), jobExecutor);
         statusPane.setPadding(new Insets(10, 10, 10, 10));
 
         GridPane mainPane = new GridPane();

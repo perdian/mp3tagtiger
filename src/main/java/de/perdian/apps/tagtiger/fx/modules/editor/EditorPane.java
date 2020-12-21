@@ -15,7 +15,6 @@
  */
 package de.perdian.apps.tagtiger.fx.modules.editor;
 
-import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
 import de.perdian.apps.tagtiger.fx.modules.editor.components.ContentEditorPane;
@@ -23,6 +22,7 @@ import de.perdian.apps.tagtiger.fx.modules.editor.components.MetadataEditorPane;
 import de.perdian.apps.tagtiger.fx.modules.editor.handlers.ChangeCurrentFileEventHandler;
 import de.perdian.apps.tagtiger.fx.support.joblisteners.DisableWhileJobRunningJobListener;
 import de.perdian.apps.tagtiger.fx.support.jobs.SaveChangedFilesJob;
+import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import javafx.geometry.Insets;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;

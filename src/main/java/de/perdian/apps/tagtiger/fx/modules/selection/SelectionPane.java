@@ -17,13 +17,13 @@ package de.perdian.apps.tagtiger.fx.modules.selection;
 
 import java.io.File;
 
-import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
 import de.perdian.apps.tagtiger.fx.modules.selection.directories.DirectoryTreeView;
 import de.perdian.apps.tagtiger.fx.modules.selection.files.FileSelectionPane;
 import de.perdian.apps.tagtiger.fx.support.joblisteners.DisableWhileJobRunningJobListener;
+import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener.Change;
 import javafx.geometry.Insets;

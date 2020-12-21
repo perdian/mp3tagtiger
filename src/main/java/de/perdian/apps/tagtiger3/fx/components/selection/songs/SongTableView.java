@@ -16,8 +16,13 @@
 package de.perdian.apps.tagtiger3.fx.components.selection.songs;
 
 import de.perdian.apps.tagtiger3.model.SongFile;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TableView;
 
 public class SongTableView extends TableView<SongFile> {
+
+    public SongTableView(ObservableList<SongFile> selectedFiles) {
+        super(selectedFiles);
+    }
 
 }

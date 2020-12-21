@@ -17,12 +17,12 @@ package de.perdian.apps.tagtiger.fx.modules.editor.components;
 
 import java.util.List;
 
-import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
 import de.perdian.apps.tagtiger.fx.modules.editor.EditorComponentBuilderFactory;
 import de.perdian.apps.tagtiger.fx.support.joblisteners.DisableWhileJobRunningJobListener;
+import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;

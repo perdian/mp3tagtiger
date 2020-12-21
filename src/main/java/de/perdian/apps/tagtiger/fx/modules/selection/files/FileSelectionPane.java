@@ -15,10 +15,10 @@
  */
 package de.perdian.apps.tagtiger.fx.modules.selection.files;
 
-import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
+import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;

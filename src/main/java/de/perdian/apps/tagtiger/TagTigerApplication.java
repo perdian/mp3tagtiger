@@ -20,7 +20,6 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
 import de.perdian.apps.tagtiger.core.preferences.PreferencesKey;
 import de.perdian.apps.tagtiger.core.preferences.PreferencesLookup;
 import de.perdian.apps.tagtiger.core.selection.Selection;
@@ -29,6 +28,7 @@ import de.perdian.apps.tagtiger.fx.modules.editor.EditorPane;
 import de.perdian.apps.tagtiger.fx.modules.selection.SelectionPane;
 import de.perdian.apps.tagtiger.fx.modules.status.StatusPane;
 import de.perdian.apps.tagtiger.fx.support.jobs.ChangeDirectoryJob;
+import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;

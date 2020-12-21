@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Christian Seifert
+ * Copyright 2014-2020 Christian Seifert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.core.jobs;
+package de.perdian.apps.tagtiger3.fx.jobs;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,10 +24,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.perdian.apps.tagtiger3.fx.jobs.Job;
-
-import de.perdian.apps.tagtiger3.fx.jobs.Job;
 
 public class JobExecutor {
 

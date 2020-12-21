@@ -15,6 +15,21 @@
  */
 package de.perdian.apps.tagtiger3.fx.jobs;
 
-public class JobScheduler {
+/**
+ * Listener that will be notified upon changes within the execution of a job
+ *
+ * @author Christian Seifert
+ */
+
+public interface JobListener {
+
+    default void jobStarted(Job job) {
+    }
+
+    default void jobProgress(Job job, String progressMessage, Integer progressStep, Integer totalProgressSteps) {
+    }
+
+    default void jobCompleted(Job job, boolean otherJobsActive) {
+    }
 
 }

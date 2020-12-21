@@ -15,11 +15,11 @@
  */
 package de.perdian.apps.tagtiger.fx.modules.status;
 
-import de.perdian.apps.tagtiger.core.jobs.JobExecutor;
-import de.perdian.apps.tagtiger.core.jobs.JobListener;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
 import de.perdian.apps.tagtiger3.fx.jobs.Job;
+import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
+import de.perdian.apps.tagtiger3.fx.jobs.JobListener;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;

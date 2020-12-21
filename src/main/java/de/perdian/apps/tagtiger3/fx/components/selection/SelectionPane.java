@@ -20,31 +20,39 @@ import java.nio.file.Path;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.perdian.apps.tagtiger3.fx.components.selection.directories.Directory;
 import de.perdian.apps.tagtiger3.fx.components.selection.directories.DirectorySelectionPane;
 import de.perdian.apps.tagtiger3.fx.components.selection.directories.DirectoryTreeView;
 import de.perdian.apps.tagtiger3.fx.components.selection.songs.SongActionsPane;
 import de.perdian.apps.tagtiger3.fx.components.selection.songs.SongTableView;
+import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
+import de.perdian.apps.tagtiger3.model.SongFile;
 import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
 public class SelectionPane extends GridPane {
 
-    public SelectionPane(Preferences preferences) {
+    private ObservableList<SongFile> selectedFiles = FXCollections.observableArrayList();
+
+    public SelectionPane(Preferences preferences, JobExecutor jobExecutor) {
 
         DirectorySelectionPane directorySelectionPane = new DirectorySelectionPane(preferences);
         DirectoryTreeView directoryTreeView = new DirectoryTreeView();
         directoryTreeView.setMinWidth(200);
         directoryTreeView.setPrefWidth(300);
         directoryTreeView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> directorySelectionPane.getSelectedPathProperty().setValue(newValue == null ? null : newValue.getValue().getPath()));
+        directoryTreeView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.onDirectoryUpdate(newValue == null ? null : newValue.getValue(), jobExecutor));
         directorySelectionPane.getSelectedPathProperty().addListener((o, oldValue, newValue) -> directoryTreeView.selectDirectory(newValue));
         GridPane.setVgrow(directoryTreeView, Priority.ALWAYS);
 
         SongActionsPane songActionsPane = new SongActionsPane();
         GridPane.setHgrow(songActionsPane, Priority.ALWAYS);
-        SongTableView songTableView = new SongTableView();
+        SongTableView songTableView = new SongTableView(this.getSelectedFiles());
         songTableView.setMinWidth(300);
         songTableView.setPrefWidth(400);
         GridPane.setHgrow(songTableView, Priority.ALWAYS);
@@ -65,6 +73,17 @@ public class SelectionPane extends GridPane {
         }
         directoryTreeView.getSelectedDirectory().addListener((o, oldValue, newValue) -> selectedPathProperty.setValue(newValue == null ? null : newValue.getPath().toString()));
 
+    }
+
+    private void onDirectoryUpdate(Directory selectedDirectoy, JobExecutor jobExecutor) {
+
+    }
+
+    public ObservableList<SongFile> getSelectedFiles() {
+        return this.selectedFiles;
+    }
+    void setSelectedFiles(ObservableList<SongFile> selectedFiles) {
+        this.selectedFiles = selectedFiles;
     }
 
 }
