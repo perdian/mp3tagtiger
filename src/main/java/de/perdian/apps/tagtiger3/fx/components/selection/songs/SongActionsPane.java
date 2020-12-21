@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Christian Seifert
+ * Copyright 2014-2020 Christian Seifert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.core.jobs;
+package de.perdian.apps.tagtiger3.fx.components.selection.songs;
 
-import de.perdian.apps.tagtiger3.fx.jobs.Job;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 
-import de.perdian.apps.tagtiger3.fx.jobs.Job;
+public class SongActionsPane extends BorderPane {
 
-/**
- * Listener that will be notified upon changes within the execution of a job
- *
- * @author Christian Seifert
- */
-
-public interface JobListener {
-
-    default void jobStarted(Job job) {
-    }
-
-    default void jobProgress(Job job, String progressMessage, Integer progressStep, Integer totalProgressSteps) {
-    }
-
-    default void jobCompleted(Job job, boolean otherJobsActive) {
+    public SongActionsPane() {
+        this.setCenter(new Label("ACTIONS GO HERE!"));
     }
 
 }

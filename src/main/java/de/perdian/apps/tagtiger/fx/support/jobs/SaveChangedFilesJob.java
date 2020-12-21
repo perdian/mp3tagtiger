@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.tagtiger.core.jobs.Job;
-import de.perdian.apps.tagtiger.core.jobs.JobContext;
 import de.perdian.apps.tagtiger.core.selection.Selection;
 import de.perdian.apps.tagtiger.core.tagging.TaggableFile;
 import de.perdian.apps.tagtiger.fx.localization.Localization;
+import de.perdian.apps.tagtiger3.fx.jobs.Job;
+import de.perdian.apps.tagtiger3.fx.jobs.JobContext;
 
 public class SaveChangedFilesJob implements Job {
 

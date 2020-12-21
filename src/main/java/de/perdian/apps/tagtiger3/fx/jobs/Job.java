@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Christian Seifert
+ * Copyright 2014-2020 Christian Seifert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.core.jobs;
+package de.perdian.apps.tagtiger3.fx.jobs;
 
 /**
- * Represents any kind of job that has to be executed throughout the GUI. It
- * will be run within a separate thread and therefore any implementation should
- * make sure that GUI relevant operations should be performed in the GUI thread.
+ * Represents any kind of job that has to be executed throughout the GUI. It will be run within a separate thread and
+ * therefore any implementation should make sure that GUI relevant operations are performed in the GUI thread by
+ * using the {@code Platform.runLater} method.
  *
  * @author Christian Seifert
  */
@@ -26,11 +26,8 @@ package de.perdian.apps.tagtiger.core.jobs;
 public interface Job {
 
     /**
-     * Executes the given job
-     *
      * @param context
-     *     the context through which the job can communicate with the outer
-     *     world
+     *     the context through which the job can communicate with the outer world
      */
     void execute(JobContext context);
 

@@ -18,6 +18,9 @@ package de.perdian.apps.tagtiger.core.jobs;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import de.perdian.apps.tagtiger3.fx.jobs.Job;
+import de.perdian.apps.tagtiger3.fx.jobs.JobContext;
+
 class JobContextImpl implements JobContext {
 
     private boolean cancelled = false;

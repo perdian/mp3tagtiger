@@ -25,6 +25,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.perdian.apps.tagtiger3.fx.jobs.Job;
+
+import de.perdian.apps.tagtiger3.fx.jobs.Job;
+
 public class JobExecutor {
 
     private static final Logger log = LoggerFactory.getLogger(JobExecutor.class);
