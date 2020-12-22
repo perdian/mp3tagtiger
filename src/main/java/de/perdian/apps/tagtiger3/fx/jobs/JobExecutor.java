@@ -47,21 +47,25 @@ public class JobExecutor {
         // cancelled first
         this.cancelCurrentJob();
 
-        long jobIndex = this.getJobCounter().incrementAndGet();
-        JobContextImpl jobContext = new JobContextImpl(job, jobIndex, this.getJobCounter(), this.getListeners());
+        JobContextImpl jobContext = new JobContextImpl(job, this.getJobCounter(), this.getListeners());
         this.setCurrentJobContext(jobContext);
 
         log.trace("Executing job: {}", job);
         this.getExecutor().execute(() -> {
 
             this.getListeners().forEach(listener -> listener.jobStarted(job));
-            job.execute(jobContext);
-            this.getListeners().forEach(listener -> listener.jobCompleted(job, !jobContext.isActive()));
+            try {
+                job.execute(jobContext);
+            } finally {
 
-            synchronized (this) {
-                if (this.getCurrentJobContext() == jobContext) {
-                    this.setCurrentJobContext(null);
+                this.getListeners().forEach(listener -> listener.jobCompleted(job, !jobContext.isActive()));
+
+                synchronized (this) {
+                    if (this.getCurrentJobContext() == jobContext) {
+                        this.setCurrentJobContext(null);
+                    }
                 }
+
             }
 
         });

@@ -26,9 +26,9 @@ class JobContextImpl implements JobContext {
     private long jobIndex = 0;
     private AtomicLong jobCounter = null;
 
-    JobContextImpl(Job job, long jobIndex, AtomicLong jobCounter, List<JobListener> listeners) {
+    JobContextImpl(Job job, AtomicLong jobCounter, List<JobListener> listeners) {
         this.setJob(job);
-        this.setJobIndex(jobIndex);
+        this.setJobIndex(jobCounter.incrementAndGet());
         this.setJobCounter(jobCounter);
         this.setListeners(listeners);
     }

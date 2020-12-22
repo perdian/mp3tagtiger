@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.support.joblisteners;
+package de.perdian.apps.tagtiger3.fx.jobs.listeners;
 
 import de.perdian.apps.tagtiger3.fx.jobs.Job;
 import de.perdian.apps.tagtiger3.fx.jobs.JobListener;

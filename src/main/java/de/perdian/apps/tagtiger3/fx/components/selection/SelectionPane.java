@@ -15,29 +15,32 @@
  */
 package de.perdian.apps.tagtiger3.fx.components.selection;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
 
 import de.perdian.apps.tagtiger3.fx.components.selection.directories.Directory;
 import de.perdian.apps.tagtiger3.fx.components.selection.directories.DirectorySelectionPane;
 import de.perdian.apps.tagtiger3.fx.components.selection.directories.DirectoryTreeView;
+import de.perdian.apps.tagtiger3.fx.components.selection.jobs.LoadSongsInDirectoryJob;
 import de.perdian.apps.tagtiger3.fx.components.selection.songs.SongActionsPane;
 import de.perdian.apps.tagtiger3.fx.components.selection.songs.SongTableView;
 import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
+import de.perdian.apps.tagtiger3.fx.jobs.listeners.DisableWhileJobRunningJobListener;
 import de.perdian.apps.tagtiger3.model.SongFile;
 import de.perdian.commons.fx.preferences.Preferences;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.control.TreeItem;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
 public class SelectionPane extends GridPane {
 
-    private ObservableList<SongFile> selectedFiles = FXCollections.observableArrayList();
+    private ObservableList<SongFile> availableSongs = FXCollections.observableArrayList();
+    private ObjectProperty<Path> selectedPath = new SimpleObjectProperty<>();
 
     public SelectionPane(Preferences preferences, JobExecutor jobExecutor) {
 
@@ -46,17 +49,19 @@ public class SelectionPane extends GridPane {
         directoryTreeView.setMinWidth(200);
         directoryTreeView.setPrefWidth(300);
         directoryTreeView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> directorySelectionPane.getSelectedPathProperty().setValue(newValue == null ? null : newValue.getValue().getPath()));
-        directoryTreeView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.onDirectoryUpdate(newValue == null ? null : newValue.getValue(), jobExecutor));
+        directoryTreeView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> jobExecutor.executeJob(new LoadSongsInDirectoryJob(newValue == null ? null : newValue.getValue(), this.getAvailableSongs())));
+        directoryTreeView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.getSelectedPath().setValue(newValue == null ? null : newValue.getValue().getPath()));
         directorySelectionPane.getSelectedPathProperty().addListener((o, oldValue, newValue) -> directoryTreeView.selectDirectory(newValue));
         GridPane.setVgrow(directoryTreeView, Priority.ALWAYS);
 
         SongActionsPane songActionsPane = new SongActionsPane();
         GridPane.setHgrow(songActionsPane, Priority.ALWAYS);
-        SongTableView songTableView = new SongTableView(this.getSelectedFiles());
+        SongTableView songTableView = new SongTableView(this.getAvailableSongs());
         songTableView.setMinWidth(300);
         songTableView.setPrefWidth(400);
         GridPane.setHgrow(songTableView, Priority.ALWAYS);
         GridPane.setVgrow(songTableView, Priority.ALWAYS);
+        jobExecutor.addListener(new DisableWhileJobRunningJobListener(songTableView.disableProperty()));
 
         this.add(directorySelectionPane, 0, 0, 2, 1);
         this.add(directoryTreeView, 0, 1, 1, 2);
@@ -66,24 +71,27 @@ public class SelectionPane extends GridPane {
         this.setVgap(5);
         this.setPadding(new Insets(5, 5, 5, 5));
 
-        StringProperty selectedPathProperty = preferences.getStringProperty("SelectionPane.selectedPath");
-        Path selectedPath = StringUtils.isEmpty(selectedPathProperty.getValue()) ? null : Path.of(selectedPathProperty.getValue());
-        if (selectedPath != null && Files.exists(selectedPath)) {
-            directoryTreeView.selectDirectory(selectedPath);
-        }
-        directoryTreeView.getSelectedDirectory().addListener((o, oldValue, newValue) -> selectedPathProperty.setValue(newValue == null ? null : newValue.getPath().toString()));
+        this.getSelectedPath().addListener((o, oldValue, newValue) -> {
+            TreeItem<Directory> selectedTreeItem = directoryTreeView.getSelectionModel().getSelectedItem();
+            if (!Objects.equals(newValue, selectedTreeItem == null || selectedTreeItem.getValue() == null ? null : selectedTreeItem.getValue().getPath())) {
+                directoryTreeView.selectDirectory(newValue == null ? null : newValue);
+            }
+        });
 
     }
 
-    private void onDirectoryUpdate(Directory selectedDirectoy, JobExecutor jobExecutor) {
-
+    public ObservableList<SongFile> getAvailableSongs() {
+        return this.availableSongs;
+    }
+    void setAvailableSongs(ObservableList<SongFile> availableSongs) {
+        this.availableSongs = availableSongs;
     }
 
-    public ObservableList<SongFile> getSelectedFiles() {
-        return this.selectedFiles;
+    public ObjectProperty<Path> getSelectedPath() {
+        return this.selectedPath;
     }
-    void setSelectedFiles(ObservableList<SongFile> selectedFiles) {
-        this.selectedFiles = selectedFiles;
+    void setSelectedPath(ObjectProperty<Path> selectedPath) {
+        this.selectedPath = selectedPath;
     }
 
 }
