@@ -31,7 +31,8 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jaudiotagger.tag.datatype.Artwork;
+import org.jaudiotagger.tag.images.Artwork;
+import org.jaudiotagger.tag.images.StandardArtwork;
 import org.jaudiotagger.tag.reference.PictureTypes;
 
 import javafx.beans.property.Property;
@@ -97,7 +98,7 @@ public class TagImage {
         } else {
 
             Integer pictureTypeId = PictureTypes.getInstanceOf().getIdForValue(this.pictureTypeProperty().getValue());
-            Artwork artwork = this.getArtwork() == null ? new Artwork() : this.getArtwork();
+            Artwork artwork = this.getArtwork() == null ? new StandardArtwork() : this.getArtwork();
             artwork.setBinaryData(this.toPngBytes());
             artwork.setDescription(this.descriptionProperty().getValue());
             artwork.setMimeType("image/png");

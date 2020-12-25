@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 Christian Seifert
+ * Copyright 2014-2020 Christian Seifert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger;
+package de.perdian.apps.tagtiger3.model;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javafx.application.Application;
-
-public class TagTigerLauncher {
-
-    private static final Logger log = LoggerFactory.getLogger(TagTigerLauncher.class);
-
-    public static void main(String[] args) {
-        log.info("Starting application");
-        Application.launch(TagTigerApplication.class);
-    }
+public enum SongImageType {
 
 }

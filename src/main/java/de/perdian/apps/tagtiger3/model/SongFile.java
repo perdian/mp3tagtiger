@@ -15,6 +15,72 @@
  */
 package de.perdian.apps.tagtiger3.model;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
+
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.TagException;
+import org.slf4j.bridge.SLF4JBridgeHandler;
+
 public class SongFile {
+
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
+
+    private SongProperties properties = null;
+    private AudioFile audioFile = null;
+
+    SongFile(File osFile) throws IOException {
+        try {
+            AudioFile audioFile = AudioFileIO.read(Objects.requireNonNull(osFile, "File must not be null"));
+            SongProperties songProperties = new SongProperties();
+            songProperties.readValues(audioFile);
+            this.setAudioFile(audioFile);
+            this.setProperties(songProperties);
+        } catch (InvalidAudioFrameException | ReadOnlyFileException | TagException | CannotReadException e) {
+            throw new IOException("Invalid MP3 file: " + osFile.getAbsolutePath(), e);
+        }
+    }
+
+    public boolean persistChanges() throws IOException {
+        if (this.getProperties().writeValues(this.getAudioFile())) {
+            try {
+                AudioFileIO.write(this.getAudioFile());
+            } catch (CannotWriteException e) {
+                throw new IOException("Cannot write MP3 tags into target file: " + this.getAudioFile().getFile().getAbsolutePath(), e);
+            }
+            this.getProperties().resetValuesToNewValues();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return this.getAudioFile().getFile().getAbsolutePath();
+    }
+
+    AudioFile getAudioFile() {
+        return this.audioFile;
+    }
+    private void setAudioFile(AudioFile audioFile) {
+        this.audioFile = audioFile;
+    }
+
+    public SongProperties getProperties() {
+        return this.properties;
+    }
+    private void setProperties(SongProperties properties) {
+        this.properties = properties;
+    }
 
 }

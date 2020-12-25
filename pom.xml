@@ -32,14 +32,15 @@
     </developers>
 
     <properties>
-        <commons-fx.version>1.4.1-SNAPSHOT</commons-fx.version>
+        <commons-fx.version>1.4.0</commons-fx.version>
         <commons-lang3.version>3.10</commons-lang3.version>
         <commons-text.version>1.8</commons-text.version>
         <fontawesomefx.version>4.7.0-9.1.2</fontawesomefx.version>
         <java.version>15</java.version>
         <javafx.version>15</javafx.version>
-        <logback.version>1.2.3</logback.version>
-        <jaudiotagger.version>2.0.3</jaudiotagger.version>
+        <junit-jupiter.version>5.7.0</junit-jupiter.version>
+        <log4j.version>2.14.0</log4j.version>
+        <jaudiotagger.version>2.2.5</jaudiotagger.version>
         <slf4j.version>1.7.30</slf4j.version>
     </properties>
 
@@ -75,26 +76,49 @@
             <version>${commons-text.version}</version>
         </dependency>
         <dependency>
+            <groupId>net.jthink</groupId>
+            <artifactId>jaudiotagger</artifactId>
+            <version>${jaudiotagger.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
-        </dependency>
+        </dependency>        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>org</groupId>
-            <artifactId>jaudiotagger</artifactId>
-            <version>${jaudiotagger.version}</version>
-        </dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>        
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>jaudiotagger-repository</id>
+            <url>https://dl.bintray.com/ijabz/maven</url>
+        </repository>
+    </repositories>
 
     <build>
         <finalName>${project.name}</finalName>
@@ -137,6 +161,11 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+          </plugin>            
         </plugins>
     </build>
 
