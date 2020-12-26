@@ -15,10 +15,15 @@
  */
 package de.perdian.apps.tagtiger3.fx;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.tagtiger3.fx.components.directories.Directory;
 import de.perdian.apps.tagtiger3.fx.components.directories.DirectoryPane;
@@ -29,6 +34,7 @@ import de.perdian.apps.tagtiger3.fx.jobs.JobContext;
 import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import de.perdian.apps.tagtiger3.model.SongFile;
 import de.perdian.commons.fx.preferences.Preferences;
+import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,6 +44,8 @@ import javafx.scene.layout.Priority;
 
 class TagTigerPane extends GridPane {
 
+    private static final Logger log = LoggerFactory.getLogger(TagTigerPane.class);
+
     public TagTigerPane(Preferences preferences, JobExecutor jobExecutor) {
 
         ObservableList<SongFile> availableSongs = FXCollections.observableArrayList();
@@ -46,7 +54,7 @@ class TagTigerPane extends GridPane {
         directoryPane.getSelectedDirectory().addListener((o, oldValue, newValue) -> jobExecutor.executeJob(jobContext -> this.loadSongsFromDirectory(newValue, availableSongs, jobContext)));
         GridPane.setVgrow(directoryPane, Priority.ALWAYS);
 
-        SelectionPane selectionPane = new SelectionPane(preferences, jobExecutor);
+        SelectionPane selectionPane = new SelectionPane(availableSongs, preferences, jobExecutor);
         GridPane.setHgrow(selectionPane, Priority.ALWAYS);
         GridPane.setVgrow(selectionPane, Priority.ALWAYS);
 
@@ -77,8 +85,21 @@ class TagTigerPane extends GridPane {
     private void loadSongsFromDirectory(Directory sourceDirectory, ObservableList<SongFile> targetList, JobContext jobContext) {
         jobContext.updateProgress("Loading available songs in directory: " + sourceDirectory.getPath());
         try {
-            Thread.sleep(2000);
-        } catch (Exception e) {
+            List<Path> files = sourceDirectory.loadFiles();
+            List<SongFile> songFiles = new ArrayList<>(files.size());
+            for (int i=0; i < files.size() && !jobContext.isCancelled(); i++) {
+                jobContext.updateProgress("Loading file: " + files.get(i).getFileName().toString(), i, files.size());
+                try {
+                    songFiles.add(new SongFile(files.get(i).toFile()));
+                } catch (Exception e) {
+                    log.warn("Cannot load MP3 data from file at: {}", files.get(i));
+                }
+            }
+            if (!jobContext.isCancelled()) {
+                Platform.runLater(() -> targetList.setAll(songFiles));
+            }
+        } catch (IOException e) {
+            log.warn("Cannot load files from directory: {}", sourceDirectory, e);
         }
     }
 

@@ -40,7 +40,7 @@ public class FileNameDelegate implements SongPropertyDelegate<String> {
         String existingFileExtension = existingFileTypeSeparatorIndex < 0 ? ".mp3" : existingFile.getName().substring(existingFileTypeSeparatorIndex).strip();
         String newFileNameWithExtension = cleanupFileName(newFileName.strip()) + existingFileExtension;
         File newFile = new File(existingFile.getParentFile(), newFileNameWithExtension);
-        Files.copy(existingFile.toPath(), newFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
+        Files.move(existingFile.toPath(), newFile.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
         audioFile.setFile(newFile);
     }
 

@@ -49,6 +49,16 @@ public class Directory {
             .collect(Collectors.toList());
     }
 
+    public List<Path> loadFiles() throws IOException {
+        return Files.walk(this.getPath())
+            .parallel()
+            .filter(file -> !Files.isDirectory(file))
+            .filter(file -> { try { return !Files.isHidden(file) && Files.isReadable(file); } catch (Exception e) { return false; } })
+            .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".mp3"))
+            .sorted((f1, f2) -> f1.toString().compareToIgnoreCase(f2.toString()))
+            .collect(Collectors.toList());
+    }
+
     private static int compareByTitle(Directory d1, Directory d2) {
         return String.CASE_INSENSITIVE_ORDER.compare(d1.getTitle(), d2.getTitle());
     }

@@ -28,6 +28,9 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.TagException;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 public class SongFile {
 
     static {
@@ -37,14 +40,16 @@ public class SongFile {
 
     private SongProperties properties = null;
     private AudioFile audioFile = null;
+    private BooleanProperty marker = null;
 
-    SongFile(File osFile) throws IOException {
+    public SongFile(File osFile) throws IOException {
         try {
             AudioFile audioFile = AudioFileIO.read(Objects.requireNonNull(osFile, "File must not be null"));
             SongProperties songProperties = new SongProperties();
             songProperties.readValues(audioFile);
             this.setAudioFile(audioFile);
             this.setProperties(songProperties);
+            this.setMarker(new SimpleBooleanProperty());
         } catch (InvalidAudioFrameException | ReadOnlyFileException | TagException | CannotReadException e) {
             throw new IOException("Invalid MP3 file: " + osFile.getAbsolutePath(), e);
         }
@@ -81,6 +86,13 @@ public class SongFile {
     }
     private void setProperties(SongProperties properties) {
         this.properties = properties;
+    }
+
+    public BooleanProperty getMarker() {
+        return this.marker;
+    }
+    private void setMarker(BooleanProperty marker) {
+        this.marker = marker;
     }
 
 }

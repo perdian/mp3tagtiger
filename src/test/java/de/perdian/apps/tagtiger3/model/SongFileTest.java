@@ -73,12 +73,13 @@ public class SongFileTest {
 
     @Test
     public void writeNewValueWithFilenameChanged() throws IOException {
-        SongFile originalSongFile = new SongFile(new File("src/test/resources/META-INF/mp3/Hold on a Sec.mp3"));
+        File originalOsFile = this.createTempSongFile();
+        SongFile originalSongFile = new SongFile(originalOsFile);
         Assertions.assertFalse(originalSongFile.getProperties().getDirty().getValue());
 
         originalSongFile.getProperties().getValue(SongProperty.FILENAME, String.class).getValue().setValue("Hold on a Sec - NEW");
         originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().setValue("foo");
-        Assertions.assertEquals("Hold on a Sec", originalSongFile.getProperties().getValue(SongProperty.FILENAME, String.class).getPersistedValue().getValue());
+        Assertions.assertEquals("Hold on a Sec - TEMP", originalSongFile.getProperties().getValue(SongProperty.FILENAME, String.class).getPersistedValue().getValue());
         Assertions.assertEquals("Hold on a Sec - NEW", originalSongFile.getProperties().getValue(SongProperty.FILENAME, String.class).getValue().getValue());
         Assertions.assertEquals("Hold on a Sec", originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getPersistedValue().getValue());
         Assertions.assertEquals("foo", originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().getValue());
@@ -87,6 +88,7 @@ public class SongFileTest {
 
         Assertions.assertTrue(originalSongFile.persistChanges());
 
+        Assertions.assertFalse(originalOsFile.exists());
         Assertions.assertEquals("Hold on a Sec - NEW.mp3", originalSongFile.getAudioFile().getFile().getName());
         Assertions.assertEquals("Hold on a Sec - NEW", originalSongFile.getProperties().getValue(SongProperty.FILENAME, String.class).getPersistedValue().getValue());
         Assertions.assertEquals("Hold on a Sec - NEW", originalSongFile.getProperties().getValue(SongProperty.FILENAME, String.class).getValue().getValue());
