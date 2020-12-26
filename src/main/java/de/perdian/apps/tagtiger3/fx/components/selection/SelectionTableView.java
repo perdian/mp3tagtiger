@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger3.fx.components.selection.songs;
+package de.perdian.apps.tagtiger3.fx.components.selection;
 
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
+import de.perdian.apps.tagtiger3.model.SongFile;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TableView;
 
-public class SongActionsPane extends BorderPane {
+class SelectionTableView extends TableView<SongFile> {
 
-    public SongActionsPane() {
-        this.setCenter(new Label("ACTIONS GO HERE!"));
+    SelectionTableView(ObservableList<SongFile> selectedFiles) {
+        super(selectedFiles);
     }
 
 }

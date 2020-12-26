@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger3.fx.components.selection.directories;
+package de.perdian.apps.tagtiger3.fx.components.directories;
 
 import java.nio.file.Path;
 import java.util.Objects;
