@@ -38,11 +38,13 @@ import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
-class TagTigerPane extends GridPane {
+class TagTigerPane extends BorderPane {
 
     private static final Logger log = LoggerFactory.getLogger(TagTigerPane.class);
 
@@ -64,14 +66,18 @@ class TagTigerPane extends GridPane {
         StatusPane statusPane = new StatusPane(preferences, jobExecutor);
         GridPane.setHgrow(statusPane, Priority.ALWAYS);
 
-        this.add(directoryPane, 0, 0, 1, 2);
-        this.add(selectionPane, 1, 0, 1, 1);
-        this.add(editorPane, 1, 1, 1, 1);
-        this.add(statusPane, 0, 3, 2, 1);
-        this.setHgap(10);
-        this.setVgap(10);
-        this.getColumnConstraints().add(new ColumnConstraints(300));
-        this.getColumnConstraints().add(new ColumnConstraints());
+        GridPane innerPane = new GridPane();
+        innerPane.add(directoryPane, 0, 0, 1, 2);
+        innerPane.add(selectionPane, 1, 0, 1, 1);
+        innerPane.add(editorPane, 1, 1, 1, 1);
+        innerPane.setPadding(new Insets(10, 10, 10, 10));
+        innerPane.setHgap(10);
+        innerPane.setVgap(10);
+        innerPane.getColumnConstraints().add(new ColumnConstraints(300));
+        innerPane.getColumnConstraints().add(new ColumnConstraints());
+
+        this.setCenter(innerPane);
+        this.setBottom(statusPane);
 
         StringProperty selectedPathProperty = preferences.getStringProperty("TagTigerApplication.selectedPath");
         Path selectedPath = StringUtils.isEmpty(selectedPathProperty.getValue()) ? null : Path.of(selectedPathProperty.getValue());

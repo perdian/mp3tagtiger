@@ -17,7 +17,6 @@ package de.perdian.apps.tagtiger3.fx;
 
 import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import de.perdian.commons.fx.AbstractApplication;
-import javafx.geometry.Insets;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -26,9 +25,7 @@ public class TagTigerApplication extends AbstractApplication {
 
     @Override
     protected Pane createMainPane() {
-        TagTigerPane mainPane = new TagTigerPane(this.getPreferences(), new JobExecutor());
-        mainPane.setPadding(new Insets(10, 10, 10, 10));
-        return mainPane;
+        return new TagTigerPane(this.getPreferences(), new JobExecutor());
     }
 
     @Override

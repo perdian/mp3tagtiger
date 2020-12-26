@@ -22,11 +22,18 @@ import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import de.perdian.apps.tagtiger3.fx.jobs.JobListener;
 import de.perdian.commons.fx.preferences.Preferences;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 
 public class StatusPane extends GridPane implements JobListener {
 
@@ -56,7 +63,9 @@ public class StatusPane extends GridPane implements JobListener {
         this.add(progressLabel, 0, 0, 1, 1);
         this.add(progressBar, 1, 0, 1, 1);
         this.add(cancelButton, 2, 0, 1, 1);
+        this.setBorder(new Border(new BorderStroke(Color.LIGHTGRAY, null, null, null, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.NONE, BorderStrokeStyle.NONE, CornerRadii.EMPTY, new BorderWidths(1), Insets.EMPTY)));
         this.setHgap(5);
+        this.setPadding(new Insets(10, 10, 10, 10));
 
         this.setJobExecutor(jobExecutor);
         jobExecutor.addListener(this);
