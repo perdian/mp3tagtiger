@@ -59,11 +59,9 @@ public class SongProperties {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void resetValues() {
         for (SongProperty songProperty : SongProperty.values()) {
-            SongPropertyValue<Object> songPropertyValue = (SongPropertyValue<Object>)this.getValues().get(songProperty);
-            songPropertyValue.getValue().setValue(songPropertyValue.getPersistedValue().getValue());
+            this.getValues().get(songProperty).resetValue();
         }
     }
 

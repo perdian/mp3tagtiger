@@ -18,11 +18,13 @@ package de.perdian.apps.tagtiger3.fx.components.editor;
 import java.util.Objects;
 
 import de.perdian.apps.tagtiger3.fx.components.selection.SelectionModel;
+import de.perdian.apps.tagtiger3.model.SongFile;
 import de.perdian.apps.tagtiger3.model.SongProperty;
 import de.perdian.commons.fx.components.ComponentBuilder;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -71,27 +73,46 @@ class EditorComponentBuilder {
                 textField.selectAll();
             }
         });
+        textField.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.DELETE && event.isMetaDown()) {
+                SongFile focusFile = this.getSelectionModel().focusFileProperty().getValue();
+                if (focusFile != null) {
+                    focusFile.getProperties().getValue(property, String.class).resetValue();
+                }
+            }
+        });
         return textField;
     }
 
     private StringProperty createStringProperty(SongProperty property) {
-       StringProperty stringProperty = new SimpleStringProperty();
-       this.getSelectionModel().focusFileProperty().addListener((o, oldFocusFile, newFocusFile) -> {
-           if (newFocusFile != null) {
-               stringProperty.setValue(newFocusFile.getProperties().getValue(property, String.class).getValue().getValue());
-           } else {
-               stringProperty.setValue("");
-           }
-       });
-       stringProperty.addListener((o, oldValue, newValue) -> {
-           if (this.getSelectionModel().focusFileProperty().getValue() != null) {
-               Property<String> focusFileTargetProperty = this.getSelectionModel().focusFileProperty().getValue().getProperties().getValue(property, String.class).getValue();
-               if (!Objects.equals(newValue, focusFileTargetProperty.getValue())) {
-                   focusFileTargetProperty.setValue(newValue);
-               }
-           }
-       });
-       return stringProperty;
+        StringProperty stringProperty = new SimpleStringProperty();
+        ChangeListener<String> updateStringPropertyChangeListener = (o, oldValue, newValue) -> {
+            if (!Objects.equals(stringProperty.getValue(), newValue)) {
+                stringProperty.setValue(newValue);
+            }
+        };
+        this.getSelectionModel().focusFileProperty().addListener((o, oldFocusFile, newFocusFile) -> {
+            if (newFocusFile != null) {
+                Property<String> newFocusFileProperty = newFocusFile.getProperties().getValue(property, String.class).getValue();
+                stringProperty.setValue(newFocusFileProperty.getValue());
+                newFocusFileProperty.addListener(updateStringPropertyChangeListener);
+            } else {
+                stringProperty.setValue("");
+            }
+            if (oldFocusFile != null) {
+                Property<String> oldFocusFileProperty = oldFocusFile.getProperties().getValue(property, String.class).getValue();
+                oldFocusFileProperty.removeListener(updateStringPropertyChangeListener);
+            }
+        });
+        stringProperty.addListener((o, oldValue, newValue) -> {
+            if (!Objects.equals(oldValue, newValue) && this.getSelectionModel().focusFileProperty().getValue() != null) {
+                Property<String> focusFileTargetProperty = this.getSelectionModel().focusFileProperty().getValue().getProperties().getValue(property, String.class).getValue();
+                if (!Objects.equals(newValue, focusFileTargetProperty.getValue())) {
+                    focusFileTargetProperty.setValue(newValue);
+                }
+            }
+        });
+        return stringProperty;
     }
 
     private ComponentBuilder getComponentBuilder() {
