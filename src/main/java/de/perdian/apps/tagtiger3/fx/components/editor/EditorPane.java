@@ -17,35 +17,33 @@ package de.perdian.apps.tagtiger3.fx.components.editor;
 
 import de.perdian.apps.tagtiger3.fx.components.selection.SelectionModel;
 import javafx.geometry.Insets;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
 public class EditorPane extends GridPane {
 
     public EditorPane(SelectionModel selectionModel) {
+        EditorComponentBuilder componentBuilder = new EditorComponentBuilder(selectionModel);
 
-        BorderPane filePane = new BorderPane();
-        filePane.setPadding(new Insets(10, 10, 10, 10));
-        TitledPane fileTitledPane = new TitledPane("File", filePane);
+        EditorFilePane fileEditorPane = new EditorFilePane(componentBuilder);
+        TitledPane fileTitledPane = new TitledPane("File", fileEditorPane);
         fileTitledPane.setCollapsible(false);
+        fileTitledPane.setFocusTraversable(false);
         GridPane.setHgrow(fileTitledPane, Priority.ALWAYS);
 
-        EditorComponentBuilder componentBuilder = new EditorComponentBuilder(selectionModel);
         EditorTagsPane tagsEditorPane = new EditorTagsPane(componentBuilder);
-        tagsEditorPane.setPadding(new Insets(10, 10, 10, 10));
-        Tab tagsEditorTab = new Tab("Tags", tagsEditorPane);
-        tagsEditorTab.setClosable(false);
-        BorderPane imagesEditorPane = new BorderPane();
-        imagesEditorPane.setPadding(new Insets(10, 10, 10, 10));
-        Tab imagesEditorTab = new Tab("Images", imagesEditorPane);
-        imagesEditorTab.setClosable(false);
-        TabPane tagsPane = new TabPane(tagsEditorTab, imagesEditorTab);
+        GridPane.setHgrow(tagsEditorPane, Priority.ALWAYS);
+        EditorImagesPane imagesEditorPane = new EditorImagesPane(componentBuilder);
+        GridPane.setVgrow(imagesEditorPane, Priority.ALWAYS);
+        GridPane tagsPane = new GridPane();
+        tagsPane.add(tagsEditorPane, 0, 0, 1, 1);
+        tagsPane.add(imagesEditorPane, 1, 0, 1, 1);
+        tagsPane.setHgap(10);
+        tagsPane.setPadding(new Insets(10, 10, 10, 10));
         TitledPane tagsTitledPane = new TitledPane("Tags", tagsPane);
         tagsTitledPane.setCollapsible(false);
+        tagsTitledPane.setFocusTraversable(false);
         GridPane.setHgrow(tagsTitledPane, Priority.ALWAYS);
 
         this.setVgap(10);

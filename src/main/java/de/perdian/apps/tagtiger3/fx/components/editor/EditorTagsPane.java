@@ -22,10 +22,15 @@ class EditorTagsPane extends GridPane {
 
     EditorTagsPane(EditorComponentBuilder editorComponentBuilder) {
 
-        this.add(editorComponentBuilder.createLabel("Title"), 0, 0, 1, 1);
+        this.add(editorComponentBuilder.createLabel("Title", 75), 0, 0, 1, 1);
         this.add(editorComponentBuilder.createTextField(SongProperty.TITLE), 1, 0, 1, 1);
-        this.add(editorComponentBuilder.createLabel("Artist"), 0, 1, 1, 1);
+        this.add(editorComponentBuilder.createCopyToOtherSongsButton(SongProperty.TITLE), 2, 0, 1, 1);
+        this.add(editorComponentBuilder.createLabel("Artist", 75), 0, 1, 1, 1);
         this.add(editorComponentBuilder.createTextField(SongProperty.ARTIST), 1, 1, 1, 1);
+        this.add(editorComponentBuilder.createCopyToOtherSongsButton(SongProperty.ARTIST), 2, 1, 1, 1);
+        this.add(editorComponentBuilder.createLabel("Album artist", 75), 0, 2, 1, 1);
+        this.add(editorComponentBuilder.createTextField(SongProperty.ALBUM_ARTIST), 1, 2, 1, 1);
+        this.add(editorComponentBuilder.createCopyToOtherSongsButton(SongProperty.ALBUM_ARTIST), 2, 2, 1, 1);
 
         this.setHgap(5);
         this.setVgap(5);

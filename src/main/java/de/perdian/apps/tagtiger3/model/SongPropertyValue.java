@@ -39,10 +39,6 @@ public class SongPropertyValue<T> {
         return String.valueOf(this.getValue().getValue());
     }
 
-    public void resetValue() {
-        this.getValue().setValue(this.getPersistedValue().getValue());
-    }
-
     ObjectProperty<T> getPersistedValue() {
         return this.persistedValue;
     }
@@ -50,6 +46,9 @@ public class SongPropertyValue<T> {
         this.persistedValue = persistedValue;
     }
 
+    public void resetValue() {
+        this.getValue().setValue(this.getPersistedValue().getValue());
+    }
     public ObjectProperty<T> getValue() {
         return this.value;
     }

@@ -34,42 +34,42 @@ class SelectionTableView extends TableView<SongFile> {
     SelectionTableView(ObservableList<SongFile> selectedFiles) {
         super(selectedFiles);
 
-        TableColumn<SongFile, Boolean> selectedColumn = new TableColumn<>("");
-        selectedColumn.setCellValueFactory(callback -> callback.getValue().getMarker());
-        selectedColumn.setCellFactory(this.createIconCellCallback(FontAwesomeIcon.ARROW_RIGHT, null));
-        selectedColumn.setSortable(false);
-        selectedColumn.setReorderable(false);
-        selectedColumn.setMinWidth(30);
-        selectedColumn.setMaxWidth(30);
-
         TableColumn<SongFile, Boolean> dirtyColumn = new TableColumn<>("");
         dirtyColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getDirty());
         dirtyColumn.setCellFactory(this.createIconCellCallback(FontAwesomeIcon.FLAG, null));
         dirtyColumn.setSortable(false);
         dirtyColumn.setReorderable(false);
-        dirtyColumn.setMinWidth(30);
-        dirtyColumn.setMaxWidth(30);
+        dirtyColumn.setMinWidth(25);
+        dirtyColumn.setMaxWidth(25);
+
+        TableColumn<SongFile, Boolean> markerColumn = new TableColumn<>("");
+        markerColumn.setCellValueFactory(callback -> callback.getValue().getMarker());
+        markerColumn.setCellFactory(this.createIconCellCallback(FontAwesomeIcon.ARROW_RIGHT, null));
+        markerColumn.setSortable(false);
+        markerColumn.setReorderable(false);
+        markerColumn.setMinWidth(25);
+        markerColumn.setMaxWidth(25);
 
         TableColumn<SongFile, String> fileNameColumn = new TableColumn<>("File name");
         fileNameColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.FILENAME, String.class).getValue());
 
         TableColumn<SongFile, String> titleColumn = new TableColumn<>("Title");
-        titleColumn.setMinWidth(150);
+        titleColumn.setMinWidth(175);
         titleColumn.setMaxWidth(200);
         titleColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.TITLE, String.class).getValue());
 
         TableColumn<SongFile, String> artistColumn = new TableColumn<>("Artist");
-        artistColumn.setMinWidth(150);
+        artistColumn.setMinWidth(125);
         artistColumn.setMaxWidth(200);
         artistColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.ARTIST, String.class).getValue());
 
         TableColumn<SongFile, String> albumColumn = new TableColumn<>("Album");
-        albumColumn.setMinWidth(150);
+        albumColumn.setMinWidth(125);
         albumColumn.setMaxWidth(200);
         albumColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.ALBUM, String.class).getValue());
 
-        this.getColumns().setAll(List.of(selectedColumn, dirtyColumn, fileNameColumn, titleColumn, artistColumn, albumColumn));
         this.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        this.getColumns().setAll(List.of(dirtyColumn, markerColumn, fileNameColumn, titleColumn, artistColumn, albumColumn));
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
     }
