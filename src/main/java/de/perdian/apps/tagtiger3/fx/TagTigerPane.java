@@ -15,17 +15,18 @@
  */
 package de.perdian.apps.tagtiger3.fx;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.perdian.apps.tagtiger3.fx.components.directories.Directory;
 import de.perdian.apps.tagtiger3.fx.components.directories.DirectoryPane;
 import de.perdian.apps.tagtiger3.fx.components.editor.EditorPane;
 import de.perdian.apps.tagtiger3.fx.components.selection.SelectionPane;
@@ -53,7 +54,9 @@ class TagTigerPane extends BorderPane {
         ObservableList<SongFile> availableSongs = FXCollections.observableArrayList();
 
         DirectoryPane directoryPane = new DirectoryPane(preferences);
-        directoryPane.getSelectedDirectory().addListener((o, oldValue, newValue) -> jobExecutor.executeJob(jobContext -> this.loadSongsFromDirectory(newValue, availableSongs, jobContext)));
+        directoryPane.setMinWidth(200);
+        directoryPane.setPrefWidth(300);
+        directoryPane.selectedDirectoryProperty().addListener((o, oldValue, newValue) -> jobExecutor.executeJob(jobContext -> this.loadSongsFromDirectory(newValue, availableSongs, jobContext)));
         GridPane.setVgrow(directoryPane, Priority.ALWAYS);
 
         SelectionPane selectionPane = new SelectionPane(availableSongs, preferences, jobExecutor);
@@ -80,23 +83,23 @@ class TagTigerPane extends BorderPane {
         this.setBottom(statusPane);
 
         StringProperty selectedPathProperty = preferences.getStringProperty("TagTigerApplication.selectedPath");
-        Path selectedPath = StringUtils.isEmpty(selectedPathProperty.getValue()) ? null : Path.of(selectedPathProperty.getValue());
-        if (selectedPath != null && Files.exists(selectedPath)) {
-            directoryPane.selectPath(selectedPath);
+        File selectedPath = StringUtils.isEmpty(selectedPathProperty.getValue()) ? null : new File(selectedPathProperty.getValue());
+        if (selectedPath != null && selectedPath.exists()) {
+            directoryPane.setSelectedDirectory(selectedPath);
         }
-        directoryPane.getSelectedDirectory().addListener((o, oldValue, newValue) -> selectedPathProperty.setValue(newValue == null ? null : newValue.getPath().toString()));
+        directoryPane.selectedDirectoryProperty().addListener((o, oldValue, newValue) -> selectedPathProperty.setValue(newValue == null ? null : newValue.toString()));
 
     }
 
-    private void loadSongsFromDirectory(Directory sourceDirectory, ObservableList<SongFile> targetList, JobContext jobContext) {
-        jobContext.updateProgress("Loading available songs in directory: " + sourceDirectory.getPath());
+    private void loadSongsFromDirectory(File sourceDirectory, ObservableList<SongFile> targetList, JobContext jobContext) {
+        jobContext.updateProgress("Loading available songs in directory: " + sourceDirectory);
         try {
-            List<Path> files = sourceDirectory.loadFiles();
+            List<File> files = this.loadSongs(sourceDirectory);
             List<SongFile> songFiles = new ArrayList<>(files.size());
             for (int i=0; i < files.size() && !jobContext.isCancelled(); i++) {
-                jobContext.updateProgress("Loading file: " + files.get(i).getFileName().toString(), i, files.size());
+                jobContext.updateProgress("Loading file: " + files.get(i).getName(), i, files.size());
                 try {
-                    songFiles.add(new SongFile(files.get(i).toFile()));
+                    songFiles.add(new SongFile(files.get(i)));
                 } catch (Exception e) {
                     log.warn("Cannot load MP3 data from file at: {}", files.get(i));
                 }
@@ -107,6 +110,17 @@ class TagTigerPane extends BorderPane {
         } catch (IOException e) {
             log.warn("Cannot load files from directory: {}", sourceDirectory, e);
         }
+    }
+
+    private List<File> loadSongs(File sourceDirectory) throws IOException {
+        return Files.walk(sourceDirectory.toPath())
+            .parallel()
+            .map(Path::toFile)
+            .filter(file -> !file.isDirectory())
+            .filter(file -> !file.isHidden() && file.canRead())
+            .filter(file -> file.getName().toLowerCase().endsWith(".mp3"))
+            .sorted((f1, f2) -> f1.getAbsolutePath().compareToIgnoreCase(f2.getAbsolutePath()))
+            .collect(Collectors.toList());
     }
 
 }

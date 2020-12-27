@@ -15,61 +15,47 @@
  */
 package de.perdian.apps.tagtiger3.fx.components.directories;
 
-import java.nio.file.Path;
-import java.util.Objects;
+import java.io.File;
 
 import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.TreeItem;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
 public class DirectoryPane extends GridPane {
 
-    private ObjectProperty<Directory> selectedDirectory = new SimpleObjectProperty<>();
-    private DirectoryTreeView directoryTreeView = null;
+    private ObjectProperty<File> selectedDirectory = new SimpleObjectProperty<>();
 
     public DirectoryPane(Preferences preferences) {
 
-        DirectorySelectionPane directorySelectionPane = new DirectorySelectionPane(preferences);
-        GridPane.setHgrow(directorySelectionPane, Priority.ALWAYS);
+        TextField directoryPathField = new TextField();
+        directoryPathField.setOnAction(event -> this.setSelectedDirectory(new File(((TextField)event.getSource()).getText())));
+        GridPane.setHgrow(directoryPathField, Priority.ALWAYS);
 
-        DirectoryTreeView directoryTreeView = new DirectoryTreeView();
-        directoryTreeView.setMinWidth(200);
-        directoryTreeView.setPrefWidth(300);
-        directoryTreeView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> directorySelectionPane.getSelectedPathProperty().setValue(newValue == null ? null : newValue.getValue().getPath()));
-        directoryTreeView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.getSelectedDirectory().setValue(newValue == null ? null : newValue.getValue()));
-        directorySelectionPane.getSelectedPathProperty().addListener((o, oldValue, newValue) -> directoryTreeView.selectDirectory(newValue));
-        GridPane.setHgrow(directoryTreeView, Priority.ALWAYS);
-        GridPane.setVgrow(directoryTreeView, Priority.ALWAYS);
+        DirectoryTreeView pathTreeView = new DirectoryTreeView();
+        pathTreeView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.selectedDirectoryProperty().setValue(newValue == null ? null : newValue.getValue()));
+        GridPane.setHgrow(pathTreeView, Priority.ALWAYS);
+        GridPane.setVgrow(pathTreeView, Priority.ALWAYS);
 
-        this.add(directorySelectionPane, 0, 0, 1, 1);
-        this.add(directoryTreeView, 0, 1, 1, 1);
+        this.add(directoryPathField, 0, 0, 1, 1);
+        this.add(pathTreeView, 0, 1, 1, 1);
         this.setVgap(5);
-        this.setDirectoryTreeView(directoryTreeView);
+
+        this.selectedDirectoryProperty().addListener((o, oldValue, newValue) -> pathTreeView.selectDirectory(newValue));
+        this.selectedDirectoryProperty().addListener((o, oldValue, newValue) -> directoryPathField.setText(newValue.toString()));
 
     }
 
-    public void selectPath(Path path) {
-        TreeItem<Directory> selectedTreeItem = this.getDirectoryTreeView().getSelectionModel().getSelectedItem();
-        if (!Objects.equals(path, selectedTreeItem == null || selectedTreeItem.getValue() == null ? null : selectedTreeItem.getValue().getPath())) {
-            this.getDirectoryTreeView().selectDirectory(path);
-        }
-    }
-
-    private DirectoryTreeView getDirectoryTreeView() {
-        return this.directoryTreeView;
-    }
-    private void setDirectoryTreeView(DirectoryTreeView directoryTreeView) {
-        this.directoryTreeView = directoryTreeView;
-    }
-
-    public ObjectProperty<Directory> getSelectedDirectory() {
+    public ObjectProperty<File> selectedDirectoryProperty() {
         return this.selectedDirectory;
     }
-    void setSelectedDirectory(ObjectProperty<Directory> selectedDirectory) {
-        this.selectedDirectory = selectedDirectory;
+    public File getSelectedDirectory() {
+        return this.selectedDirectoryProperty().getValue();
+    }
+    public void setSelectedDirectory(File path) {
+        this.selectedDirectoryProperty().setValue(path);
     }
 
 }

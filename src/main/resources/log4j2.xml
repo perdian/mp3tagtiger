@@ -6,6 +6,7 @@
         </Console>
     </Appenders>
     <Loggers>
+        <Logger name="org.jaudiotagger.audio" level="OFF" additivity="true" />
         <Root level="debug">
             <AppenderRef ref="ConsoleAppender" />
         </Root>
