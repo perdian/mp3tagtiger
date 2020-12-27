@@ -15,8 +15,43 @@
  */
 package de.perdian.apps.tagtiger3.fx.components.editor;
 
+import de.perdian.apps.tagtiger3.fx.components.selection.SelectionModel;
+import javafx.geometry.Insets;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 
 public class EditorPane extends GridPane {
+
+    public EditorPane(SelectionModel selectionModel) {
+
+        BorderPane filePane = new BorderPane();
+        filePane.setPadding(new Insets(10, 10, 10, 10));
+        TitledPane fileTitledPane = new TitledPane("File", filePane);
+        fileTitledPane.setCollapsible(false);
+        GridPane.setHgrow(fileTitledPane, Priority.ALWAYS);
+
+        EditorComponentBuilder componentBuilder = new EditorComponentBuilder(selectionModel);
+        EditorTagsPane tagsEditorPane = new EditorTagsPane(componentBuilder);
+        tagsEditorPane.setPadding(new Insets(10, 10, 10, 10));
+        Tab tagsEditorTab = new Tab("Tags", tagsEditorPane);
+        tagsEditorTab.setClosable(false);
+        BorderPane imagesEditorPane = new BorderPane();
+        imagesEditorPane.setPadding(new Insets(10, 10, 10, 10));
+        Tab imagesEditorTab = new Tab("Images", imagesEditorPane);
+        imagesEditorTab.setClosable(false);
+        TabPane tagsPane = new TabPane(tagsEditorTab, imagesEditorTab);
+        TitledPane tagsTitledPane = new TitledPane("Tags", tagsPane);
+        tagsTitledPane.setCollapsible(false);
+        GridPane.setHgrow(tagsTitledPane, Priority.ALWAYS);
+
+        this.setVgap(10);
+        this.add(fileTitledPane, 0, 0, 1, 1);
+        this.add(tagsTitledPane, 0, 1, 1, 1);
+
+    }
 
 }

@@ -35,6 +35,7 @@ public class DirectoryPane extends GridPane {
         GridPane.setHgrow(directoryPathField, Priority.ALWAYS);
 
         DirectoryTreeView pathTreeView = new DirectoryTreeView();
+        pathTreeView.selectDirectory(new File(System.getProperty("user.home")));
         pathTreeView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> this.selectedDirectoryProperty().setValue(newValue == null ? null : newValue.getValue()));
         GridPane.setHgrow(pathTreeView, Priority.ALWAYS);
         GridPane.setVgrow(pathTreeView, Priority.ALWAYS);

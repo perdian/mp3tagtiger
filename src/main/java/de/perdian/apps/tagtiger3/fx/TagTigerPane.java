@@ -63,7 +63,7 @@ class TagTigerPane extends BorderPane {
         GridPane.setHgrow(selectionPane, Priority.ALWAYS);
         GridPane.setVgrow(selectionPane, Priority.ALWAYS);
 
-        EditorPane editorPane = new EditorPane();
+        EditorPane editorPane = new EditorPane(selectionPane.getSelectionModel());
         GridPane.setHgrow(editorPane, Priority.ALWAYS);
 
         StatusPane statusPane = new StatusPane(preferences, jobExecutor);

@@ -17,12 +17,17 @@ package de.perdian.apps.tagtiger3.fx.components.selection;
 
 import java.util.List;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.tagtiger3.model.SongFile;
 import de.perdian.apps.tagtiger3.model.SongProperty;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.util.Callback;
 
 class SelectionTableView extends TableView<SongFile> {
 
@@ -30,12 +35,16 @@ class SelectionTableView extends TableView<SongFile> {
         super(selectedFiles);
 
         TableColumn<SongFile, Boolean> selectedColumn = new TableColumn<>("");
+        selectedColumn.setCellValueFactory(callback -> callback.getValue().getMarker());
+        selectedColumn.setCellFactory(this.createIconCellCallback(FontAwesomeIcon.ARROW_RIGHT, null));
         selectedColumn.setSortable(false);
         selectedColumn.setReorderable(false);
         selectedColumn.setMinWidth(30);
         selectedColumn.setMaxWidth(30);
 
         TableColumn<SongFile, Boolean> dirtyColumn = new TableColumn<>("");
+        dirtyColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getDirty());
+        dirtyColumn.setCellFactory(this.createIconCellCallback(FontAwesomeIcon.FLAG, null));
         dirtyColumn.setSortable(false);
         dirtyColumn.setReorderable(false);
         dirtyColumn.setMinWidth(30);
@@ -63,6 +72,25 @@ class SelectionTableView extends TableView<SongFile> {
         this.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+    }
+
+    private Callback<TableColumn<SongFile, Boolean>, TableCell<SongFile, Boolean>> createIconCellCallback(FontAwesomeIcon trueIcon, FontAwesomeIcon falseIcon) {
+        return column -> {
+            TableCell<SongFile, Boolean> tableCell = new TableCell<>() {
+                @Override protected void updateItem(Boolean item, boolean empty) {
+                    if (!empty) {
+                        if (item != null && item.booleanValue()) {
+                            this.setGraphic(trueIcon == null ? null : new Label("", new FontAwesomeIconView(trueIcon)));
+                        } else {
+                            this.setGraphic(falseIcon == null ? null : new Label("", new FontAwesomeIconView(falseIcon)));
+                        }
+                    } else {
+                        this.setGraphic(null);
+                    }
+                }
+            };
+            return tableCell;
+        };
     }
 
 }
