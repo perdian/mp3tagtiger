@@ -17,15 +17,18 @@ package de.perdian.apps.tagtiger3.fx.components.editor;
 
 import de.perdian.apps.tagtiger3.model.SongProperty;
 import javafx.geometry.Insets;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
 class EditorFilePane extends GridPane {
 
     EditorFilePane(EditorComponentBuilder componentBuilder) {
 
-        this.add(componentBuilder.createLabel("File name", 75), 0, 0, 1, 1);
+        this.add(componentBuilder.createLabel("File name", 0, 5), 0, 0, 1, 1);
         this.add(componentBuilder.createTextField(SongProperty.FILENAME), 1, 0, 1, 1);
 
+        this.getColumnConstraints().add(new ColumnConstraints(75));
+        this.getColumnConstraints().add(new ColumnConstraints());
         this.setPadding(new Insets(10, 10, 10, 10));
         this.setHgap(5);
         this.setVgap(5);
