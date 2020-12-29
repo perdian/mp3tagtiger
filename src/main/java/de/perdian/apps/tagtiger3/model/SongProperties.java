@@ -34,29 +34,22 @@ public class SongProperties {
     private Map<SongProperty, SongPropertyValue<?>> values = null;
     private BooleanProperty dirtyProperty = new SimpleBooleanProperty();
 
-    SongProperties() {
+    SongProperties(AudioFile audioFile) throws IOException {
         Map<SongProperty, SongPropertyValue<?>> values = new EnumMap<>(SongProperty.class);
-        for (SongProperty songProperty : SongProperty.values()) {
-            values.put(songProperty, new SongPropertyValue<>());
-        }
-        this.setValues(values);
-    }
-
-    @SuppressWarnings("unchecked")
-    void readValues(AudioFile audioFile) throws IOException {
         log.trace("Reading tag information from file: {}", audioFile.getFile().getAbsolutePath());
         for (SongProperty songProperty : SongProperty.values()) {
             Object persistedValue = songProperty.getDelegate().readValue(audioFile);
             if (persistedValue != null && !songProperty.getType().isInstance(persistedValue)) {
                 throw new IllegalArgumentException("Incompatible type for SongProperty '" + songProperty.name() + "'. Expected: " + songProperty.getClass().getName() + ", actual: " + persistedValue.getClass().getName());
             } else {
-                SongPropertyValue<Object> songPropertyValue = (SongPropertyValue<Object>)this.getValues().get(songProperty);
+                SongPropertyValue<Object> songPropertyValue = new SongPropertyValue<>();
                 songPropertyValue.getPersistedValue().setValue(songProperty.getType().cast(persistedValue));
                 songPropertyValue.getValue().setValue(songProperty.getType().cast(persistedValue));
                 songPropertyValue.getDirty().addListener((o, oldValue, newValue) -> this.recomputeDirty());
-                this.getValues().put(songProperty, songPropertyValue);
+                values.put(songProperty, songPropertyValue);
             }
         }
+        this.setValues(values);
     }
 
     public void resetValues() {

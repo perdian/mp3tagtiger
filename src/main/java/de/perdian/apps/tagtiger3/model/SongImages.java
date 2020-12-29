@@ -19,9 +19,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.tag.images.Artwork;
 
 public class SongImages implements Serializable {
 
@@ -29,11 +32,11 @@ public class SongImages implements Serializable {
 
     private List<SongImage> images = null;
 
-    public SongImages() {
+    SongImages(AudioFile audioFile) {
         this.setImages(Collections.emptyList());
     }
 
-    public SongImages(List<SongImage> images) {
+    private SongImages(List<SongImage> images) {
         this.setImages(Collections.unmodifiableList(images));
     }
 
@@ -55,6 +58,12 @@ public class SongImages implements Serializable {
         HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
         hashCodeBuilder.append(this.getImages());
         return hashCodeBuilder.toHashCode();
+    }
+
+    List<Artwork> toArtworkList() {
+        return this.getImages().stream()
+            .map(image -> image.toArtwork())
+            .collect(Collectors.toList());
     }
 
     public SongImages withRemovedImage(int index) {

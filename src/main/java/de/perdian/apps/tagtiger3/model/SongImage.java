@@ -19,6 +19,7 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jaudiotagger.tag.images.Artwork;
 
 public class SongImage implements Serializable {
 
@@ -56,6 +57,10 @@ public class SongImage implements Serializable {
         hashCodeBuilder.append(this.getType());
         hashCodeBuilder.append(this.getBytes());
         return hashCodeBuilder.toHashCode();
+    }
+
+    Artwork toArtwork() {
+        return null;
     }
 
     public SongImage withDescription(String description) {

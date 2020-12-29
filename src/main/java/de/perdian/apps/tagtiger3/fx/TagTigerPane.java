@@ -101,7 +101,7 @@ class TagTigerPane extends BorderPane {
                 try {
                     songFiles.add(new SongFile(files.get(i)));
                 } catch (Exception e) {
-                    log.warn("Cannot load MP3 data from file at: {}", files.get(i));
+                    log.warn("Cannot load MP3 data from file at: {}", files.get(i), e);
                 }
             }
             if (!jobContext.isCancelled()) {

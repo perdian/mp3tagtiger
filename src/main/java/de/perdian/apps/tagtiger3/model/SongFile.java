@@ -45,10 +45,8 @@ public class SongFile {
     public SongFile(File osFile) throws IOException {
         try {
             AudioFile audioFile = AudioFileIO.read(Objects.requireNonNull(osFile, "File must not be null"));
-            SongProperties songProperties = new SongProperties();
-            songProperties.readValues(audioFile);
             this.setAudioFile(audioFile);
-            this.setProperties(songProperties);
+            this.setProperties(new SongProperties(audioFile));
             this.setMarker(new SimpleBooleanProperty());
         } catch (InvalidAudioFrameException | ReadOnlyFileException | TagException | CannotReadException e) {
             throw new IOException("Invalid MP3 file: " + osFile.getAbsolutePath(), e);

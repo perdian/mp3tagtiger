@@ -17,9 +17,9 @@ package de.perdian.apps.tagtiger3.model;
 
 import org.jaudiotagger.tag.FieldKey;
 
-import de.perdian.apps.tagtiger3.model.delegates.ArtworkDelegate;
-import de.perdian.apps.tagtiger3.model.delegates.FileNameDelegate;
-import de.perdian.apps.tagtiger3.model.delegates.TagPropertyDelegate;
+import de.perdian.apps.tagtiger3.model.SongPropertyDelegate.ArtworkDelegate;
+import de.perdian.apps.tagtiger3.model.SongPropertyDelegate.FileNameDelegate;
+import de.perdian.apps.tagtiger3.model.SongPropertyDelegate.TagPropertyDelegate;
 
 public enum SongProperty {
 
