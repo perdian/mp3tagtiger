@@ -225,14 +225,14 @@ class EditorComponentBuilder {
         this.getSelectionModel().getSelectedFiles().forEach(file -> file.getProperties().getValue(property, String.class).getValue().setValue(String.valueOf(this.getSelectionModel().getSelectedFiles().size())));
     }
 
-    private ComponentBuilder getComponentBuilder() {
+    ComponentBuilder getComponentBuilder() {
         return this.componentBuilder;
     }
     private void setComponentBuilder(ComponentBuilder componentBuilder) {
         this.componentBuilder = componentBuilder;
     }
 
-    private SelectionModel getSelectionModel() {
+    SelectionModel getSelectionModel() {
         return this.selectionModel;
     }
     private void setSelectionModel(SelectionModel selectionModel) {

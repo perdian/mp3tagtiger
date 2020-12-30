@@ -34,11 +34,10 @@ public class EditorPane extends GridPane {
 
         EditorTagsPane tagsEditorPane = new EditorTagsPane(componentBuilder);
         GridPane.setHgrow(tagsEditorPane, Priority.ALWAYS);
-        EditorImagesPane imagesEditorPane = new EditorImagesPane(componentBuilder);
-        GridPane.setVgrow(imagesEditorPane, Priority.ALWAYS);
+        EditorImagePane imageEditorPane = new EditorImagePane(componentBuilder);
         GridPane tagsPane = new GridPane();
         tagsPane.add(tagsEditorPane, 0, 0, 1, 1);
-        tagsPane.add(imagesEditorPane, 1, 0, 1, 1);
+        tagsPane.add(imageEditorPane, 1, 0, 1, 1);
         tagsPane.setHgap(10);
         tagsPane.setPadding(new Insets(10, 10, 10, 10));
         TitledPane tagsTitledPane = new TitledPane("Tags", tagsPane);

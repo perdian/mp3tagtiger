@@ -33,7 +33,16 @@ public class SongImages implements Serializable {
     private List<SongImage> images = null;
 
     SongImages(AudioFile audioFile) {
-        this.setImages(Collections.emptyList());
+        List<Artwork> artworkList = audioFile.getTag() == null ? null : audioFile.getTag().getArtworkList();
+        if (artworkList == null || artworkList.isEmpty()) {
+            this.setImages(Collections.emptyList());
+        } else {
+            List<SongImage> images = new ArrayList<>(artworkList.size());
+            for (Artwork artwork : artworkList) {
+                images.add(new SongImage(artwork));
+            }
+            this.setImages(images);
+        }
     }
 
     private SongImages(List<SongImage> images) {
@@ -66,6 +75,15 @@ public class SongImages implements Serializable {
             .collect(Collectors.toList());
     }
 
+    public SongImages withRemovedImage(SongImage image) {
+        int imageIndex = this.getImages().indexOf(image);
+        if (imageIndex < 0) {
+            return this;
+        } else {
+            return this.withRemovedImage(imageIndex);
+        }
+    }
+
     public SongImages withRemovedImage(int index) {
         if (index < 0 || index >= this.getImages().size()) {
             throw new IndexOutOfBoundsException(index);
@@ -76,6 +94,10 @@ public class SongImages implements Serializable {
         }
     }
 
+    public SongImages withRemovedImages() {
+        return new SongImages(Collections.emptyList());
+    }
+
     public SongImages withReplacedImage(int index, SongImage newImage) {
         if (index < 0 || index >= this.getImages().size()) {
             throw new IndexOutOfBoundsException(index);
@@ -83,6 +105,15 @@ public class SongImages implements Serializable {
             List<SongImage> newImages = new ArrayList<>(this.getImages());
             newImages.set(index, newImage);
             return new SongImages(newImages);
+        }
+    }
+
+    public SongImages withReplacedImage(SongImage oldImage, SongImage newImage) {
+        int oldImageIndex = this.getImages().indexOf(oldImage);
+        if (oldImageIndex < 0) {
+            return this.withNewImage(newImage);
+        } else {
+            return this.withReplacedImage(oldImageIndex, newImage);
         }
     }
 
