@@ -19,6 +19,7 @@ import org.jaudiotagger.tag.reference.GenreTypes;
 
 import de.perdian.apps.tagtiger3.fx.model.Selection;
 import de.perdian.apps.tagtiger3.model.SongProperty;
+import de.perdian.commons.fx.preferences.Preferences;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.TitledPane;
@@ -31,8 +32,8 @@ import javafx.scene.layout.Priority;
 
 public class EditorPane extends BorderPane {
 
-    public EditorPane(Selection selection) {
-        EditorComponentFactory componentFactory = new EditorComponentFactory(selection);
+    public EditorPane(Selection selection, Preferences preferences) {
+        EditorComponentFactory componentFactory = new EditorComponentFactory(selection, preferences);
 
         Pane tagValuesPane = this.createTagValuesPane(componentFactory);
         GridPane.setHgrow(tagValuesPane, Priority.ALWAYS);

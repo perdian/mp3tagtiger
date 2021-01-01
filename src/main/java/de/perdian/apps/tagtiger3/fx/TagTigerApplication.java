@@ -15,13 +15,19 @@
  */
 package de.perdian.apps.tagtiger3.fx;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import de.perdian.commons.fx.AbstractApplication;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class TagTigerApplication extends AbstractApplication {
+
+    private static final Logger log = LoggerFactory.getLogger(TagTigerApplication.class);
 
     @Override
     protected Pane createMainPane() {
@@ -37,6 +43,10 @@ public class TagTigerApplication extends AbstractApplication {
         primaryStage.setTitle("MP3 TagTiger");
         primaryStage.setWidth(1200);
         primaryStage.setHeight(800);
+    }
+
+    public static void showError(String title, Exception exception, Window parentWindow) {
+        log.warn("An error occured: {}", title, exception);
     }
 
 }

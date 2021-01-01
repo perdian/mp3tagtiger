@@ -16,16 +16,26 @@
 package de.perdian.apps.tagtiger3.fx.components.editor;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.lang3.StringUtils;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.perdian.apps.tagtiger3.fx.TagTigerApplication;
 import de.perdian.apps.tagtiger3.fx.model.Selection;
 import de.perdian.apps.tagtiger3.model.SongFile;
+import de.perdian.apps.tagtiger3.model.SongImage;
 import de.perdian.apps.tagtiger3.model.SongImages;
 import de.perdian.apps.tagtiger3.model.SongProperty;
 import de.perdian.commons.fx.components.ComponentBuilder;
+import de.perdian.commons.fx.preferences.Preferences;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -48,16 +58,26 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Window;
 
 class EditorComponentFactory {
 
     private ComponentBuilder componentBuilder = null;
     private Selection selection = null;
+    private ObjectProperty<File> currentDirectory = null;
 
-    EditorComponentFactory(Selection selection) {
+    EditorComponentFactory(Selection selection, Preferences preferences) {
         ComponentBuilder componentBuilder = new ComponentBuilder();
         this.setComponentBuilder(componentBuilder);
         this.setSelection(selection);
+
+        String currentDirectoryValue = preferences.getStringProperty("EditorComponentFactory.currentDirectory").getValue();
+        File currentDirectory = StringUtils.isEmpty(currentDirectoryValue) ? null : new File(currentDirectoryValue);
+        ObjectProperty<File> currentDirectoryProperty = new SimpleObjectProperty<>(currentDirectory == null || !currentDirectory.exists() ? new File(System.getProperty("user.home")) : currentDirectory);
+        currentDirectoryProperty.addListener((o, oldValue, newValue) -> preferences.setStringValue("EditorComponentFactory.currentDirectory", newValue == null ? null : newValue.getAbsolutePath()));
+        this.setCurrentDirectory(currentDirectoryProperty);
     }
 
     Label createOuterLabel(String title) {
@@ -168,7 +188,7 @@ class EditorComponentFactory {
         Button button = new Button("", new FontAwesomeIconView(FontAwesomeIcon.PLUS));
         button.setTooltip(new Tooltip("Add/replace image"));
         button.disableProperty().bind(this.getSelection().focusFileProperty().isNull());
-        button.setOnAction(event -> this.handleAddImage());
+        button.setOnAction(event -> this.handleAddImage(((Button)event.getSource()).getScene().getWindow()));
         return button;
     }
 
@@ -260,8 +280,27 @@ class EditorComponentFactory {
         }
     }
 
-    private void handleAddImage() {
-        throw new UnsupportedOperationException();
+    private void handleAddImage(Window parentWindow) {
+        FileChooser imageFileChooser = new FileChooser();
+        imageFileChooser.setInitialDirectory(this.getCurrentDirectory().getValue());
+        imageFileChooser.setTitle("Select image file");
+        imageFileChooser.setSelectedExtensionFilter(new ExtensionFilter("Image files", "*.png", "*.jpg", "*.jpeg"));
+        File imageFile = imageFileChooser.showOpenDialog(parentWindow);
+        if (imageFile != null && imageFile.exists()) {
+            this.getCurrentDirectory().setValue(imageFile.getParentFile());
+            try {
+                java.awt.image.BufferedImage image = ImageIO.read(imageFile);
+                try (ByteArrayOutputStream pngStream = new ByteArrayOutputStream()) {
+                    ImageIO.write(image, "png", pngStream);
+                    SongFile songFile = this.getSelection().focusFileProperty().getValue();
+                    Property<SongImages> songImagesProperty = songFile.getProperties().getValue(SongProperty.IMAGES, SongImages.class).getValue();
+                    SongImage songImage = new SongImage(null, null, pngStream.toByteArray(), "image/png");
+                    songImagesProperty.setValue(songImagesProperty.getValue().withRemovedImages().withNewImage(songImage));
+                }
+            } catch (IOException e) {
+                TagTigerApplication.showError("Cannot load selected image file", e, parentWindow);
+            }
+        }
     }
 
     private void handleClearImage() {
@@ -311,18 +350,25 @@ class EditorComponentFactory {
         }
     }
 
-    ComponentBuilder getComponentBuilder() {
+    private ComponentBuilder getComponentBuilder() {
         return this.componentBuilder;
     }
     private void setComponentBuilder(ComponentBuilder componentBuilder) {
         this.componentBuilder = componentBuilder;
     }
 
-    Selection getSelection() {
+    private Selection getSelection() {
         return this.selection;
     }
     private void setSelection(Selection selection) {
         this.selection = selection;
+    }
+
+    private ObjectProperty<File> getCurrentDirectory() {
+        return this.currentDirectory;
+    }
+    private void setCurrentDirectory(ObjectProperty<File> currentDirectory) {
+        this.currentDirectory = currentDirectory;
     }
 
 }
