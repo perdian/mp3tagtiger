@@ -15,11 +15,9 @@
  */
 package de.perdian.apps.tagtiger3.fx.components.selection;
 
-import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
-import de.perdian.apps.tagtiger3.fx.jobs.listeners.DisableWhileJobRunningJobListener;
+import de.perdian.apps.tagtiger3.fx.model.Selection;
 import de.perdian.apps.tagtiger3.model.SongFile;
-import de.perdian.commons.fx.preferences.Preferences;
-import javafx.collections.ObservableList;
+import javafx.beans.binding.Bindings;
 import javafx.scene.control.TableView;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
@@ -28,19 +26,16 @@ import javafx.scene.layout.Priority;
 
 public class SelectionPane extends GridPane {
 
-    private SelectionModel selectionModel = null;
+    public SelectionPane(Selection selection) {
 
-    public SelectionPane(ObservableList<SongFile> availableSongs, Preferences preferences, JobExecutor jobExecutor) {
-
-        SelectionTableView selectionTableView = new SelectionTableView(availableSongs);
+        SelectionTableView selectionTableView = new SelectionTableView(selection.getAvailableFiles());
+        selectionTableView.disableProperty().bind(selection.busyProperty());
         GridPane.setHgrow(selectionTableView, Priority.ALWAYS);
         GridPane.setVgrow(selectionTableView, Priority.ALWAYS);
-        jobExecutor.addListener(new DisableWhileJobRunningJobListener(selectionTableView.disableProperty()));
 
-        SelectionModel selectionModel = new SelectionModel(availableSongs, selectionTableView.getSelectionModel().getSelectedItems());
-        selectionTableView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> selectionModel.focusFileProperty().setValue(newValue));
-        selectionModel.focusFileProperty().addListener((o, oldValue, newValue) -> this.scrollTo(newValue, selectionTableView));
-        this.setSelectionModel(selectionModel);
+        selectionTableView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> selection.focusFileProperty().setValue(newValue));
+        selection.focusFileProperty().addListener((o, oldValue, newValue) -> this.scrollTo(newValue, selectionTableView));
+        Bindings.bindContent(selection.getSelectedFiles(), selectionTableView.getSelectionModel().getSelectedItems());
 
         this.add(selectionTableView, 0, 0, 1, 1);
         this.setHgap(5);
@@ -61,13 +56,6 @@ public class SelectionPane extends GridPane {
                 tableView.scrollTo(fileIndex);
             }
         }
-    }
-
-    public SelectionModel getSelectionModel() {
-        return this.selectionModel;
-    }
-    private void setSelectionModel(SelectionModel selectionModel) {
-        this.selectionModel = selectionModel;
     }
 
 }

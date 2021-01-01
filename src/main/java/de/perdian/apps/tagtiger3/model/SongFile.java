@@ -40,14 +40,14 @@ public class SongFile {
 
     private SongProperties properties = null;
     private AudioFile audioFile = null;
-    private BooleanProperty marker = null;
+    private BooleanProperty focus = null;
 
     public SongFile(File osFile) throws IOException {
         try {
             AudioFile audioFile = AudioFileIO.read(Objects.requireNonNull(osFile, "File must not be null"));
             this.setAudioFile(audioFile);
             this.setProperties(new SongProperties(audioFile));
-            this.setMarker(new SimpleBooleanProperty());
+            this.setFocus(new SimpleBooleanProperty());
         } catch (InvalidAudioFrameException | ReadOnlyFileException | TagException | CannotReadException e) {
             throw new IOException("Invalid MP3 file: " + osFile.getAbsolutePath(), e);
         }
@@ -86,11 +86,11 @@ public class SongFile {
         this.properties = properties;
     }
 
-    public BooleanProperty getMarker() {
-        return this.marker;
+    public BooleanProperty getFocus() {
+        return this.focus;
     }
-    private void setMarker(BooleanProperty marker) {
-        this.marker = marker;
+    private void setFocus(BooleanProperty focus) {
+        this.focus = focus;
     }
 
 }

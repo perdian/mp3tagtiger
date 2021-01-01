@@ -20,7 +20,6 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.tagtiger3.fx.jobs.Job;
 import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import de.perdian.apps.tagtiger3.fx.jobs.JobListener;
-import de.perdian.commons.fx.preferences.Preferences;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -42,7 +41,7 @@ public class StatusPane extends GridPane implements JobListener {
     private Button cancelButton = null;
     private JobExecutor jobExecutor = null;
 
-    public StatusPane(Preferences preferences, JobExecutor jobExecutor) {
+    public StatusPane(JobExecutor jobExecutor) {
 
         Label progressLabel = new Label("");
         GridPane.setHgrow(progressLabel, Priority.ALWAYS);

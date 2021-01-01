@@ -42,13 +42,13 @@ class SelectionTableView extends TableView<SongFile> {
         dirtyColumn.setMinWidth(25);
         dirtyColumn.setMaxWidth(25);
 
-        TableColumn<SongFile, Boolean> markerColumn = new TableColumn<>("");
-        markerColumn.setCellValueFactory(callback -> callback.getValue().getMarker());
-        markerColumn.setCellFactory(this.createIconCellCallback(FontAwesomeIcon.ARROW_RIGHT, null));
-        markerColumn.setSortable(false);
-        markerColumn.setReorderable(false);
-        markerColumn.setMinWidth(25);
-        markerColumn.setMaxWidth(25);
+        TableColumn<SongFile, Boolean> focusColumn = new TableColumn<>("");
+        focusColumn.setCellValueFactory(callback -> callback.getValue().getFocus());
+        focusColumn.setCellFactory(this.createIconCellCallback(FontAwesomeIcon.ARROW_RIGHT, null));
+        focusColumn.setSortable(false);
+        focusColumn.setReorderable(false);
+        focusColumn.setMinWidth(25);
+        focusColumn.setMaxWidth(25);
 
         TableColumn<SongFile, String> fileNameColumn = new TableColumn<>("File name");
         fileNameColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.FILENAME, String.class).getValue());
@@ -69,7 +69,7 @@ class SelectionTableView extends TableView<SongFile> {
         albumColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.ALBUM, String.class).getValue());
 
         this.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        this.getColumns().setAll(List.of(dirtyColumn, markerColumn, fileNameColumn, titleColumn, artistColumn, albumColumn));
+        this.getColumns().setAll(List.of(dirtyColumn, focusColumn, fileNameColumn, titleColumn, artistColumn, albumColumn));
         this.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
     }

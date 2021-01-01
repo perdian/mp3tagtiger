@@ -17,7 +17,6 @@ package de.perdian.apps.tagtiger3.fx.components.directories;
 
 import java.io.File;
 
-import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.TextField;
@@ -28,7 +27,7 @@ public class DirectoryPane extends GridPane {
 
     private ObjectProperty<File> selectedDirectory = new SimpleObjectProperty<>();
 
-    public DirectoryPane(Preferences preferences) {
+    public DirectoryPane() {
 
         TextField directoryPathField = new TextField();
         directoryPathField.setOnAction(event -> this.setSelectedDirectory(new File(((TextField)event.getSource()).getText())));
