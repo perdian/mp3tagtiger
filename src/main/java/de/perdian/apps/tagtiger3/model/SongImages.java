@@ -45,7 +45,7 @@ public class SongImages implements Serializable {
         }
     }
 
-    private SongImages(List<SongImage> images) {
+    SongImages(List<SongImage> images) {
         this.setImages(Collections.unmodifiableList(images));
     }
 

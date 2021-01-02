@@ -33,6 +33,7 @@ import de.perdian.apps.tagtiger3.model.SongFile;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -47,13 +48,15 @@ public class Selection {
     private final ObservableList<SongFile> selectedFiles = FXCollections.observableArrayList();
     private final ObjectProperty<SongFile> focusFile = new SimpleObjectProperty<>();
     private final BooleanProperty busy = new SimpleBooleanProperty();
+    private SelectionDirtyComputer dirtyComputer = null;
     private JobExecutor jobExecutor = null;
 
     public Selection(JobExecutor jobExecutor) {
         this.focusFileProperty().addListener((o, oldValue, newValue) -> this.handleFocusFileChanged(oldValue, newValue));
         this.selectedDirectoryProperty().addListener((o, oldValue, newValue) -> this.handleSelectedDirectoryChanged(oldValue, newValue));
+        this.setDirtyComputer(new SelectionDirtyComputer(this.getAvailableFiles()));
         this.setJobExecutor(jobExecutor);
-        jobExecutor.addListener(new DisableWhileJobRunningJobListener(this.busyProperty()));
+        jobExecutor.addListener(new DisableWhileJobRunningJobListener(this.busy));
     }
 
     private void handleFocusFileChanged(SongFile oldFocusFile, SongFile newFocusFile) {
@@ -119,8 +122,19 @@ public class Selection {
         return this.focusFile;
     }
 
-    public BooleanProperty busyProperty() {
+    public ReadOnlyBooleanProperty dirtyProperty() {
+        return this.getDirtyComputer().getDirty();
+    }
+
+    public ReadOnlyBooleanProperty busyProperty() {
         return this.busy;
+    }
+
+    private SelectionDirtyComputer getDirtyComputer() {
+        return this.dirtyComputer;
+    }
+    private void setDirtyComputer(SelectionDirtyComputer dirtyComputer) {
+        this.dirtyComputer = dirtyComputer;
     }
 
     private JobExecutor getJobExecutor() {

@@ -46,6 +46,7 @@ public class SongProperties {
                 songPropertyValue.getPersistedValue().setValue(songProperty.getType().cast(persistedValue));
                 songPropertyValue.getValue().setValue(songProperty.getType().cast(persistedValue));
                 songPropertyValue.getDirty().addListener((o, oldValue, newValue) -> this.recomputeDirty());
+                songPropertyValue.setClearValue(songProperty.getDelegate().getClearValue());
                 values.put(songProperty, songPropertyValue);
             }
         }

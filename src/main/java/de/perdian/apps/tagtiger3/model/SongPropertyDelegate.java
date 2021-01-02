@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,11 +30,18 @@ import org.jaudiotagger.tag.images.Artwork;
 
 public interface SongPropertyDelegate<T> {
 
+    T getClearValue();
+
     T readValue(AudioFile audioFile) throws IOException;
 
     void writeValue(AudioFile audioFile, T value) throws IOException;
 
     static class FileNameDelegate implements SongPropertyDelegate<String> {
+
+        @Override
+        public String getClearValue() {
+            return "";
+        }
 
         @Override
         public String readValue(AudioFile audioFile) throws IOException {
@@ -76,6 +84,11 @@ public interface SongPropertyDelegate<T> {
         }
 
         @Override
+        public String getClearValue() {
+            return "";
+        }
+
+        @Override
         public String readValue(AudioFile audioFile) throws IOException {
             return audioFile.getTag().getFirst(this.getFieldKey());
         }
@@ -103,6 +116,11 @@ public interface SongPropertyDelegate<T> {
     }
 
     static class ArtworkDelegate implements SongPropertyDelegate<SongImages> {
+
+        @Override
+        public SongImages getClearValue() {
+            return new SongImages(Collections.emptyList());
+        }
 
         @Override
         public SongImages readValue(AudioFile audioFile) throws IOException {

@@ -25,6 +25,7 @@ public class SongPropertyValue<T> {
     private ObjectProperty<T> persistedValue = new SimpleObjectProperty<>();
     private ObjectProperty<T> value = new SimpleObjectProperty<>();
     private ObservableBooleanValue dirty = null;
+    private T clearValue = null;
 
     SongPropertyValue() {
         ObjectProperty<T> persistedValue = new SimpleObjectProperty<>();
@@ -46,6 +47,9 @@ public class SongPropertyValue<T> {
         this.persistedValue = persistedValue;
     }
 
+    public void clearValue() {
+        this.getValue().setValue(this.getClearValue());
+    }
     public void resetValue() {
         this.getValue().setValue(this.getPersistedValue().getValue());
     }
@@ -61,6 +65,13 @@ public class SongPropertyValue<T> {
     }
     private void setDirty(ObservableBooleanValue dirty) {
         this.dirty = dirty;
+    }
+
+    T getClearValue() {
+        return this.clearValue;
+    }
+    void setClearValue(T clearValue) {
+        this.clearValue = clearValue;
     }
 
 }

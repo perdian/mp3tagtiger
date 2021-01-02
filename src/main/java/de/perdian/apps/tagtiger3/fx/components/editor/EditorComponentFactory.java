@@ -69,8 +69,7 @@ class EditorComponentFactory {
     private ObjectProperty<File> currentDirectory = null;
 
     EditorComponentFactory(Selection selection, Preferences preferences) {
-        ComponentBuilder componentBuilder = new ComponentBuilder();
-        this.setComponentBuilder(componentBuilder);
+        this.setComponentBuilder(new ComponentBuilder());
         this.setSelection(selection);
 
         String currentDirectoryValue = preferences.getStringProperty("EditorComponentFactory.currentDirectory").getValue();
@@ -78,6 +77,12 @@ class EditorComponentFactory {
         ObjectProperty<File> currentDirectoryProperty = new SimpleObjectProperty<>(currentDirectory == null || !currentDirectory.exists() ? new File(System.getProperty("user.home")) : currentDirectory);
         currentDirectoryProperty.addListener((o, oldValue, newValue) -> preferences.setStringValue("EditorComponentFactory.currentDirectory", newValue == null ? null : newValue.getAbsolutePath()));
         this.setCurrentDirectory(currentDirectoryProperty);
+    }
+
+    Label createLabel(String title, double leftPadding, double rightPadding) {
+        Label label = new Label(title);
+        label.setPadding(new Insets(0, rightPadding, 0, leftPadding));
+        return label;
     }
 
     Label createOuterLabel(String title) {
@@ -152,35 +157,24 @@ class EditorComponentFactory {
         return imagesLabel;
     }
 
-    Button createCopyPropertyValueToSelectedSongsButton(SongProperty property) {
-        Button button = new Button("", new FontAwesomeIconView(FontAwesomeIcon.COPY));
-        button.setTooltip(new Tooltip("Copy to other songs in selection"));
+    Button createCopyPropertyValuesToSelectedSongsButton(SongProperty... properties) {
+        Button button = this.createButton("", FontAwesomeIcon.COPY, "Copy to other songs in selection");
         button.disableProperty().bind(Bindings.size(this.getSelection().getSelectedFiles()).lessThanOrEqualTo(1));
-        button.setOnAction(event -> this.handleCopyPropertyValueToSelectedSongs(property));
+        button.setOnAction(event -> this.handleCopyPropertyValueToSelectedSongs(properties));
         return button;
     }
 
-    Button createClearPropertyForSelectedSongsButton(SongProperty property) {
-        Button button = new Button("", new FontAwesomeIconView(FontAwesomeIcon.ERASER));
-        button.setTooltip(new Tooltip("Clear for all songs in selection"));
+    Button createClearPropertiesForSelectedSongsButton(SongProperty... properties) {
+        Button button = this.createButton("", FontAwesomeIcon.ERASER, "Clear for all songs in selection");
         button.disableProperty().bind(Bindings.size(this.getSelection().getSelectedFiles()).lessThanOrEqualTo(1));
-        button.setOnAction(event -> this.handleClearPropertyForSelectedSongs(property));
+        button.setOnAction(event -> this.handleClearPropertiesForSelectedSongs(properties));
         return button;
     }
 
-    Button createEnumeratePropertyForSelectedSongsButton(SongProperty property) {
-        Button button = new Button("", new FontAwesomeIconView(FontAwesomeIcon.SORT_NUMERIC_ASC));
-        button.setTooltip(new Tooltip("Enumerate within selection"));
+    Button createEnumeratePropertiesForSelectedSongsButton(SongProperty indexProperty, SongProperty sumProperty) {
+        Button button = this.createButton("", FontAwesomeIcon.SORT_NUMERIC_ASC, "Enumerate within selection");
         button.disableProperty().bind(Bindings.size(this.getSelection().getSelectedFiles()).lessThanOrEqualTo(1));
-        button.setOnAction(event -> this.handleEnumeratePropertyForSelectedSongs(property));
-        return button;
-    }
-
-    Button createCountSelectedSongsIntoPropertyButton(SongProperty property) {
-        Button button = new Button("", new FontAwesomeIconView(FontAwesomeIcon.COPY));
-        button.setTooltip(new Tooltip("Count selection"));
-        button.disableProperty().bind(Bindings.size(this.getSelection().getSelectedFiles()).lessThanOrEqualTo(1));
-        button.setOnAction(event -> this.handleCountSelectedSongsIntoProperty(property));
+        button.setOnAction(event -> this.handleEnumeratePropertiesForSelectedSongs(indexProperty, sumProperty));
         return button;
     }
 
@@ -211,6 +205,13 @@ class EditorComponentFactory {
         button.setTooltip(new Tooltip("Clear image"));
         button.disableProperty().bind(this.getSelection().focusFileProperty().isNull().or(imagesAvailableProperty.not()));
         button.setOnAction(event -> this.handleClearImage());
+        return button;
+    }
+
+    private Button createButton(String title, FontAwesomeIcon icon, String tooltip) {
+        Button button = new Button(title, icon == null ? null : new FontAwesomeIconView(icon));
+        button.setTooltip(new Tooltip(tooltip));
+        button.addEventHandler(KeyEvent.KEY_PRESSED, event -> this.processKeyPressedEventForNavigation(event));
         return button;
     }
 
@@ -245,38 +246,36 @@ class EditorComponentFactory {
         return fxProperty;
     }
 
-    private void handleCopyPropertyValueToSelectedSongs(SongProperty property) {
+    private void handleCopyPropertyValueToSelectedSongs(SongProperty... properties) {
         SongFile focusFile = this.getSelection().focusFileProperty().getValue();
         if (focusFile != null) {
-            Property<Object> sourceFileProperty = focusFile.getProperties().getValue(property, Object.class).getValue();
-            Object sourceFileValue = sourceFileProperty.getValue();
-            for (SongFile targetFile : this.getSelection().getSelectedFiles()) {
-                Property<Object> targetFileProperty = targetFile.getProperties().getValue(property, Object.class).getValue();
-                targetFileProperty.setValue(sourceFileValue);
+            for (SongProperty property : properties) {
+                Property<Object> sourceFileProperty = focusFile.getProperties().getValue(property, Object.class).getValue();
+                Object sourceFileValue = sourceFileProperty.getValue();
+                for (SongFile targetFile : this.getSelection().getSelectedFiles()) {
+                    Property<Object> targetFileProperty = targetFile.getProperties().getValue(property, Object.class).getValue();
+                    targetFileProperty.setValue(sourceFileValue);
+                }
             }
         }
     }
 
-    private void handleClearPropertyForSelectedSongs(SongProperty property) {
+    private void handleClearPropertiesForSelectedSongs(SongProperty... properties) {
         for (SongFile targetFile : this.getSelection().getSelectedFiles()) {
-            Property<Object> targetFileProperty = targetFile.getProperties().getValue(property, Object.class).getValue();
-            targetFileProperty.setValue(null);
+            for (SongProperty property : properties) {
+                targetFile.getProperties().getValue(property, Object.class).clearValue();
+            }
         }
     }
 
-    private void handleEnumeratePropertyForSelectedSongs(SongProperty property) {
+    private void handleEnumeratePropertiesForSelectedSongs(SongProperty indexProperty, SongProperty sumProperty) {
         List<SongFile> targetFiles = this.getSelection().getSelectedFiles();
         for (int i=0; i < targetFiles.size(); i++) {
             SongFile targetFile = targetFiles.get(i);
-            Property<String> targetFileProperty = targetFile.getProperties().getValue(property, String.class).getValue();
-            targetFileProperty.setValue(String.valueOf(i + 1));
-        }
-    }
-
-    private void handleCountSelectedSongsIntoProperty(SongProperty property) {
-        for (SongFile targetFile : this.getSelection().getSelectedFiles()) {
-            Property<String> targetFileProperty = targetFile.getProperties().getValue(property, String.class).getValue();
-            targetFileProperty.setValue(String.valueOf(this.getSelection().getSelectedFiles().size()));
+            Property<String> targetIndexProperty = targetFile.getProperties().getValue(indexProperty, String.class).getValue();
+            targetIndexProperty.setValue(String.valueOf(i + 1));
+            Property<String> targetSumProperty = targetFile.getProperties().getValue(sumProperty, String.class).getValue();
+            targetSumProperty.setValue(String.valueOf(this.getSelection().getSelectedFiles().size()));
         }
     }
 
