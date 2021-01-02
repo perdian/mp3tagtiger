@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import de.perdian.commons.fx.AbstractApplication;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -35,13 +36,20 @@ public class TagTigerApplication extends AbstractApplication {
     }
 
     @Override
+    protected Scene createMainScene(Pane mainPane) {
+        Scene scene = super.createMainScene(mainPane);
+        scene.getStylesheets().add(this.getClass().getClassLoader().getResource("css/tagtiger.css").toString());
+        return scene;
+    }
+
+    @Override
     protected void configurePrimaryStage(Stage primaryStage) {
         primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));
         primaryStage.setOnCloseRequest(event -> System.exit(0));
-        primaryStage.setMinWidth(1024);
-        primaryStage.setMinHeight(640);
+        primaryStage.setMinWidth(1200);
+        primaryStage.setMinHeight(700);
         primaryStage.setTitle("MP3 TagTiger");
-        primaryStage.setWidth(1200);
+        primaryStage.setWidth(1400);
         primaryStage.setHeight(800);
     }
 
