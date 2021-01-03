@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 Christian Seifert
+ * Copyright 2014-2021 Christian Seifert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger3.fx;
+package de.perdian.apps.tagtiger3.fx.components.actions.batchactions;
 
-import javafx.application.Application;
+import de.perdian.apps.tagtiger3.model.SongFile;
+import javafx.collections.ObservableList;
 
-public class TagTigerLauncher {
+public class ExtractTagsFromFilenamesActionEventHandler extends AbstractBatchActionEventHandler {
 
-    public static void main(String[] args) {
-        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> TagTigerApplication.showError("Uncaught exception in thread '" + thread + "': " + exception.getMessage(), exception, null));
-        Application.launch(TagTigerApplication.class, args);
+    public ExtractTagsFromFilenamesActionEventHandler(ObservableList<SongFile> files) {
+        super(files);
     }
 
 }

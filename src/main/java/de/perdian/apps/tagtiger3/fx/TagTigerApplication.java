@@ -56,7 +56,7 @@ public class TagTigerApplication extends AbstractApplication {
         primaryStage.setHeight(Math.min(900, screenBounds.getHeight() - 250));
     }
 
-    public static void showError(String title, Exception exception, Window parentWindow) {
+    public static void showError(String title, Throwable exception, Window parentWindow) {
         log.warn("An error occured: {}", title, exception);
     }
 

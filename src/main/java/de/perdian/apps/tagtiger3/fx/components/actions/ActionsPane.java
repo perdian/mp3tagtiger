@@ -17,7 +17,10 @@ package de.perdian.apps.tagtiger3.fx.components.actions;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.perdian.apps.tagtiger3.fx.components.actions.batchactions.ComputeFilenamesFromTagsActionEventHandler;
+import de.perdian.apps.tagtiger3.fx.components.actions.batchactions.ExtractTagsFromFilenamesActionEventHandler;
 import de.perdian.apps.tagtiger3.fx.model.Selection;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.TitledPane;
@@ -32,10 +35,18 @@ public class ActionsPane extends TitledPane {
         saveChangedFilesButton.setOnAction(event -> selection.saveDirtySongs());
         saveChangedFilesButton.disableProperty().bind(selection.dirtyProperty().not());
 
-        HBox rightButtons = new HBox();
-        rightButtons.getChildren().add(saveChangedFilesButton);
+        Button computeFilenamesFromTagsButton = new Button("File names from tags", new FontAwesomeIconView(FontAwesomeIcon.LIST));
+        computeFilenamesFromTagsButton.setOnAction(new ComputeFilenamesFromTagsActionEventHandler(selection.getSelectedFiles()));
+        computeFilenamesFromTagsButton.disableProperty().bind(Bindings.isEmpty(selection.getSelectedFiles()));
+        Button extractTagsFromFilenamesButton = new Button("Tags from file names", new FontAwesomeIconView(FontAwesomeIcon.LIST));
+        extractTagsFromFilenamesButton.setOnAction(new ExtractTagsFromFilenamesActionEventHandler(selection.getSelectedFiles()));
+        extractTagsFromFilenamesButton.disableProperty().bind(Bindings.isEmpty(selection.getSelectedFiles()));
+
+        HBox leftButtons = new HBox(5, computeFilenamesFromTagsButton, extractTagsFromFilenamesButton);
+        HBox rightButtons = new HBox(saveChangedFilesButton);
 
         BorderPane internalPane = new BorderPane();
+        internalPane.setLeft(leftButtons);
         internalPane.setRight(rightButtons);
         internalPane.setPadding(new Insets(10, 10, 10, 10));
 
