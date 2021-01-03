@@ -90,16 +90,18 @@ public interface SongPropertyDelegate<T> {
 
         @Override
         public String readValue(AudioFile audioFile) throws IOException {
-            return audioFile.getTag().getFirst(this.getFieldKey());
+            return audioFile.getTag() == null ? this.getClearValue() : audioFile.getTag().getFirst(this.getFieldKey());
         }
 
         @Override
         public void writeValue(AudioFile audioFile, String newValue) throws IOException {
             try {
                 if (StringUtils.isEmpty(newValue)) {
-                    audioFile.getTag().deleteField(this.getFieldKey());
+                    if (audioFile.getTag() != null) {
+                        audioFile.getTag().deleteField(this.getFieldKey());
+                    }
                 } else {
-                    audioFile.getTag().setField(this.getFieldKey(), newValue);
+                    audioFile.getTagOrCreateAndSetDefault().setField(this.getFieldKey(), newValue);
                 }
             } catch (FieldDataInvalidException e) {
                 throw new IOException("Cannot write MP3 tag '" + this.getFieldKey().name() + "': " + e.getMessage(), e);

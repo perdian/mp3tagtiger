@@ -32,21 +32,24 @@ public class SelectionPane extends GridPane {
 
     public SelectionPane(Selection selection) {
 
-        MenuItem reloadMenuItem = new MenuItem("Reload files", new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
-        reloadMenuItem.disableProperty().bind(selection.selectedDirectoryProperty().isNull());
-        reloadMenuItem.setOnAction(event -> selection.reloadAvailableSongs());
-        ContextMenu selectionContextMenu = new ContextMenu();
-        selectionContextMenu.getItems().add(reloadMenuItem);
-
         SelectionTableView selectionTableView = new SelectionTableView(selection.getAvailableFiles());
         selectionTableView.disableProperty().bind(selection.busyProperty());
-        selectionTableView.setContextMenu(selectionContextMenu);
         GridPane.setHgrow(selectionTableView, Priority.ALWAYS);
         GridPane.setVgrow(selectionTableView, Priority.ALWAYS);
 
         selectionTableView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> selection.focusFileProperty().setValue(newValue));
         selection.focusFileProperty().addListener((o, oldValue, newValue) -> this.scrollTo(newValue, selectionTableView));
         Bindings.bindContent(selection.getSelectedFiles(), selectionTableView.getSelectionModel().getSelectedItems());
+
+        MenuItem reloadMenuItem = new MenuItem("Reload files", new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
+        reloadMenuItem.disableProperty().bind(selection.selectedDirectoryProperty().isNull());
+        reloadMenuItem.setOnAction(event -> selection.reloadAvailableSongs());
+        MenuItem selectAllMenuItem = new MenuItem("Select all files", new FontAwesomeIconView(FontAwesomeIcon.LIST));
+        selectAllMenuItem.disableProperty().bind(Bindings.isEmpty(selectionTableView.getSelectionModel().getSelectedItems()));
+        selectAllMenuItem.setOnAction(event -> selectionTableView.getSelectionModel().selectAll());
+        ContextMenu selectionContextMenu = new ContextMenu();
+        selectionContextMenu.getItems().addAll(reloadMenuItem, selectAllMenuItem);
+        selectionTableView.setContextMenu(selectionContextMenu);
 
         this.add(selectionTableView, 0, 0, 1, 1);
         this.setHgap(5);
