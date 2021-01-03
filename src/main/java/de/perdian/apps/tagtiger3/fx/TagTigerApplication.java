@@ -20,9 +20,11 @@ import org.slf4j.LoggerFactory;
 
 import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import de.perdian.commons.fx.AbstractApplication;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -44,13 +46,14 @@ public class TagTigerApplication extends AbstractApplication {
 
     @Override
     protected void configurePrimaryStage(Stage primaryStage) {
+        Rectangle2D screenBounds = Screen.getPrimary().getBounds();
         primaryStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));
         primaryStage.setOnCloseRequest(event -> System.exit(0));
         primaryStage.setMinWidth(1200);
         primaryStage.setMinHeight(700);
         primaryStage.setTitle("MP3 TagTiger");
-        primaryStage.setWidth(1400);
-        primaryStage.setHeight(800);
+        primaryStage.setWidth(Math.min(1400, screenBounds.getWidth() - 250));
+        primaryStage.setHeight(Math.min(900, screenBounds.getHeight() - 250));
     }
 
     public static void showError(String title, Exception exception, Window parentWindow) {

@@ -54,17 +54,17 @@ class SelectionTableView extends TableView<SongFile> {
         fileNameColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.FILENAME, String.class).getValue());
 
         TableColumn<SongFile, String> titleColumn = new TableColumn<>("Title");
-        titleColumn.setMinWidth(175);
-        titleColumn.setMaxWidth(200);
+        titleColumn.setMinWidth(250);
+        titleColumn.setMaxWidth(300);
         titleColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.TITLE, String.class).getValue());
 
         TableColumn<SongFile, String> artistColumn = new TableColumn<>("Artist");
-        artistColumn.setMinWidth(125);
+        artistColumn.setMinWidth(150);
         artistColumn.setMaxWidth(200);
         artistColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.ARTIST, String.class).getValue());
 
         TableColumn<SongFile, String> albumColumn = new TableColumn<>("Album");
-        albumColumn.setMinWidth(125);
+        albumColumn.setMinWidth(150);
         albumColumn.setMaxWidth(200);
         albumColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.ALBUM, String.class).getValue());
 

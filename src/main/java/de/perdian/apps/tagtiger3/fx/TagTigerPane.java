@@ -19,6 +19,7 @@ import java.io.File;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.perdian.apps.tagtiger3.fx.components.actions.ActionsPane;
 import de.perdian.apps.tagtiger3.fx.components.directories.DirectoryPane;
 import de.perdian.apps.tagtiger3.fx.components.editor.EditorPane;
 import de.perdian.apps.tagtiger3.fx.components.selection.SelectionPane;
@@ -29,6 +30,7 @@ import de.perdian.commons.fx.preferences.Preferences;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
+import javafx.scene.control.Control;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -44,12 +46,14 @@ class TagTigerPane extends BorderPane {
         directoryPane.setMinWidth(200);
         directoryPane.setPrefWidth(300);
         Bindings.bindBidirectional(selection.selectedDirectoryProperty(), directoryPane.selectedDirectoryProperty());
-
         GridPane.setVgrow(directoryPane, Priority.ALWAYS);
 
         SelectionPane selectionPane = new SelectionPane(selection);
         GridPane.setHgrow(selectionPane, Priority.ALWAYS);
         GridPane.setVgrow(selectionPane, Priority.ALWAYS);
+
+        Control actionsPane = new ActionsPane(selection);
+        GridPane.setHgrow(actionsPane, Priority.ALWAYS);
 
         EditorPane editorPane = new EditorPane(selection, preferences);
         GridPane.setHgrow(editorPane, Priority.ALWAYS);
@@ -58,9 +62,10 @@ class TagTigerPane extends BorderPane {
         GridPane.setHgrow(statusPane, Priority.ALWAYS);
 
         GridPane innerPane = new GridPane();
-        innerPane.add(directoryPane, 0, 0, 1, 2);
+        innerPane.add(directoryPane, 0, 0, 1, 3);
         innerPane.add(selectionPane, 1, 0, 1, 1);
-        innerPane.add(editorPane, 1, 1, 1, 1);
+        innerPane.add(actionsPane, 1, 1, 1, 1);
+        innerPane.add(editorPane, 1, 2, 1, 1);
         innerPane.setPadding(new Insets(10, 10, 10, 10));
         innerPane.setHgap(10);
         innerPane.setVgap(10);

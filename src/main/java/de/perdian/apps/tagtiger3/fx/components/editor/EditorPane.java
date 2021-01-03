@@ -49,7 +49,9 @@ public class EditorPane extends BorderPane {
         tagsTitledPane.setCollapsible(false);
         tagsTitledPane.setFocusTraversable(false);
         GridPane.setHgrow(tagsTitledPane, Priority.ALWAYS);
+
         this.setCenter(tagsTitledPane);
+        this.disableProperty().bind(selection.busyProperty());
 
     }
 

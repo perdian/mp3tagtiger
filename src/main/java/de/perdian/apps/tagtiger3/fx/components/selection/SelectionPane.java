@@ -15,9 +15,13 @@
  */
 package de.perdian.apps.tagtiger3.fx.components.selection;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.tagtiger3.fx.model.Selection;
 import de.perdian.apps.tagtiger3.model.SongFile;
 import javafx.beans.binding.Bindings;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableView;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
@@ -28,8 +32,15 @@ public class SelectionPane extends GridPane {
 
     public SelectionPane(Selection selection) {
 
+        MenuItem reloadMenuItem = new MenuItem("Reload files", new FontAwesomeIconView(FontAwesomeIcon.REFRESH));
+        reloadMenuItem.disableProperty().bind(selection.selectedDirectoryProperty().isNull());
+        reloadMenuItem.setOnAction(event -> selection.reloadAvailableSongs());
+        ContextMenu selectionContextMenu = new ContextMenu();
+        selectionContextMenu.getItems().add(reloadMenuItem);
+
         SelectionTableView selectionTableView = new SelectionTableView(selection.getAvailableFiles());
         selectionTableView.disableProperty().bind(selection.busyProperty());
+        selectionTableView.setContextMenu(selectionContextMenu);
         GridPane.setHgrow(selectionTableView, Priority.ALWAYS);
         GridPane.setVgrow(selectionTableView, Priority.ALWAYS);
 

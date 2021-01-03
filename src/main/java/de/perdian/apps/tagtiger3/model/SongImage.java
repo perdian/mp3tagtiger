@@ -20,6 +20,7 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jaudiotagger.tag.images.Artwork;
+import org.jaudiotagger.tag.images.StandardArtwork;
 import org.jaudiotagger.tag.reference.PictureTypes;
 
 public class SongImage implements Serializable {
@@ -72,7 +73,13 @@ public class SongImage implements Serializable {
     }
 
     Artwork toArtwork() {
-        return null;
+        Integer pictureTypeId = PictureTypes.getInstanceOf().getIdForValue(this.getType());
+        Artwork artwork = new StandardArtwork();
+        artwork.setBinaryData(this.getBytes());
+        artwork.setDescription(this.getDescription());
+        artwork.setMimeType(this.getMimeType());
+        artwork.setPictureType(pictureTypeId == null ? PictureTypes.DEFAULT_ID : pictureTypeId);
+        return artwork;
     }
 
     public SongImage withDescription(String description) {

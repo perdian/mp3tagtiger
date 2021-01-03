@@ -20,8 +20,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -31,13 +35,17 @@ import de.perdian.apps.tagtiger3.fx.jobs.JobExecutor;
 import de.perdian.apps.tagtiger3.fx.jobs.listeners.DisableWhileJobRunningJobListener;
 import de.perdian.apps.tagtiger3.model.SongFile;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 
 public class Selection {
 
@@ -45,18 +53,22 @@ public class Selection {
 
     private final ObjectProperty<File> selectedDirectory = new SimpleObjectProperty<>();
     private final ObservableList<SongFile> availableFiles = FXCollections.observableArrayList();
+    private final ObservableSet<SongFile> dirtyFiles = FXCollections.observableSet(Collections.newSetFromMap(new IdentityHashMap<>()));
     private final ObservableList<SongFile> selectedFiles = FXCollections.observableArrayList();
     private final ObjectProperty<SongFile> focusFile = new SimpleObjectProperty<>();
     private final BooleanProperty busy = new SimpleBooleanProperty();
-    private SelectionDirtyComputer dirtyComputer = null;
+    private final BooleanProperty dirty = new SimpleBooleanProperty();
     private JobExecutor jobExecutor = null;
+    private List<ChangeListener<?>> changeListeners = null;
 
     public Selection(JobExecutor jobExecutor) {
         this.focusFileProperty().addListener((o, oldValue, newValue) -> this.handleFocusFileChanged(oldValue, newValue));
         this.selectedDirectoryProperty().addListener((o, oldValue, newValue) -> this.handleSelectedDirectoryChanged(oldValue, newValue));
-        this.setDirtyComputer(new SelectionDirtyComputer(this.getAvailableFiles()));
+        this.dirtyProperty().bind(Bindings.isNotEmpty(this.getDirtyFiles()));
         this.setJobExecutor(jobExecutor);
-        jobExecutor.addListener(new DisableWhileJobRunningJobListener(this.busy));
+        this.setChangeListeners(new ArrayList<>());
+        this.getAvailableFiles().addListener((ListChangeListener.Change<? extends SongFile> change) -> this.handleAvailableFilesChanged(change.getList()));
+        jobExecutor.addListener(new DisableWhileJobRunningJobListener(this.busyProperty()));
     }
 
     private void handleFocusFileChanged(SongFile oldFocusFile, SongFile newFocusFile) {
@@ -68,6 +80,36 @@ public class Selection {
                 newFocusFile.getFocus().setValue(true);
             }
         }
+    }
+
+    private void handleAvailableFilesChanged(ObservableList<? extends SongFile> newSongFiles) {
+        Set<SongFile> newDirtyFiles = new HashSet<>();
+        List<ChangeListener<?>> newChangeListeners = new ArrayList<>();
+        for (SongFile newFile : newSongFiles) {
+            ChangeListener<Boolean> dirtyChangeListener = (o, oldValue, newValue) -> {
+                if (this.getAvailableFiles().contains(newFile)) {
+                    if (newValue.booleanValue()) {
+                        this.getDirtyFiles().add(newFile);
+                    } else {
+                        this.getDirtyFiles().remove(newFile);
+                    }
+                }
+            };
+            newChangeListeners.add(dirtyChangeListener);
+            newFile.getProperties().getDirty().addListener(new WeakChangeListener<>(dirtyChangeListener));
+            if (newFile.getProperties().getDirty().getValue()) {
+                newDirtyFiles.add(newFile);
+            }
+        }
+        this.getDirtyFiles().clear();
+        this.getDirtyFiles().addAll(newDirtyFiles);
+        this.getChangeListeners().clear();
+        this.getChangeListeners().addAll(newChangeListeners);
+
+    }
+
+    public void reloadAvailableSongs() {
+        this.handleSelectedDirectoryChanged(null, this.selectedDirectoryProperty().getValue());
     }
 
     private void handleSelectedDirectoryChanged(File oldDirectory, File newDirectory) {
@@ -106,12 +148,41 @@ public class Selection {
         }
     }
 
+    public void saveDirtySongs() {
+        if (!this.getDirtyFiles().isEmpty()) {
+            this.getJobExecutor().executeJob(jobContext -> {
+
+                jobContext.updateProgress("Computing list of changes files", -1, null);
+                List<SongFile> dirtyFilesInOriginalOrder = this.getAvailableFiles().stream()
+                    .filter(songFile -> this.getDirtyFiles().contains(songFile))
+                    .collect(Collectors.toList());
+
+                if (jobContext.isActive()) {
+                    for (int i=0; i < dirtyFilesInOriginalOrder.size() && jobContext.isActive(); i++) {
+                        SongFile songFile = dirtyFilesInOriginalOrder.get(i);
+                        try {
+                            jobContext.updateProgress("Saving file: " + songFile, i, dirtyFilesInOriginalOrder.size());
+                            songFile.persistChanges();
+                        } catch (Exception e) {
+                            throw new RuntimeException("Cannot save changed file: " + songFile, e);
+                        }
+                    }
+                }
+
+            });
+        }
+    }
+
     public ObjectProperty<File> selectedDirectoryProperty() {
         return this.selectedDirectory;
     }
 
     public ObservableList<SongFile> getAvailableFiles() {
         return this.availableFiles;
+    }
+
+    private ObservableSet<SongFile> getDirtyFiles() {
+        return this.dirtyFiles;
     }
 
     public ObservableList<SongFile> getSelectedFiles() {
@@ -122,19 +193,12 @@ public class Selection {
         return this.focusFile;
     }
 
-    public ReadOnlyBooleanProperty dirtyProperty() {
-        return this.getDirtyComputer().getDirty();
+    public BooleanProperty dirtyProperty() {
+        return this.dirty;
     }
 
-    public ReadOnlyBooleanProperty busyProperty() {
+    public BooleanProperty busyProperty() {
         return this.busy;
-    }
-
-    private SelectionDirtyComputer getDirtyComputer() {
-        return this.dirtyComputer;
-    }
-    private void setDirtyComputer(SelectionDirtyComputer dirtyComputer) {
-        this.dirtyComputer = dirtyComputer;
     }
 
     private JobExecutor getJobExecutor() {
@@ -142,6 +206,13 @@ public class Selection {
     }
     private void setJobExecutor(JobExecutor jobExecutor) {
         this.jobExecutor = jobExecutor;
+    }
+
+    private List<ChangeListener<?>> getChangeListeners() {
+        return this.changeListeners;
+    }
+    private void setChangeListeners(List<ChangeListener<?>> changeListeners) {
+        this.changeListeners = changeListeners;
     }
 
 }

@@ -20,12 +20,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.tag.FieldDataInvalidException;
 import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.images.Artwork;
 
 public interface SongPropertyDelegate<T> {
@@ -129,9 +129,15 @@ public interface SongPropertyDelegate<T> {
 
         @Override
         public void writeValue(AudioFile audioFile, SongImages value) throws IOException {
-            List<Artwork> artworkList = audioFile.getTagOrCreateDefault().getArtworkList();
-            artworkList.clear();
-            artworkList.addAll(value.toArtworkList());
+            Tag audioFileTag = audioFile.getTagOrCreateDefault();
+            audioFileTag.deleteArtworkField();
+            for (Artwork artwork : value.toArtworkList()) {
+                try {
+                    audioFileTag.addField(artwork);
+                } catch (FieldDataInvalidException e) {
+                    throw new IOException("Cannot store image into MP3 tag", e);
+                }
+            }
         }
 
     }
