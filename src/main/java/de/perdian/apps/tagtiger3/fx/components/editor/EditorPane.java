@@ -58,21 +58,21 @@ public class EditorPane extends BorderPane {
     private Pane createTagValuesPane(EditorComponentFactory componentFactory) {
 
         GridPane tagsPane = new GridPane();
-        tagsPane.add(componentFactory.createOuterLabel("Title"), 0, 0, 1, 1);
+        tagsPane.add(componentFactory.createOuterLabel(SongProperty.TITLE.getTitle()), 0, 0, 1, 1);
         tagsPane.add(componentFactory.createTextField(SongProperty.TITLE), 1, 0, 10, 1);
         tagsPane.add(componentFactory.createCopyPropertyValuesToSelectedSongsButton(SongProperty.TITLE), 11, 0, 1, 1);
 
-        tagsPane.add(componentFactory.createOuterLabel("Artist"), 0, 1, 1, 1);
+        tagsPane.add(componentFactory.createOuterLabel(SongProperty.ARTIST.getTitle()), 0, 1, 1, 1);
         tagsPane.add(componentFactory.createTextField(SongProperty.ARTIST), 1, 1, 10, 1);
         tagsPane.add(componentFactory.createCopyPropertyValuesToSelectedSongsButton(SongProperty.ARTIST), 11, 1, 1, 1);
 
-        tagsPane.add(componentFactory.createOuterLabel("Album"), 0, 2, 1, 1);
+        tagsPane.add(componentFactory.createOuterLabel(SongProperty.ALBUM.getTitle()), 0, 2, 1, 1);
         tagsPane.add(componentFactory.createTextField(SongProperty.ALBUM), 1, 2, 7, 1);
         tagsPane.add(componentFactory.createCopyPropertyValuesToSelectedSongsButton(SongProperty.ALBUM), 8, 2, 1, 1);
-        tagsPane.add(componentFactory.createInnerLabel("Year"), 9, 2, 1, 1);
+        tagsPane.add(componentFactory.createInnerLabel(SongProperty.YEAR.getTitle()), 9, 2, 1, 1);
         tagsPane.add(componentFactory.createNumericTextField(SongProperty.YEAR), 10, 2, 1, 1);
         tagsPane.add(componentFactory.createCopyPropertyValuesToSelectedSongsButton(SongProperty.YEAR), 11, 2, 1, 1);
-        tagsPane.add(componentFactory.createOuterLabel("Album artist"), 0, 3, 1, 1);
+        tagsPane.add(componentFactory.createOuterLabel(SongProperty.ALBUM_ARTIST.getTitle()), 0, 3, 1, 1);
         tagsPane.add(componentFactory.createTextField(SongProperty.ALBUM_ARTIST), 1, 3, 10, 1);
         tagsPane.add(componentFactory.createCopyPropertyValuesToSelectedSongsButton(SongProperty.ALBUM_ARTIST), 11, 3, 1, 1);
 
@@ -82,7 +82,7 @@ public class EditorPane extends BorderPane {
         tagsPane.add(componentFactory.createNumericTextField(SongProperty.TRACKS_TOTAL), 3, 4, 1, 1);
         tagsPane.add(componentFactory.createEnumeratePropertiesForSelectedSongsButton(SongProperty.TRACK_NUMBER, SongProperty.TRACKS_TOTAL), 4, 4, 1, 1);
         tagsPane.add(componentFactory.createClearPropertiesForSelectedSongsButton(SongProperty.TRACK_NUMBER, SongProperty.TRACKS_TOTAL), 5, 4, 1, 1);
-        tagsPane.add(componentFactory.createInnerLabel("Genre"), 6, 4, 1, 1);
+        tagsPane.add(componentFactory.createInnerLabel(SongProperty.GENRE.getTitle()), 6, 4, 1, 1);
         tagsPane.add(componentFactory.createComboBox(SongProperty.GENRE, GenreTypes.getInstanceOf().getAlphabeticalValueList()), 7, 4, 4, 1);
         tagsPane.add(componentFactory.createCopyPropertyValuesToSelectedSongsButton(SongProperty.GENRE), 11, 4, 1, 1);
 
@@ -92,28 +92,16 @@ public class EditorPane extends BorderPane {
         tagsPane.add(componentFactory.createNumericTextField(SongProperty.DISCS_TOTAL), 3, 5, 1, 1);
         tagsPane.add(componentFactory.createCopyPropertyValuesToSelectedSongsButton(SongProperty.DISC_NUMBER, SongProperty.DISCS_TOTAL), 4, 5, 1, 1);
         tagsPane.add(componentFactory.createClearPropertiesForSelectedSongsButton(SongProperty.DISC_NUMBER, SongProperty.DISCS_TOTAL), 5, 5, 1, 1);
-        tagsPane.add(componentFactory.createInnerLabel("Composer"), 6, 5, 1, 1);
+        tagsPane.add(componentFactory.createInnerLabel(SongProperty.COMPOSER.getTitle()), 6, 5, 1, 1);
         tagsPane.add(componentFactory.createTextField(SongProperty.COMPOSER), 7, 5, 4, 1);
         tagsPane.add(componentFactory.createCopyPropertyValuesToSelectedSongsButton(SongProperty.COMPOSER), 11, 5, 1, 1);
 
-        tagsPane.add(componentFactory.createOuterLabel("Comment"), 0, 6, 1, 1);
+        tagsPane.add(componentFactory.createOuterLabel(SongProperty.COMMENT.getTitle()), 0, 6, 1, 1);
         tagsPane.add(componentFactory.createTextField(SongProperty.COMMENT), 1, 6, 10, 1);
         tagsPane.add(componentFactory.createCopyPropertyValuesToSelectedSongsButton(SongProperty.COMMENT), 11, 6, 1, 1);
 
-        tagsPane.add(componentFactory.createOuterLabel("File name"), 0, 7, 1, 1);
+        tagsPane.add(componentFactory.createOuterLabel(SongProperty.FILENAME.getTitle()), 0, 7, 1, 1);
         tagsPane.add(componentFactory.createTextField(SongProperty.FILENAME), 1, 7, 11, 1);
-
-//        tagsPane.add(componentFactory.createOuterLabel("Genre"), 0, 5, 1, 1);
-//        tagsPane.add(componentFactory.createComboBox(SongProperty.GENRE, GenreTypes.getInstanceOf().getAlphabeticalValueList()), 1, 5, 9, 1);
-//        tagsPane.add(componentFactory.createCopyPropertyValueToSelectedSongsButton(SongProperty.GENRE), 10, 5, 1, 1);
-//        tagsPane.add(componentFactory.createOuterLabel("Comment"), 0, 6, 1, 1);
-//        tagsPane.add(componentFactory.createTextField(SongProperty.COMMENT), 1, 6, 9, 1);
-//        tagsPane.add(componentFactory.createCopyPropertyValueToSelectedSongsButton(SongProperty.COMMENT), 10, 6, 1, 1);
-//        tagsPane.add(componentFactory.createOuterLabel("Composer"), 0, 7, 1, 1);
-//        tagsPane.add(componentFactory.createTextField(SongProperty.COMPOSER), 1, 7, 9, 1);
-//        tagsPane.add(componentFactory.createCopyPropertyValueToSelectedSongsButton(SongProperty.COMPOSER), 10, 7, 1, 1);
-//        tagsPane.add(componentFactory.createOuterLabel("File name"), 0, 8, 1, 1);
-//        tagsPane.add(componentFactory.createTextField(SongProperty.FILENAME), 1, 8, 10, 1);
 
         tagsPane.getColumnConstraints().add(new ColumnConstraints()); // 0
         tagsPane.getColumnConstraints().add(new ColumnConstraints(50)); // 1

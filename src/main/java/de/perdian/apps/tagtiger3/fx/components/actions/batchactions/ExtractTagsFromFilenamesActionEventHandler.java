@@ -15,13 +15,21 @@
  */
 package de.perdian.apps.tagtiger3.fx.components.actions.batchactions;
 
+import java.util.List;
+
 import de.perdian.apps.tagtiger3.model.SongFile;
 import javafx.collections.ObservableList;
+import javafx.scene.layout.Pane;
 
-public class ExtractTagsFromFilenamesActionEventHandler extends AbstractBatchActionEventHandler {
+public class ExtractTagsFromFilenamesActionEventHandler extends BatchActionEventHandler {
 
     public ExtractTagsFromFilenamesActionEventHandler(ObservableList<SongFile> files) {
-        super(files);
+        super("Extract tags from file names", files);
+    }
+
+    @Override
+    protected Pane createPane(List<SongFile> files) {
+        throw new UnsupportedOperationException();
     }
 
 }

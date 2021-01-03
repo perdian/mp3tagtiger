@@ -23,27 +23,45 @@ import de.perdian.apps.tagtiger3.model.SongPropertyDelegate.TagPropertyDelegate;
 
 public enum SongProperty {
 
-    FILENAME(String.class, new FileNameDelegate()),
-    TITLE(String.class, new TagPropertyDelegate(FieldKey.TITLE)),
-    ARTIST(String.class, new TagPropertyDelegate(FieldKey.ARTIST)),
-    ALBUM(String.class, new TagPropertyDelegate(FieldKey.ALBUM)),
-    ALBUM_ARTIST(String.class, new TagPropertyDelegate(FieldKey.ALBUM_ARTIST)),
-    YEAR(String.class, new TagPropertyDelegate(FieldKey.YEAR)),
-    TRACK_NUMBER(String.class, new TagPropertyDelegate(FieldKey.TRACK)),
-    TRACKS_TOTAL(String.class, new TagPropertyDelegate(FieldKey.TRACK_TOTAL)),
-    DISC_NUMBER(String.class, new TagPropertyDelegate(FieldKey.DISC_NO)),
-    DISCS_TOTAL(String.class, new TagPropertyDelegate(FieldKey.DISC_TOTAL)),
-    GENRE(String.class, new TagPropertyDelegate(FieldKey.GENRE)),
-    COMMENT(String.class, new TagPropertyDelegate(FieldKey.COMMENT)),
-    COMPOSER(String.class, new TagPropertyDelegate(FieldKey.COMPOSER)),
-    IMAGES(SongImages.class, new ArtworkDelegate());
+    FILENAME("File name", false, String.class, new FileNameDelegate()),
+    TITLE("Title", true, String.class, new TagPropertyDelegate(FieldKey.TITLE)),
+    ARTIST("Artist", true, String.class, new TagPropertyDelegate(FieldKey.ARTIST)),
+    ALBUM("Album", true, String.class, new TagPropertyDelegate(FieldKey.ALBUM)),
+    ALBUM_ARTIST("Album artist", true, String.class, new TagPropertyDelegate(FieldKey.ALBUM_ARTIST)),
+    YEAR("Year", true, String.class, new TagPropertyDelegate(FieldKey.YEAR)),
+    TRACK_NUMBER("Track number", true, String.class, new TagPropertyDelegate(FieldKey.TRACK)),
+    TRACKS_TOTAL("Tracks total", true, String.class, new TagPropertyDelegate(FieldKey.TRACK_TOTAL)),
+    DISC_NUMBER("Disc number", true, String.class, new TagPropertyDelegate(FieldKey.DISC_NO)),
+    DISCS_TOTAL("Discs total", true, String.class, new TagPropertyDelegate(FieldKey.DISC_TOTAL)),
+    GENRE("Genre", true, String.class, new TagPropertyDelegate(FieldKey.GENRE)),
+    COMMENT("Comment", true, String.class, new TagPropertyDelegate(FieldKey.COMMENT)),
+    COMPOSER("Composer", true, String.class, new TagPropertyDelegate(FieldKey.COMPOSER)),
+    IMAGES("Images", false, SongImages.class, new ArtworkDelegate());
 
+    private String title = null;
     private SongPropertyDelegate<?> delegate = null;
+    private boolean replaceable = false;
     private Class<?> type = null;
 
-    private SongProperty(Class<?> type, SongPropertyDelegate<?> delegate) {
+    private SongProperty(String title, boolean replaceable, Class<?> type, SongPropertyDelegate<?> delegate) {
+        this.setTitle(title);
+        this.setReplaceable(replaceable);
         this.setType(type);
         this.setDelegate(delegate);
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+    private void setTitle(String title) {
+        this.title = title;
+    }
+
+    public boolean isReplaceable() {
+        return this.replaceable;
+    }
+    private void setReplaceable(boolean replaceable) {
+        this.replaceable = replaceable;
     }
 
     Class<?> getType() {

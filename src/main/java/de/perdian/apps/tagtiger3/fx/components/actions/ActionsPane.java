@@ -35,10 +35,10 @@ public class ActionsPane extends TitledPane {
         saveChangedFilesButton.setOnAction(event -> selection.saveDirtySongs());
         saveChangedFilesButton.disableProperty().bind(selection.dirtyProperty().not());
 
-        Button computeFilenamesFromTagsButton = new Button("File names from tags", new FontAwesomeIconView(FontAwesomeIcon.LIST));
+        Button computeFilenamesFromTagsButton = new Button("Compute file names from tags", new FontAwesomeIconView(FontAwesomeIcon.LIST));
         computeFilenamesFromTagsButton.setOnAction(new ComputeFilenamesFromTagsActionEventHandler(selection.getSelectedFiles()));
         computeFilenamesFromTagsButton.disableProperty().bind(Bindings.isEmpty(selection.getSelectedFiles()));
-        Button extractTagsFromFilenamesButton = new Button("Tags from file names", new FontAwesomeIconView(FontAwesomeIcon.LIST));
+        Button extractTagsFromFilenamesButton = new Button("Extract tags from file names", new FontAwesomeIconView(FontAwesomeIcon.LIST));
         extractTagsFromFilenamesButton.setOnAction(new ExtractTagsFromFilenamesActionEventHandler(selection.getSelectedFiles()));
         extractTagsFromFilenamesButton.disableProperty().bind(Bindings.isEmpty(selection.getSelectedFiles()));
 
