@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger3.fx.components.actions.batchactions;
+package de.perdian.apps.tagtiger3.fx.components.tools.computefilenames;
 
 import java.util.Objects;
 
+import de.perdian.apps.tagtiger3.model.SongAttribute;
 import de.perdian.apps.tagtiger3.model.SongFile;
-import de.perdian.apps.tagtiger3.model.SongProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -26,18 +26,32 @@ import javafx.beans.property.SimpleStringProperty;
 
 class ComputeFilenamesFromTagsItem {
 
+    private SongFile songFile = null;
     private Property<String> originalFilename = null;
     private Property<String> newFilename = null;
     private BooleanProperty dirty = null;
 
     ComputeFilenamesFromTagsItem(SongFile songFile) {
         BooleanProperty dirtyProperty = new SimpleBooleanProperty();
-        Property<String> originalFilenameProperty = songFile.getProperties().getValue(SongProperty.FILENAME, String.class).getValue();
+        Property<String> originalFilenameProperty = songFile.getAttributeValueProperty(SongAttribute.FILENAME, String.class);
         Property<String> newFilenameProperty = new SimpleStringProperty(originalFilenameProperty.getValue());
         newFilenameProperty.addListener((o, oldValue, newValue) -> dirtyProperty.setValue(!Objects.equals(originalFilenameProperty.getValue(), newValue)));
         this.setOriginalFilename(originalFilenameProperty);
         this.setNewFilename(newFilenameProperty);
         this.setDirty(dirtyProperty);
+        this.setSongFile(songFile);
+    }
+
+    void updateToFile() {
+        Property<String> filenameProperty = this.getSongFile().getAttributeValueProperty(SongAttribute.FILENAME, String.class);
+        filenameProperty.setValue(this.getNewFilename().getValue());
+    }
+
+    SongFile getSongFile() {
+        return this.songFile;
+    }
+    private void setSongFile(SongFile songFile) {
+        this.songFile = songFile;
     }
 
     Property<String> getOriginalFilename() {

@@ -28,105 +28,105 @@ public class SongFileTest {
     @Test
     public void constructorWithValidFile() throws IOException {
         SongFile songFile = new SongFile(new File("src/test/resources/META-INF/mp3/Hold on a Sec.mp3"));
-        Assertions.assertEquals("Hold on a Sec", songFile.getProperties().getValue(SongProperty.TITLE, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("Hold on a Sec", songFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().getValue());
-        Assertions.assertEquals("Free PD", songFile.getProperties().getValue(SongProperty.ALBUM, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("Free PD", songFile.getProperties().getValue(SongProperty.ALBUM, String.class).getValue().getValue());
+        Assertions.assertEquals("Hold on a Sec", songFile.getAttributeValue(SongAttribute.TITLE, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("Hold on a Sec", songFile.getAttributeValue(SongAttribute.TITLE, Object.class).getValue().getValue());
+        Assertions.assertEquals("Free PD", songFile.getAttributeValue(SongAttribute.ALBUM, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("Free PD", songFile.getAttributeValue(SongAttribute.ALBUM, Object.class).getValue().getValue());
     }
 
     @Test
     public void dirtyFlagSetAndReset() throws IOException {
         SongFile originalSongFile = new SongFile(new File("src/test/resources/META-INF/mp3/Hold on a Sec.mp3"));
-        Assertions.assertFalse(originalSongFile.getProperties().getDirty().getValue());
+        Assertions.assertFalse(originalSongFile.getDirty().getValue());
 
-        originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().setValue("A new title");
-        Assertions.assertEquals("Hold on a Sec", originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("A new title", originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().getValue());
-        Assertions.assertTrue(originalSongFile.getProperties().getDirty().getValue());
-        Assertions.assertTrue(originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getDirty().getValue());
+        originalSongFile.getAttributeValueProperty(SongAttribute.TITLE, String.class).setValue("A new title");
+        Assertions.assertEquals("Hold on a Sec", originalSongFile.getAttributeValue(SongAttribute.TITLE, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("A new title", originalSongFile.getAttributeValue(SongAttribute.TITLE, Object.class).getValue().getValue());
+        Assertions.assertTrue(originalSongFile.getDirty().getValue());
+        Assertions.assertTrue(originalSongFile.getAttributeValue(SongAttribute.TITLE, Object.class).getDirty().getValue());
 
-        originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().setValue("Hold on a Sec");
-        Assertions.assertEquals("Hold on a Sec", originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("Hold on a Sec", originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().getValue());
-        Assertions.assertFalse(originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getDirty().getValue());
-        Assertions.assertFalse(originalSongFile.getProperties().getDirty().getValue());
+        originalSongFile.getAttributeValueProperty(SongAttribute.TITLE, String.class).setValue("Hold on a Sec");
+        Assertions.assertEquals("Hold on a Sec", originalSongFile.getAttributeValue(SongAttribute.TITLE, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("Hold on a Sec", originalSongFile.getAttributeValue(SongAttribute.TITLE, Object.class).getValue().getValue());
+        Assertions.assertFalse(originalSongFile.getAttributeValue(SongAttribute.TITLE, Object.class).getDirty().getValue());
+        Assertions.assertFalse(originalSongFile.getDirty().getValue());
     }
 
     @Test
-    public void writeNewValue() throws IOException {
+    public void persistChanges() throws IOException {
         File tempSongOsFile = this.createTempSongFile();
         SongFile songFile = new SongFile(tempSongOsFile);
-        Assertions.assertEquals("Hold on a Sec", songFile.getProperties().getValue(SongProperty.TITLE, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("Hold on a Sec", songFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().getValue());
+        Assertions.assertEquals("Hold on a Sec", songFile.getAttributeValue(SongAttribute.TITLE, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("Hold on a Sec", songFile.getAttributeValue(SongAttribute.TITLE, Object.class).getValue().getValue());
 
-        songFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().setValue("This is a new title");
+        songFile.getAttributeValueProperty(SongAttribute.TITLE, String.class).setValue("This is a new title");
 
         Assertions.assertTrue(songFile.persistChanges());
 
-        Assertions.assertEquals("This is a new title", songFile.getProperties().getValue(SongProperty.TITLE, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("This is a new title", songFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().getValue());
+        Assertions.assertEquals("This is a new title", songFile.getAttributeValue(SongAttribute.TITLE, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("This is a new title", songFile.getAttributeValue(SongAttribute.TITLE, Object.class).getValue().getValue());
 
         SongFile reloadedSongFile = new SongFile(tempSongOsFile);
-        Assertions.assertEquals("This is a new title", reloadedSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("This is a new title", reloadedSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().getValue());
+        Assertions.assertEquals("This is a new title", reloadedSongFile.getAttributeValue(SongAttribute.TITLE, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("This is a new title", reloadedSongFile.getAttributeValue(SongAttribute.TITLE, Object.class).getValue().getValue());
     }
 
     @Test
-    public void writeNewValueWithFilenameChanged() throws IOException {
+    public void persistChangesWithFilenameChanged() throws IOException {
         File originalOsFile = this.createTempSongFile();
         SongFile originalSongFile = new SongFile(originalOsFile);
-        Assertions.assertFalse(originalSongFile.getProperties().getDirty().getValue());
+        Assertions.assertFalse(originalSongFile.getDirty().getValue());
 
-        originalSongFile.getProperties().getValue(SongProperty.FILENAME, String.class).getValue().setValue("Hold on a Sec - NEW");
-        originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().setValue("foo");
-        Assertions.assertEquals("Hold on a Sec - TEMP", originalSongFile.getProperties().getValue(SongProperty.FILENAME, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("Hold on a Sec - NEW", originalSongFile.getProperties().getValue(SongProperty.FILENAME, String.class).getValue().getValue());
-        Assertions.assertEquals("Hold on a Sec", originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("foo", originalSongFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().getValue());
-        Assertions.assertTrue(originalSongFile.getProperties().getDirty().getValue());
-        Assertions.assertTrue(originalSongFile.getProperties().getValue(SongProperty.FILENAME, String.class).getDirty().getValue());
+        originalSongFile.getAttributeValueProperty(SongAttribute.FILENAME, String.class).setValue("Hold on a Sec - NEW");
+        originalSongFile.getAttributeValueProperty(SongAttribute.TITLE, String.class).setValue("foo");
+        Assertions.assertEquals("Hold on a Sec - TEMP", originalSongFile.getAttributeValue(SongAttribute.FILENAME, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("Hold on a Sec - NEW", originalSongFile.getAttributeValue(SongAttribute.FILENAME, Object.class).getValue().getValue());
+        Assertions.assertEquals("Hold on a Sec", originalSongFile.getAttributeValue(SongAttribute.TITLE, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("foo", originalSongFile.getAttributeValue(SongAttribute.TITLE, Object.class).getValue().getValue());
+        Assertions.assertTrue(originalSongFile.getDirty().getValue());
+        Assertions.assertTrue(originalSongFile.getAttributeValue(SongAttribute.FILENAME, Object.class).getDirty().getValue());
 
         Assertions.assertTrue(originalSongFile.persistChanges());
 
         Assertions.assertFalse(originalOsFile.exists());
         Assertions.assertEquals("Hold on a Sec - NEW.mp3", originalSongFile.getAudioFile().getFile().getName());
-        Assertions.assertEquals("Hold on a Sec - NEW", originalSongFile.getProperties().getValue(SongProperty.FILENAME, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("Hold on a Sec - NEW", originalSongFile.getProperties().getValue(SongProperty.FILENAME, String.class).getValue().getValue());
-        Assertions.assertFalse(originalSongFile.getProperties().getDirty().getValue());
+        Assertions.assertEquals("Hold on a Sec - NEW", originalSongFile.getAttributeValue(SongAttribute.FILENAME, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("Hold on a Sec - NEW", originalSongFile.getAttributeValue(SongAttribute.FILENAME, Object.class).getValue().getValue());
+        Assertions.assertFalse(originalSongFile.getDirty().getValue());
 
         // Make sure that the old file hasn't been changed. It should still have its old properties
         SongFile originalSongFileReloaded = new SongFile(new File("src/test/resources/META-INF/mp3/Hold on a Sec.mp3"));
-        Assertions.assertEquals("Hold on a Sec", originalSongFileReloaded.getProperties().getValue(SongProperty.TITLE, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("Hold on a Sec", originalSongFileReloaded.getProperties().getValue(SongProperty.TITLE, String.class).getValue().getValue());
-        Assertions.assertEquals("Hold on a Sec", originalSongFileReloaded.getProperties().getValue(SongProperty.FILENAME, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("Hold on a Sec", originalSongFileReloaded.getProperties().getValue(SongProperty.FILENAME, String.class).getValue().getValue());
+        Assertions.assertEquals("Hold on a Sec", originalSongFileReloaded.getAttributeValue(SongAttribute.TITLE, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("Hold on a Sec", originalSongFileReloaded.getAttributeValue(SongAttribute.TITLE, Object.class).getValue().getValue());
+        Assertions.assertEquals("Hold on a Sec", originalSongFileReloaded.getAttributeValue(SongAttribute.FILENAME, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("Hold on a Sec", originalSongFileReloaded.getAttributeValue(SongAttribute.FILENAME, Object.class).getValue().getValue());
 
         // The new file however should have been changed to contain the new values
         SongFile newSongFileReloaded = new SongFile(new File("src/test/resources/META-INF/mp3/Hold on a Sec - NEW.mp3"));
-        Assertions.assertEquals("foo", newSongFileReloaded.getProperties().getValue(SongProperty.TITLE, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("foo", newSongFileReloaded.getProperties().getValue(SongProperty.TITLE, String.class).getValue().getValue());
-        Assertions.assertEquals("Hold on a Sec - NEW", newSongFileReloaded.getProperties().getValue(SongProperty.FILENAME, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("Hold on a Sec - NEW", newSongFileReloaded.getProperties().getValue(SongProperty.FILENAME, String.class).getValue().getValue());
+        Assertions.assertEquals("foo", newSongFileReloaded.getAttributeValue(SongAttribute.TITLE, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("foo", newSongFileReloaded.getAttributeValue(SongAttribute.TITLE, Object.class).getValue().getValue());
+        Assertions.assertEquals("Hold on a Sec - NEW", newSongFileReloaded.getAttributeValue(SongAttribute.FILENAME, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("Hold on a Sec - NEW", newSongFileReloaded.getAttributeValue(SongAttribute.FILENAME, Object.class).getValue().getValue());
 
     }
 
     @Test
-    public void resetPropertyValues() throws IOException {
+    public void resetChanges() throws IOException {
         SongFile songFile = new SongFile(this.createTempSongFile());
-        Assertions.assertFalse(songFile.getProperties().getDirty().getValue());
+        Assertions.assertFalse(songFile.getDirty().getValue());
         Assertions.assertFalse(songFile.persistChanges());
 
-        songFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().setValue("A new title");
-        Assertions.assertEquals("Hold on a Sec", songFile.getProperties().getValue(SongProperty.TITLE, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("A new title", songFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().getValue());
-        Assertions.assertTrue(songFile.getProperties().getDirty().getValue());
-        Assertions.assertTrue(songFile.getProperties().getValue(SongProperty.TITLE, String.class).getDirty().getValue());
+        songFile.getAttributeValueProperty(SongAttribute.TITLE, String.class).setValue("A new title");
+        Assertions.assertEquals("Hold on a Sec", songFile.getAttributeValue(SongAttribute.TITLE, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("A new title", songFile.getAttributeValue(SongAttribute.TITLE, Object.class).getValue().getValue());
+        Assertions.assertTrue(songFile.getDirty().getValue());
+        Assertions.assertTrue(songFile.getAttributeValue(SongAttribute.TITLE, Object.class).getDirty().getValue());
 
-        songFile.getProperties().resetValues();
-        Assertions.assertEquals("Hold on a Sec", songFile.getProperties().getValue(SongProperty.TITLE, String.class).getPersistedValue().getValue());
-        Assertions.assertEquals("Hold on a Sec", songFile.getProperties().getValue(SongProperty.TITLE, String.class).getValue().getValue());
-        Assertions.assertFalse(songFile.getProperties().getDirty().getValue());
-        Assertions.assertFalse(songFile.getProperties().getValue(SongProperty.TITLE, String.class).getDirty().getValue());
+        songFile.resetChanges();;
+        Assertions.assertEquals("Hold on a Sec", songFile.getAttributeValue(SongAttribute.TITLE, Object.class).getPersistedValue().getValue());
+        Assertions.assertEquals("Hold on a Sec", songFile.getAttributeValue(SongAttribute.TITLE, Object.class).getValue().getValue());
+        Assertions.assertFalse(songFile.getDirty().getValue());
+        Assertions.assertFalse(songFile.getAttributeValue(SongAttribute.TITLE, Object.class).getDirty().getValue());
         Assertions.assertFalse(songFile.persistChanges());
     }
 

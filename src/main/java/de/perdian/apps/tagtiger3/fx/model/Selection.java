@@ -96,8 +96,8 @@ public class Selection {
                 }
             };
             newChangeListeners.add(dirtyChangeListener);
-            newFile.getProperties().getDirty().addListener(new WeakChangeListener<>(dirtyChangeListener));
-            if (newFile.getProperties().getDirty().getValue()) {
+            newFile.getDirty().addListener(new WeakChangeListener<>(dirtyChangeListener));
+            if (newFile.getDirty().getValue()) {
                 newDirtyFiles.add(newFile);
             }
         }

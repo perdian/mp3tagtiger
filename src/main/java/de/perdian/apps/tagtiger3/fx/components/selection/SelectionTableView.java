@@ -20,7 +20,7 @@ import java.util.List;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.tagtiger3.model.SongFile;
-import de.perdian.apps.tagtiger3.model.SongProperty;
+import de.perdian.apps.tagtiger3.model.SongAttribute;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
@@ -35,7 +35,7 @@ class SelectionTableView extends TableView<SongFile> {
         super(selectedFiles);
 
         TableColumn<SongFile, Boolean> dirtyColumn = new TableColumn<>("");
-        dirtyColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getDirty());
+        dirtyColumn.setCellValueFactory(callback -> callback.getValue().getDirty());
         dirtyColumn.setCellFactory(this.createIconCellCallback(FontAwesomeIcon.FLAG, null));
         dirtyColumn.setSortable(false);
         dirtyColumn.setReorderable(false);
@@ -51,22 +51,22 @@ class SelectionTableView extends TableView<SongFile> {
         focusColumn.setMaxWidth(25);
 
         TableColumn<SongFile, String> fileNameColumn = new TableColumn<>("File name");
-        fileNameColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.FILENAME, String.class).getValue());
+        fileNameColumn.setCellValueFactory(callback -> callback.getValue().getAttributeValueProperty(SongAttribute.FILENAME, String.class));
 
         TableColumn<SongFile, String> titleColumn = new TableColumn<>("Title");
         titleColumn.setMinWidth(250);
         titleColumn.setMaxWidth(300);
-        titleColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.TITLE, String.class).getValue());
+        titleColumn.setCellValueFactory(callback -> callback.getValue().getAttributeValueProperty(SongAttribute.TITLE, String.class));
 
         TableColumn<SongFile, String> artistColumn = new TableColumn<>("Artist");
         artistColumn.setMinWidth(150);
         artistColumn.setMaxWidth(200);
-        artistColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.ARTIST, String.class).getValue());
+        artistColumn.setCellValueFactory(callback -> callback.getValue().getAttributeValueProperty(SongAttribute.ARTIST, String.class));
 
         TableColumn<SongFile, String> albumColumn = new TableColumn<>("Album");
         albumColumn.setMinWidth(150);
         albumColumn.setMaxWidth(200);
-        albumColumn.setCellValueFactory(callback -> callback.getValue().getProperties().getValue(SongProperty.ALBUM, String.class).getValue());
+        albumColumn.setCellValueFactory(callback -> callback.getValue().getAttributeValueProperty(SongAttribute.ALBUM, String.class));
 
         this.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         this.getColumns().setAll(List.of(dirtyColumn, focusColumn, fileNameColumn, titleColumn, artistColumn, albumColumn));

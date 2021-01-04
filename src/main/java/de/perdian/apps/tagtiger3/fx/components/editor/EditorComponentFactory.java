@@ -30,10 +30,10 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.perdian.apps.tagtiger3.fx.TagTigerApplication;
 import de.perdian.apps.tagtiger3.fx.model.Selection;
+import de.perdian.apps.tagtiger3.model.SongAttribute;
 import de.perdian.apps.tagtiger3.model.SongFile;
 import de.perdian.apps.tagtiger3.model.SongImage;
 import de.perdian.apps.tagtiger3.model.SongImages;
-import de.perdian.apps.tagtiger3.model.SongProperty;
 import de.perdian.commons.fx.components.ComponentBuilder;
 import de.perdian.commons.fx.preferences.Preferences;
 import javafx.application.Platform;
@@ -97,8 +97,8 @@ class EditorComponentFactory {
         return label;
     }
 
-    TextField createNumericTextField(SongProperty property) {
-        TextField textField = this.createTextField(property);
+    TextField createNumericTextField(SongAttribute attribute) {
+        TextField textField = this.createTextField(attribute);
         textField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
             if (!event.getCharacter().matches("\\d+")) {
                 event.consume();
@@ -107,10 +107,10 @@ class EditorComponentFactory {
         return textField;
     }
 
-    TextField createTextField(SongProperty property) {
-        StringProperty textFieldProperty = this.bindSongProperty(property, new SimpleStringProperty());
+    TextField createTextField(SongAttribute attribute) {
+        StringProperty textFieldProperty = this.bindSongAttribute(attribute, new SimpleStringProperty());
         TextField textField = this.getComponentBuilder().createTextField(textFieldProperty).get();
-        textField.addEventHandler(KeyEvent.KEY_PRESSED, event -> this.processKeyPressedEvent(event, property));
+        textField.addEventHandler(KeyEvent.KEY_PRESSED, event -> this.processKeyPressedEvent(event, attribute));
         textField.disableProperty().bind(this.getSelection().focusFileProperty().isNull());
         textFieldProperty.addListener((o, oldValue, newValue) -> {
             if (textField.focusedProperty().getValue()) {
@@ -120,8 +120,8 @@ class EditorComponentFactory {
         return textField;
     }
 
-    ComboBox<String> createComboBox(SongProperty property, List<String> values) {
-        StringProperty valueProperty = this.bindSongProperty(property, new SimpleStringProperty());
+    ComboBox<String> createComboBox(SongAttribute attribute, List<String> values) {
+        StringProperty valueProperty = this.bindSongAttribute(attribute, new SimpleStringProperty());
         ComboBox<String> comboBox = new ComboBox<>(FXCollections.observableArrayList(values));
         comboBox.setPrefWidth(0);
         comboBox.setMaxWidth(Double.MAX_VALUE);
@@ -130,7 +130,7 @@ class EditorComponentFactory {
         comboBox.focusedProperty().addListener((o, oldValue, newValue) -> Platform.runLater(() -> comboBox.getEditor().selectAll()));
         comboBox.valueProperty().addListener((o, oldValue, newValue) -> valueProperty.setValue(newValue));
         comboBox.getEditor().textProperty().addListener((o, oldValue, newValue) -> valueProperty.setValue(newValue));
-        comboBox.addEventHandler(KeyEvent.KEY_PRESSED, event -> this.processKeyPressedEvent(event, property));
+        comboBox.addEventHandler(KeyEvent.KEY_PRESSED, event -> this.processKeyPressedEvent(event, attribute));
         valueProperty.addListener((o, oldValue, newValue) -> comboBox.setValue(newValue == null ? null : newValue.toString()));
         return comboBox;
     }
@@ -141,7 +141,7 @@ class EditorComponentFactory {
         imagesLabel.setMaxWidth(Double.MAX_VALUE);
         imagesLabel.setMinWidth(190);
         imagesLabel.setMaxWidth(190);
-        ObjectProperty<SongImages> imagesProperty = this.bindSongProperty(SongProperty.IMAGES, new SimpleObjectProperty<>());
+        ObjectProperty<SongImages> imagesProperty = this.bindSongAttribute(SongAttribute.IMAGES, new SimpleObjectProperty<>());
         imagesProperty.addListener((o, oldValue, newValue) -> {
             if (newValue == null || newValue.getImages().isEmpty()) {
                 imagesLabel.setGraphic(null);
@@ -157,24 +157,24 @@ class EditorComponentFactory {
         return imagesLabel;
     }
 
-    Button createCopyPropertyValuesToSelectedSongsButton(SongProperty... properties) {
+    Button createCopyAttributeValuesToSelectedSongsButton(SongAttribute... attributes) {
         Button button = this.createButton("", FontAwesomeIcon.COPY, "Copy to other songs in selection");
         button.disableProperty().bind(Bindings.size(this.getSelection().getSelectedFiles()).lessThanOrEqualTo(1));
-        button.setOnAction(event -> this.handleCopyPropertyValueToSelectedSongs(properties));
+        button.setOnAction(event -> this.handleCopyAttributeValueToSelectedSongs(attributes));
         return button;
     }
 
-    Button createClearPropertiesForSelectedSongsButton(SongProperty... properties) {
+    Button createClearAttributesForSelectedSongsButton(SongAttribute... attributes) {
         Button button = this.createButton("", FontAwesomeIcon.ERASER, "Clear for all songs in selection");
         button.disableProperty().bind(Bindings.size(this.getSelection().getSelectedFiles()).lessThanOrEqualTo(1));
-        button.setOnAction(event -> this.handleClearPropertiesForSelectedSongs(properties));
+        button.setOnAction(event -> this.handleClearAttributesForSelectedSongs(attributes));
         return button;
     }
 
-    Button createEnumeratePropertiesForSelectedSongsButton(SongProperty indexProperty, SongProperty sumProperty) {
+    Button createEnumerateAttributesForSelectedSongsButton(SongAttribute indexAttribute, SongAttribute sumAttribute) {
         Button button = this.createButton("", FontAwesomeIcon.SORT_NUMERIC_ASC, "Enumerate within selection");
         button.disableProperty().bind(Bindings.size(this.getSelection().getSelectedFiles()).lessThanOrEqualTo(1));
-        button.setOnAction(event -> this.handleEnumeratePropertiesForSelectedSongs(indexProperty, sumProperty));
+        button.setOnAction(event -> this.handleEnumerateAttributesForSelectedSongs(indexAttribute, sumAttribute));
         return button;
     }
 
@@ -191,12 +191,12 @@ class EditorComponentFactory {
         ChangeListener<SongImages> songImagesChangeListener = (o, oldValue, newValue) -> imagesAvailableProperty.setValue(!newValue.getImages().isEmpty());
         this.getSelection().focusFileProperty().addListener((o, oldValue, newValue) -> {
             if (oldValue != null) {
-                Property<SongImages> songImagesProperty = oldValue.getProperties().getValue(SongProperty.IMAGES, SongImages.class).getValue();
+                Property<SongImages> songImagesProperty = oldValue.getAttributeValueProperty(SongAttribute.IMAGES, SongImages.class);
                 songImagesProperty.removeListener(songImagesChangeListener);
                 imagesAvailableProperty.setValue(false);
             }
             if (newValue != null) {
-                Property<SongImages> songImagesProperty = newValue.getProperties().getValue(SongProperty.IMAGES, SongImages.class).getValue();
+                Property<SongImages> songImagesProperty = newValue.getAttributeValueProperty(SongAttribute.IMAGES, SongImages.class);
                 songImagesProperty.addListener(songImagesChangeListener);
                 imagesAvailableProperty.setValue(!songImagesProperty.getValue().getImages().isEmpty());
             }
@@ -216,7 +216,7 @@ class EditorComponentFactory {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Property<U>, U> T bindSongProperty(SongProperty songProperty, T fxProperty) {
+    private <T extends Property<U>, U> T bindSongAttribute(SongAttribute songAttribute, T fxProperty) {
         ChangeListener<U> updateFxPropertyChangeListener = (o, oldValue, newValue) -> {
             if (!Objects.equals(fxProperty.getValue(), newValue)) {
                 fxProperty.setValue(newValue);
@@ -224,20 +224,20 @@ class EditorComponentFactory {
         };
         this.getSelection().focusFileProperty().addListener((o, oldFocusFile, newFocusFile) -> {
             if (newFocusFile != null) {
-                Property<U> newFocusFileProperty = (Property<U>)newFocusFile.getProperties().getValue(songProperty, Object.class).getValue();
+                Property<U> newFocusFileProperty = (Property<U>)newFocusFile.getAttributeValueProperty(songAttribute, Object.class);
                 fxProperty.setValue(newFocusFileProperty.getValue());
                 newFocusFileProperty.addListener(updateFxPropertyChangeListener);
             } else {
                 fxProperty.setValue(null);
             }
             if (oldFocusFile != null) {
-                Property<U> oldFocusFileProperty = (Property<U>)oldFocusFile.getProperties().getValue(songProperty, Object.class).getValue();
+                Property<U> oldFocusFileProperty = (Property<U>)oldFocusFile.getAttributeValueProperty(songAttribute, Object.class);
                 oldFocusFileProperty.removeListener(updateFxPropertyChangeListener);
             }
         });
         fxProperty.addListener((o, oldValue, newValue) -> {
             if (!Objects.equals(oldValue, newValue) && this.getSelection().focusFileProperty().getValue() != null) {
-                Property<Object> focusFileTargetProperty = this.getSelection().focusFileProperty().getValue().getProperties().getValue(songProperty, Object.class).getValue();
+                Property<Object> focusFileTargetProperty = this.getSelection().focusFileProperty().getValue().getAttributeValueProperty(songAttribute, Object.class);
                 if (!Objects.equals(newValue, focusFileTargetProperty.getValue())) {
                     focusFileTargetProperty.setValue(newValue);
                 }
@@ -246,35 +246,35 @@ class EditorComponentFactory {
         return fxProperty;
     }
 
-    private void handleCopyPropertyValueToSelectedSongs(SongProperty... properties) {
+    private void handleCopyAttributeValueToSelectedSongs(SongAttribute... properties) {
         SongFile focusFile = this.getSelection().focusFileProperty().getValue();
         if (focusFile != null) {
-            for (SongProperty property : properties) {
-                Property<Object> sourceFileProperty = focusFile.getProperties().getValue(property, Object.class).getValue();
+            for (SongAttribute attribute : properties) {
+                Property<Object> sourceFileProperty = focusFile.getAttributeValueProperty(attribute, Object.class);
                 Object sourceFileValue = sourceFileProperty.getValue();
                 for (SongFile targetFile : this.getSelection().getSelectedFiles()) {
-                    Property<Object> targetFileProperty = targetFile.getProperties().getValue(property, Object.class).getValue();
+                    Property<Object> targetFileProperty = targetFile.getAttributeValueProperty(attribute, Object.class);
                     targetFileProperty.setValue(sourceFileValue);
                 }
             }
         }
     }
 
-    private void handleClearPropertiesForSelectedSongs(SongProperty... properties) {
+    private void handleClearAttributesForSelectedSongs(SongAttribute... attributes) {
         for (SongFile targetFile : this.getSelection().getSelectedFiles()) {
-            for (SongProperty property : properties) {
-                targetFile.getProperties().getValue(property, Object.class).clearValue();
+            for (SongAttribute attribute : attributes) {
+                targetFile.clearAttributeValue(attribute);
             }
         }
     }
 
-    private void handleEnumeratePropertiesForSelectedSongs(SongProperty indexProperty, SongProperty sumProperty) {
+    private void handleEnumerateAttributesForSelectedSongs(SongAttribute indexProperty, SongAttribute sumProperty) {
         List<SongFile> targetFiles = this.getSelection().getSelectedFiles();
         for (int i=0; i < targetFiles.size(); i++) {
             SongFile targetFile = targetFiles.get(i);
-            Property<String> targetIndexProperty = targetFile.getProperties().getValue(indexProperty, String.class).getValue();
+            Property<String> targetIndexProperty = targetFile.getAttributeValueProperty(indexProperty, String.class);
             targetIndexProperty.setValue(String.valueOf(i + 1));
-            Property<String> targetSumProperty = targetFile.getProperties().getValue(sumProperty, String.class).getValue();
+            Property<String> targetSumProperty = targetFile.getAttributeValueProperty(sumProperty, String.class);
             targetSumProperty.setValue(String.valueOf(this.getSelection().getSelectedFiles().size()));
         }
     }
@@ -292,7 +292,7 @@ class EditorComponentFactory {
                 try (ByteArrayOutputStream pngStream = new ByteArrayOutputStream()) {
                     ImageIO.write(image, "png", pngStream);
                     SongFile songFile = this.getSelection().focusFileProperty().getValue();
-                    Property<SongImages> songImagesProperty = songFile.getProperties().getValue(SongProperty.IMAGES, SongImages.class).getValue();
+                    Property<SongImages> songImagesProperty = songFile.getAttributeValueProperty(SongAttribute.IMAGES, SongImages.class);
                     SongImage songImage = new SongImage(null, null, pngStream.toByteArray(), "image/png");
                     songImagesProperty.setValue(songImagesProperty.getValue().withRemovedImages().withNewImage(songImage));
                 }
@@ -304,16 +304,16 @@ class EditorComponentFactory {
 
     private void handleClearImage() {
         SongFile targetFile = this.getSelection().focusFileProperty().getValue();
-        Property<SongImages> targetImagesProperty = targetFile == null ? null : targetFile.getProperties().getValue(SongProperty.IMAGES, SongImages.class).getValue();
+        Property<SongImages> targetImagesProperty = targetFile == null ? null : targetFile.getAttributeValueProperty(SongAttribute.IMAGES, SongImages.class);
         if (targetImagesProperty != null) {
             targetImagesProperty.setValue(targetImagesProperty.getValue().withRemovedImages());
         }
     }
 
-    private void processKeyPressedEvent(KeyEvent event, SongProperty property) {
+    private void processKeyPressedEvent(KeyEvent event, SongAttribute attribute) {
         this.processKeyPressedEventForNavigation(event);
-        this.processKeyPressedEventForReset(event, property);
-        this.processKeyPressedEventForCopy(event, property);
+        this.processKeyPressedEventForReset(event, attribute);
+        this.processKeyPressedEventForCopy(event, attribute);
     }
 
     private void processKeyPressedEventForNavigation(KeyEvent event) {
@@ -331,21 +331,21 @@ class EditorComponentFactory {
         }
     }
 
-    private void processKeyPressedEventForReset(KeyEvent event, SongProperty property) {
+    private void processKeyPressedEventForReset(KeyEvent event, SongAttribute attribute) {
         if (event.getCode() == KeyCode.DELETE && event.isMetaDown()) {
-            List<SongProperty> resetProperties = event.isShiftDown() ? List.of(SongProperty.values()) : List.of(property);
+            List<SongAttribute> resetAttributes = event.isShiftDown() ? List.of(SongAttribute.values()) : List.of(attribute);
             SongFile focusFile = this.getSelection().focusFileProperty().getValue();
             if (focusFile != null) {
-                for (SongProperty resetProperty : resetProperties) {
-                    focusFile.getProperties().getValue(resetProperty, Object.class).resetValue();
+                for (SongAttribute resetProperty : resetAttributes) {
+                    focusFile.resetAttributeValue(resetProperty);
                 }
             }
         }
     }
 
-    private void processKeyPressedEventForCopy(KeyEvent event, SongProperty property) {
+    private void processKeyPressedEventForCopy(KeyEvent event, SongAttribute attribute) {
         if (event.getCode() == KeyCode.ENTER && event.isMetaDown()) {
-            this.handleCopyPropertyValueToSelectedSongs(property);
+            this.handleCopyAttributeValueToSelectedSongs(attribute);
         }
     }
 

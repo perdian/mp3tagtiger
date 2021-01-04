@@ -13,36 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger3.fx.components.actions.batchactions;
+package de.perdian.apps.tagtiger3.fx.components.tools.computefilenames;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.perdian.apps.tagtiger3.model.SongFile;
-import javafx.collections.FXCollections;
+import de.perdian.apps.tagtiger3.fx.components.tools.ToolActionHelpers;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.BorderPane;
 
-public class ComputeFilenamesFromTagsActionEventHandler extends BatchActionEventHandler {
+class ComputeFilenamesFromTagsListPane extends BorderPane {
 
-    public ComputeFilenamesFromTagsActionEventHandler(List<SongFile> files) {
-        super("Compute file names from tags", files);
-    }
-
-    @Override
-    protected Pane createPane(List<SongFile> files) {
-        GridPane mainPane = new GridPane();
+    ComputeFilenamesFromTagsListPane(ObservableList<ComputeFilenamesFromTagsItem> items) {
 
         TableColumn<ComputeFilenamesFromTagsItem, Boolean> dirtyColumn = new TableColumn<>("");
         dirtyColumn.setCellValueFactory(callback -> callback.getValue().getDirty());
-        dirtyColumn.setCellFactory(BatchActionHelpers.createIconCellCallback(FontAwesomeIcon.FLAG, null));
+        dirtyColumn.setCellFactory(ToolActionHelpers.createIconCellCallback(FontAwesomeIcon.FLAG, null));
         dirtyColumn.setEditable(false);
         dirtyColumn.setSortable(false);
         dirtyColumn.setReorderable(false);
@@ -60,23 +49,12 @@ public class ComputeFilenamesFromTagsActionEventHandler extends BatchActionEvent
         newFilenameColumn.setReorderable(false);
         newFilenameColumn.setCellValueFactory(features -> features.getValue().getNewFilename());
 
-        ObservableList<ComputeFilenamesFromTagsItem> items = FXCollections.observableArrayList(files.stream().map(ComputeFilenamesFromTagsItem::new).collect(Collectors.toList()));
         TableView<ComputeFilenamesFromTagsItem> itemsTableView = new TableView<>(items);
         itemsTableView.setEditable(true);
         itemsTableView.getColumns().addAll(List.of(dirtyColumn, oldFilenameColumn, newFilenameColumn));
         itemsTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        GridPane.setHgrow(itemsTableView, Priority.ALWAYS);
-        GridPane.setVgrow(itemsTableView, Priority.ALWAYS);
+        this.setCenter(itemsTableView);
 
-        BatchActionLegendPane legendPane = new BatchActionLegendPane();
-        GridPane.setHgrow(legendPane, Priority.ALWAYS);
-
-        mainPane.add(itemsTableView, 0, 0, 1, 1);
-        mainPane.add(legendPane, 0, 1, 1, 1);
-        mainPane.setHgap(10);
-        mainPane.setVgap(10);
-        mainPane.setPadding(new Insets(10, 10, 10, 10));
-        return mainPane;
     }
 
 }

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jaudiotagger.audio.AudioFile;
@@ -28,19 +29,21 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.images.Artwork;
 
-public interface SongPropertyDelegate<T> {
+import javafx.beans.property.ObjectProperty;
 
-    T getClearValue();
+interface SongAttributeConverter<T> {
+
+    Supplier<T> createClearSupplier(ObjectProperty<T> persistedValue);
 
     T readValue(AudioFile audioFile) throws IOException;
 
     void writeValue(AudioFile audioFile, T value) throws IOException;
 
-    static class FileNameDelegate implements SongPropertyDelegate<String> {
+    static class FileNameAttributeConverter implements SongAttributeConverter<String> {
 
         @Override
-        public String getClearValue() {
-            return "";
+        public Supplier<String> createClearSupplier(ObjectProperty<String> persistedValue) {
+            return persistedValue::getValue;
         }
 
         @Override
@@ -75,22 +78,22 @@ public interface SongPropertyDelegate<T> {
 
     }
 
-    static class TagPropertyDelegate implements SongPropertyDelegate<String> {
+    static class FieldKeyAttributeConverter implements SongAttributeConverter<String> {
 
         private FieldKey fieldKey = null;
 
-        public TagPropertyDelegate(FieldKey fieldKey) {
+        public FieldKeyAttributeConverter(FieldKey fieldKey) {
             this.setFieldKey(fieldKey);
         }
 
         @Override
-        public String getClearValue() {
-            return "";
+        public Supplier<String> createClearSupplier(ObjectProperty<String> persistedValue) {
+            return () -> "";
         }
 
         @Override
         public String readValue(AudioFile audioFile) throws IOException {
-            return audioFile.getTag() == null ? this.getClearValue() : audioFile.getTag().getFirst(this.getFieldKey());
+            return audioFile.getTag() == null ? "" : audioFile.getTag().getFirst(this.getFieldKey());
         }
 
         @Override
@@ -117,11 +120,11 @@ public interface SongPropertyDelegate<T> {
 
     }
 
-    static class ArtworkDelegate implements SongPropertyDelegate<SongImages> {
+    static class ArtworkAttributeConverter implements SongAttributeConverter<SongImages> {
 
         @Override
-        public SongImages getClearValue() {
-            return new SongImages(Collections.emptyList());
+        public Supplier<SongImages> createClearSupplier(ObjectProperty<SongImages> persistedValue) {
+            return () -> new SongImages(Collections.emptyList());
         }
 
         @Override
@@ -143,6 +146,5 @@ public interface SongPropertyDelegate<T> {
         }
 
     }
-
 
 }

@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger3.fx.components.actions.batchactions;
+package de.perdian.apps.tagtiger3.fx.components.tools.extracttagsfromfilenames;
 
 import java.util.List;
 
+import de.perdian.apps.tagtiger3.fx.components.tools.ToolActionEventHandler;
 import de.perdian.apps.tagtiger3.model.SongFile;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Pane;
 
-public class ExtractTagsFromFilenamesActionEventHandler extends BatchActionEventHandler {
+public class ExtractTagsFromFilenamesActionEventHandler extends ToolActionEventHandler {
 
     public ExtractTagsFromFilenamesActionEventHandler(ObservableList<SongFile> files) {
         super("Extract tags from file names", files);

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger3.fx.components.actions.batchactions;
+package de.perdian.apps.tagtiger3.fx.components.tools;
 
 import java.util.List;
 
@@ -29,12 +29,12 @@ import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-abstract class BatchActionEventHandler implements EventHandler<ActionEvent> {
+public abstract class ToolActionEventHandler implements EventHandler<ActionEvent> {
 
     private String title = null;
     private List<SongFile> files = null;
 
-    protected BatchActionEventHandler(String title, List<SongFile> files) {
+    protected ToolActionEventHandler(String title, List<SongFile> files) {
         this.setTitle(title);
         this.setFiles(files);
     }

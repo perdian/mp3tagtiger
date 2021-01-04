@@ -15,24 +15,24 @@
  */
 package de.perdian.apps.tagtiger3.model;
 
+import java.util.function.Supplier;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 
-public class SongPropertyValue<T> {
+class SongAttributeValue<T> {
 
     private ObjectProperty<T> persistedValue = new SimpleObjectProperty<>();
     private ObjectProperty<T> value = new SimpleObjectProperty<>();
+    private Supplier<T> clearSupplier = () -> null;
     private ObservableBooleanValue dirty = null;
-    private T clearValue = null;
 
-    SongPropertyValue() {
-        ObjectProperty<T> persistedValue = new SimpleObjectProperty<>();
-        ObjectProperty<T> value = new SimpleObjectProperty<>();
-        this.setPersistedValue(persistedValue);
-        this.setValue(value);
-        this.setDirty(Bindings.notEqual(persistedValue, value));
+    SongAttributeValue(T value) {
+        this.getPersistedValue().setValue(value);
+        this.getValue().setValue(value);
+        this.setDirty(Bindings.notEqual(this.getPersistedValue(), this.getValue()));
     }
 
     @Override
@@ -43,21 +43,22 @@ public class SongPropertyValue<T> {
     ObjectProperty<T> getPersistedValue() {
         return this.persistedValue;
     }
-    private void setPersistedValue(ObjectProperty<T> persistedValue) {
-        this.persistedValue = persistedValue;
-    }
 
-    public void clearValue() {
-        this.getValue().setValue(this.getClearValue());
+    void clear() {
+        this.getValue().setValue(this.getClearSupplier().get());
     }
-    public void resetValue() {
+    void reset() {
         this.getValue().setValue(this.getPersistedValue().getValue());
     }
     public ObjectProperty<T> getValue() {
         return this.value;
     }
-    private void setValue(ObjectProperty<T> value) {
-        this.value = value;
+
+    Supplier<T> getClearSupplier() {
+        return this.clearSupplier;
+    }
+    void setClearSupplier(Supplier<T> clearSupplier) {
+        this.clearSupplier = clearSupplier;
     }
 
     ObservableBooleanValue getDirty() {
@@ -65,13 +66,6 @@ public class SongPropertyValue<T> {
     }
     private void setDirty(ObservableBooleanValue dirty) {
         this.dirty = dirty;
-    }
-
-    T getClearValue() {
-        return this.clearValue;
-    }
-    void setClearValue(T clearValue) {
-        this.clearValue = clearValue;
     }
 
 }
