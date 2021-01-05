@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger3.fx.components.tools.computefilenames;
+package de.perdian.apps.tagtiger3.fx.components.tools.filenames;
 
-import de.perdian.apps.tagtiger3.tools.FilenameComputerVariable;
+import java.util.Map;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -23,27 +24,28 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
-class ComputeFilenamesFromTagsLegendPane extends TitledPane {
+public class FilenamesToolLegendPane extends TitledPane {
 
-    ComputeFilenamesFromTagsLegendPane() {
+    FilenamesToolLegendPane(String title, Map<String, String> variables, String prefix, String postfix) {
 
         GridPane innerPane = new GridPane();
         int columnCount = 3;
         int currentRow = 0;
         int currentColumn = 0;
-        for (FilenameComputerVariable computerVariable : FilenameComputerVariable.values()) {
+        for (Map.Entry<String, String> variableEntry : variables.entrySet()) {
 
-            StringBuilder placeholderText = new StringBuilder();
-            placeholderText.append("${").append(computerVariable.name().toLowerCase()).append("}: ");
-            placeholderText.append(computerVariable.getTitle());
+            StringBuilder variableText = new StringBuilder();
+            variableText.append(prefix).append(variableEntry.getKey()).append(postfix);
+            variableText.append(": ");
+            variableText.append(variableEntry.getValue());
 
-            Label placeholderLabel = new Label(placeholderText.toString());
-            placeholderLabel.setMaxWidth(Double.MAX_VALUE);
-            placeholderLabel.setPadding(new Insets(3, 3, 3, 3));
-            placeholderLabel.setAlignment(Pos.TOP_LEFT);
-            GridPane.setFillWidth(placeholderLabel, Boolean.TRUE);
-            GridPane.setHgrow(placeholderLabel, Priority.ALWAYS);
-            innerPane.add(placeholderLabel, currentColumn, currentRow);
+            Label variableLabel = new Label(variableText.toString());
+            variableLabel.setMaxWidth(Double.MAX_VALUE);
+            variableLabel.setPadding(new Insets(3, 3, 3, 3));
+            variableLabel.setAlignment(Pos.TOP_LEFT);
+            GridPane.setFillWidth(variableLabel, Boolean.TRUE);
+            GridPane.setHgrow(variableLabel, Priority.ALWAYS);
+            innerPane.add(variableLabel, currentColumn, currentRow);
 
             currentColumn++;
             if (currentColumn >= columnCount) {
@@ -57,7 +59,7 @@ class ComputeFilenamesFromTagsLegendPane extends TitledPane {
         innerPane.setVgap(2.5);
         innerPane.setPadding(new Insets(10, 10, 10, 10));
 
-        this.setText("Available variables");
+        this.setText(title);
         this.setContent(innerPane);
         this.setCollapsible(false);
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger3.fx.components.tools;
+package de.perdian.apps.tagtiger3.fx.components.tools.filenames;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -22,9 +22,9 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
 
-public class ToolActionHelpers {
+class FilenamesToolHelpers {
 
-    public static <T> Callback<TableColumn<T, Boolean>, TableCell<T, Boolean>> createIconCellCallback(FontAwesomeIcon trueIcon, FontAwesomeIcon falseIcon) {
+    static <T> Callback<TableColumn<T, Boolean>, TableCell<T, Boolean>> createIconCellCallback(FontAwesomeIcon trueIcon, FontAwesomeIcon falseIcon) {
         return column -> {
             TableCell<T, Boolean> tableCell = new TableCell<>() {
                 @Override protected void updateItem(Boolean item, boolean empty) {

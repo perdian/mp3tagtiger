@@ -13,64 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger3.tools;
+package de.perdian.apps.tagtiger3.fx.components.tools.filenames;
+
+import java.util.Optional;
 
 import de.perdian.apps.tagtiger3.model.SongAttribute;
 import de.perdian.apps.tagtiger3.model.SongFile;
 
-interface FilenameComputerVariableResolver {
+interface FilenamesToolAttributeSongFileResolver {
 
-    String resolveVariableValue(SongFile songFile);
+    Optional<String> resolveAttributeValue(SongAttribute attribute, SongFile songFile);
 
-    static class SimpleAttributeResolver implements FilenameComputerVariableResolver {
-
-        private SongAttribute attribute = null;
-
-        SimpleAttributeResolver(SongAttribute attribute) {
-            this.setAttribute(attribute);
-        }
+    static class SimpleResolver implements FilenamesToolAttributeSongFileResolver {
 
         @Override
-        public String resolveVariableValue(SongFile songFile) {
-            return songFile.getAttributeValueProperty(this.getAttribute(), String.class).getValue();
-        }
-
-        private SongAttribute getAttribute() {
-            return this.attribute;
-        }
-        private void setAttribute(SongAttribute attribute) {
-            this.attribute = attribute;
+        public Optional<String> resolveAttributeValue(SongAttribute attribute, SongFile songFile) {
+            return Optional.of(songFile.getAttributeValueProperty(attribute, String.class).getValue());
         }
 
     }
 
-    static class NumericAttributeResolver implements FilenameComputerVariableResolver {
+    static class NumericResolver implements FilenamesToolAttributeSongFileResolver {
 
-        private SongAttribute attribute = null;
         private SongAttribute maxValueAttribute = null;
         private String prefixCharacter = null;
 
-        NumericAttributeResolver(SongAttribute attribute, SongAttribute maxValueAttribute, String prefixCharacter) {
-            this.setAttribute(attribute);
+        NumericResolver(SongAttribute maxValueAttribute, String prefixCharacter) {
             this.setMaxValueAttribute(maxValueAttribute);
             this.setPrefixCharacter(prefixCharacter);
         }
 
         @Override
-        public String resolveVariableValue(SongFile songFile) {
-            StringBuilder attributeValue = new StringBuilder(songFile.getAttributeValueProperty(this.getAttribute(), String.class).getValue());
+        public Optional<String> resolveAttributeValue(SongAttribute attribute, SongFile songFile) {
+            StringBuilder attributeValue = new StringBuilder(songFile.getAttributeValueProperty(attribute, String.class).getValue());
             int maxValueLength = songFile.getAttributeValueProperty(this.getMaxValueAttribute(), String.class).getValue().length();
             while (attributeValue.length() < maxValueLength) {
                 attributeValue.insert(0, this.getPrefixCharacter());
             }
-            return attributeValue.toString();
-        }
-
-        private SongAttribute getAttribute() {
-            return this.attribute;
-        }
-        private void setAttribute(SongAttribute attribute) {
-            this.attribute = attribute;
+            return Optional.of(attributeValue.toString());
         }
 
         private SongAttribute getMaxValueAttribute() {

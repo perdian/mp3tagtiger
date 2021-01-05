@@ -17,8 +17,8 @@ package de.perdian.apps.tagtiger3.fx.components.actions;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.perdian.apps.tagtiger3.fx.components.tools.computefilenames.ComputeFilenamesFromTagsActionEventHandler;
-import de.perdian.apps.tagtiger3.fx.components.tools.extracttagsfromfilenames.ExtractTagsFromFilenamesActionEventHandler;
+import de.perdian.apps.tagtiger3.fx.components.tools.filenames.ComputeFilenamesFromTagsActionEventHandler;
+import de.perdian.apps.tagtiger3.fx.components.tools.filenames.ExtractTagsFromFilenamesActionEventHandler;
 import de.perdian.apps.tagtiger3.fx.model.Selection;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
