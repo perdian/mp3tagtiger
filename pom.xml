@@ -61,11 +61,6 @@
             <version>${javafx.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
@@ -140,7 +135,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.perdian.apps.tagtiger.TagTigerApplication</mainClass>
+                            <mainClass>de.perdian.apps.tagtiger.fx.TagTigerLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -177,11 +172,11 @@
                     <plugin>
                         <groupId>de.perdian.maven.plugins</groupId>
                         <artifactId>macosappbundler-maven-plugin</artifactId>
-                        <version>1.9.0</version>
+                        <version>1.10.0</version>
                         <configuration>
                             <plist>
                                 <CFBundleIconFile>src/bundle/macos/resources/tagtiger.icns</CFBundleIconFile>
-                                <JVMMainClassName>de.perdian.apps.tagtiger.TagTigerLauncher</JVMMainClassName>
+                                <JVMMainClassName>de.perdian.apps.tagtiger.fx.TagTigerLauncher</JVMMainClassName>
                                 <JVMVersion>${java.version}+</JVMVersion>
                                 <JVMOptions>
                                     <string>-Dapple.laf.useScreenMenuBar=true</string>

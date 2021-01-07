@@ -6,14 +6,9 @@ Apache Commons Lang
 http://commons.apache.org/proper/commons-lang/
 Apache license
 
-ControlsFX
-----------
-http://fxexperience.com/controlsfx/
-BSD license
-
 jaudiotagger
 ------------
-http://www.jthink.net/jaudiotagger/
+https://bitbucket.org/ijabz/jaudiotagger/src/master/README.md
 LGPL license
 
 Log4J
@@ -25,8 +20,3 @@ SLF4J
 -----
 http://www.slf4j.org/
 MIT license
-
-Oxygen Icons
-------------
-https://github.com/pasnox/oxygen-icons-png
-LGPL license
