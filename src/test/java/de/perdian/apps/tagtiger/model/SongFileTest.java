@@ -23,9 +23,6 @@ import java.nio.file.StandardCopyOption;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import de.perdian.apps.tagtiger.model.SongAttribute;
-import de.perdian.apps.tagtiger.model.SongFile;
-
 public class SongFileTest {
 
     @Test
