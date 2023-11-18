@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.tagtiger.fx;
 
+import de.perdian.apps.tagtiger.fx.model.Selection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,9 +33,21 @@ public class TagTigerApplication extends AbstractApplication {
 
     private static final Logger log = LoggerFactory.getLogger(TagTigerApplication.class);
 
+    private Selection selection = null;
+    private JobExecutor jobExecutor = null;
+
+    @Override
+    public void init() throws Exception {
+        super.init();
+        JobExecutor jobExecutor = new JobExecutor();
+        Selection selection = new Selection(jobExecutor);
+        this.setSelection(selection);
+        this.setJobExecutor(jobExecutor);
+    }
+
     @Override
     protected Pane createMainPane() {
-        return new TagTigerPane(this.getPreferences(), new JobExecutor());
+        return new TagTigerPane(this.getPreferences(), this.getSelection(), this.getJobExecutor());
     }
 
     @Override
@@ -58,6 +71,20 @@ public class TagTigerApplication extends AbstractApplication {
 
     public static void showError(String title, Throwable exception, Window parentWindow) {
         log.warn("An error occured: {}", title, exception);
+    }
+
+    public Selection getSelection() {
+        return this.selection;
+    }
+    private void setSelection(Selection selection) {
+        this.selection = selection;
+    }
+
+    public JobExecutor getJobExecutor() {
+        return this.jobExecutor;
+    }
+    private void setJobExecutor(JobExecutor jobExecutor) {
+        this.jobExecutor = jobExecutor;
     }
 
 }

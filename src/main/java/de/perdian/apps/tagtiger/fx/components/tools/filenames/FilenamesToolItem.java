@@ -24,16 +24,19 @@ import de.perdian.apps.tagtiger.model.SongAttribute;
 import de.perdian.apps.tagtiger.model.SongFile;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 
 class FilenamesToolItem {
 
     private SongFile songFile = null;
+    private BooleanProperty matching = null;
     private BooleanProperty dirty = null;
     private Map<SongAttribute, FilenamesToolItemValue> values = null;
 
     FilenamesToolItem(SongFile songFile) {
         BooleanProperty dirtyProperty = new SimpleBooleanProperty();
+        BooleanProperty matchingProperty = new SimpleBooleanProperty(false);
         Map<SongAttribute, FilenamesToolItemValue> values = new HashMap<>();
         for (FilenamesToolAttribute attribute : FilenamesToolAttribute.values()) {
             String attributeValue = songFile.getAttributeValueProperty(attribute.getAttribute(), String.class).getValue();
@@ -44,6 +47,7 @@ class FilenamesToolItem {
         this.setValues(values);
         this.setSongFile(songFile);
         this.setDirty(dirtyProperty);
+        this.setMatching(matchingProperty);
     }
 
     private void updateDirty(Collection<FilenamesToolItemValue> values) {
@@ -73,6 +77,13 @@ class FilenamesToolItem {
     }
     private void setDirty(BooleanProperty dirty) {
         this.dirty = dirty;
+    }
+
+    BooleanProperty getMatching() {
+        return this.matching;
+    }
+    private void setMatching(BooleanProperty matching) {
+        this.matching = matching;
     }
 
     Map<SongAttribute, FilenamesToolItemValue> getValues() {

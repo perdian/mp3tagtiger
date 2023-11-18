@@ -15,6 +15,7 @@
  */
 package de.perdian.apps.tagtiger.fx.components.tools.filenames;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 import de.perdian.apps.tagtiger.model.SongAttribute;
 import de.perdian.apps.tagtiger.model.SongFile;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -41,9 +43,9 @@ import javafx.stage.Stage;
 public abstract class FilenamesToolActionEventHandler implements EventHandler<ActionEvent> {
 
     private String title = null;
-    private List<SongFile> files = null;
+    private ObservableList<SongFile> files = null;
 
-    protected FilenamesToolActionEventHandler(String title, List<SongFile> files) {
+    protected FilenamesToolActionEventHandler(String title, ObservableList<SongFile> files) {
         this.setTitle(title);
         this.setFiles(files);
     }
@@ -51,7 +53,10 @@ public abstract class FilenamesToolActionEventHandler implements EventHandler<Ac
     @Override
     public void handle(ActionEvent event) {
 
-        ObservableList<FilenamesToolItem> dialogItems = FXCollections.observableArrayList(this.getFiles().stream().map(FilenamesToolItem::new).collect(Collectors.toList()));
+        ObservableList<FilenamesToolItem> dialogItems = FXCollections.observableArrayList();
+        dialogItems.addAll(this.getFiles().stream().map(FilenamesToolItem::new).collect(Collectors.toList()));
+        this.getFiles().addListener((ListChangeListener.Change<? extends SongFile> change) -> dialogItems.setAll(change.getList().stream().map(FilenamesToolItem::new).collect(Collectors.toList())));
+
         Pane dialogPane = this.createDialogPane(dialogItems);
 
         Rectangle2D screenBounds = Screen.getPrimary().getBounds();
@@ -59,7 +64,7 @@ public abstract class FilenamesToolActionEventHandler implements EventHandler<Ac
         mainScene.getStylesheets().add(this.getClass().getClassLoader().getResource("css/tagtiger.css").toString());
 
         Stage mainStage = new Stage();
-        mainStage.initOwner(((Node)event.getSource()).getScene().getWindow());
+        mainStage.initOwner(event == null ? null : ((Node)event.getSource()).getScene().getWindow());
         mainStage.initModality(Modality.WINDOW_MODAL);
         mainStage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("icons/256/application.png")));
         mainStage.setTitle(this.getTitle());
@@ -78,7 +83,14 @@ public abstract class FilenamesToolActionEventHandler implements EventHandler<Ac
         FilenamesToolLegendPane legendPane = this.createLegendsPane();
 
         FilenamesToolPatternPane patternPane = new FilenamesToolPatternPane();
-        patternPane.patternProperty().addListener((o, oldValue, newValue) -> this.updateToItems(newValue, items));
+        patternPane.patternProperty().addListener((o, oldValue, newValue) -> {
+            try {
+                this.updateToItems(newValue, items);
+                patternPane.errorProperty().setValue(null);
+            } catch (Exception e) {
+                patternPane.errorProperty().setValue(e);
+            }
+        });
         patternPane.setOnActionEvent(event -> {
             this.updateToSongFiles(items);
             ((Stage)((Node)event.getSource()).getScene().getWindow()).close();
@@ -117,10 +129,10 @@ public abstract class FilenamesToolActionEventHandler implements EventHandler<Ac
         this.title = title;
     }
 
-    private List<SongFile> getFiles() {
+    private ObservableList<SongFile> getFiles() {
         return this.files;
     }
-    private void setFiles(List<SongFile> files) {
+    private void setFiles(ObservableList<SongFile> files) {
         this.files = files;
     }
 

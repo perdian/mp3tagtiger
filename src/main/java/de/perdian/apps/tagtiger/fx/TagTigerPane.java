@@ -38,9 +38,7 @@ import javafx.scene.layout.Priority;
 
 class TagTigerPane extends BorderPane {
 
-    public TagTigerPane(Preferences preferences, JobExecutor jobExecutor) {
-
-        Selection selection = new Selection(jobExecutor);
+    public TagTigerPane(Preferences preferences, Selection selection, JobExecutor jobExecutor) {
 
         DirectoryPane directoryPane = new DirectoryPane();
         directoryPane.setMinWidth(200);

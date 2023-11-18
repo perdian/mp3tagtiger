@@ -35,7 +35,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 
 public class ComputeFilenamesFromTagsActionEventHandler extends FilenamesToolActionEventHandler {
 
-    public ComputeFilenamesFromTagsActionEventHandler(List<SongFile> files) {
+    public ComputeFilenamesFromTagsActionEventHandler(ObservableList<SongFile> files) {
         super("Compute file names from tags", files);
     }
 
