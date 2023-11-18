@@ -1,6 +1,10 @@
 /.classpath
+/.factorypath
+/.idea
 /.project
 /.settings
+/src/development
 /target
 /dependency-reduced-pom.xml
+/*.iml
 .DS_Store
