@@ -33,15 +33,15 @@
 
     <properties>
         <commons-fx.version>1.4.0</commons-fx.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
-        <commons-text.version>1.9</commons-text.version>
+        <commons-lang3.version>3.13.0</commons-lang3.version>
+        <commons-text.version>1.11.0</commons-text.version>
         <fontawesomefx.version>4.7.0-9.1.2</fontawesomefx.version>
         <java.version>21</java.version>
         <javafx.version>21.0.1</javafx.version>
-        <junit-jupiter.version>5.8.2</junit-jupiter.version>
-        <log4j.version>2.17.2</log4j.version>
-        <jaudiotagger.version>2.2.5</jaudiotagger.version>
-        <slf4j.version>1.7.36</slf4j.version>
+        <junit-jupiter.version>5.10.1</junit-jupiter.version>
+        <logback.version>1.4.11</logback.version>
+        <jaudiotagger.version>3.0.1</jaudiotagger.version>
+        <slf4j.version>2.0.9</slf4j.version>
     </properties>
 
     <dependencies>
@@ -86,19 +86,9 @@
             <version>${slf4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>${log4j.version}</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -108,20 +98,13 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>jaudiotagger-repository</id>
-            <url>https://dl.bintray.com/ijabz/maven</url>
-        </repository>
-    </repositories>
-
     <build>
         <finalName>${project.name}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <source>${java.version}</source>
@@ -131,7 +114,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.2</version>
+                <version>3.3.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -143,7 +126,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.5.1</version>
                 <configuration>
                     <finalName>tagtiger</finalName>
                 </configuration>
@@ -159,7 +142,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.2.2</version>
           </plugin>
         </plugins>
     </build>
