@@ -36,8 +36,8 @@
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-text.version>1.9</commons-text.version>
         <fontawesomefx.version>4.7.0-9.1.2</fontawesomefx.version>
-        <java.version>18</java.version>
-        <javafx.version>18</javafx.version>
+        <java.version>21</java.version>
+        <javafx.version>21.0.1</javafx.version>
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
         <log4j.version>2.17.2</log4j.version>
         <jaudiotagger.version>2.2.5</jaudiotagger.version>
@@ -172,7 +172,7 @@
                     <plugin>
                         <groupId>de.perdian.maven.plugins</groupId>
                         <artifactId>macosappbundler-maven-plugin</artifactId>
-                        <version>1.17.0</version>
+                        <version>1.20.0</version>
                         <configuration>
                             <plist>
                                 <CFBundleIconFile>src/bundle/macos/resources/tagtiger.icns</CFBundleIconFile>
@@ -183,6 +183,9 @@
                                     <string>-Xdock:name=${project.name}</string>
                                 </JVMOptions>
                             </plist>
+                            <codesign>
+                                <identity>-</identity>
+                            </codesign>
                         </configuration>
                         <executions>
                             <execution>
