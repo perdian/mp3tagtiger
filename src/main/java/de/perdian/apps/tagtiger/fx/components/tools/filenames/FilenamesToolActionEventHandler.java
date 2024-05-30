@@ -15,8 +15,6 @@
  */
 package de.perdian.apps.tagtiger.fx.components.tools.filenames;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -31,6 +29,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Control;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
@@ -78,49 +77,7 @@ public abstract class FilenamesToolActionEventHandler implements EventHandler<Ac
 
     }
 
-    private Pane createDialogPane(ObservableList<FilenamesToolItem> items) {
-
-        FilenamesToolLegendPane legendPane = this.createLegendsPane();
-
-        FilenamesToolPatternPane patternPane = new FilenamesToolPatternPane();
-        patternPane.patternProperty().addListener((o, oldValue, newValue) -> {
-            try {
-                this.updateToItems(newValue, items);
-                patternPane.errorProperty().setValue(null);
-            } catch (Exception e) {
-                patternPane.errorProperty().setValue(e);
-            }
-        });
-        patternPane.setOnActionEvent(event -> {
-            this.updateToSongFiles(items);
-            ((Stage)((Node)event.getSource()).getScene().getWindow()).close();
-        });
-
-        TableView<FilenamesToolItem> tableView = this.createTableView(items);
-        VBox.setVgrow(tableView, Priority.ALWAYS);
-
-        VBox dialogPane = new VBox();
-        dialogPane.getChildren().add(legendPane);
-        dialogPane.getChildren().add(patternPane);
-        dialogPane.getChildren().add(tableView);
-        dialogPane.setPadding(new Insets(10, 10, 10, 10));
-        dialogPane.setSpacing(10);
-        return dialogPane;
-
-    }
-
-    protected abstract FilenamesToolLegendPane createLegendsPane();
-    protected abstract TableView<FilenamesToolItem> createTableView(ObservableList<FilenamesToolItem> items);
-
-    protected abstract void updateToItems(String pattern, ObservableList<FilenamesToolItem> items);
-
-    protected void updateToSongFiles(ObservableList<FilenamesToolItem> items) {
-        for (FilenamesToolItem item : items) {
-            for (Map.Entry<SongAttribute, FilenamesToolItemValue> itemValue : item.getValues().entrySet()) {
-                item.getSongFile().getAttributeValueProperty(itemValue.getKey(), String.class).setValue(itemValue.getValue().getNewValue().getValue());
-            }
-        }
-    }
+    protected abstract Pane createDialogPane(ObservableList<FilenamesToolItem> dialogItems);
 
     private String getTitle() {
         return this.title;

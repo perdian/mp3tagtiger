@@ -20,7 +20,7 @@ import java.util.Optional;
 import de.perdian.apps.tagtiger.model.SongAttribute;
 import de.perdian.apps.tagtiger.model.SongFile;
 
-interface FilenamesToolAttributeSongFileResolver {
+public interface FilenamesToolAttributeSongFileResolver {
 
     Optional<String> resolveAttributeValue(SongAttribute attribute, SongFile songFile);
 

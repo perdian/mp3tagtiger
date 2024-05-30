@@ -17,6 +17,7 @@ package de.perdian.apps.tagtiger.model;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jaudiotagger.tag.images.Artwork;
@@ -76,7 +77,7 @@ public class SongImage implements Serializable {
         Integer pictureTypeId = PictureTypes.getInstanceOf().getIdForValue(this.getType());
         Artwork artwork = new StandardArtwork();
         artwork.setBinaryData(this.getBytes());
-        artwork.setDescription(this.getDescription());
+        artwork.setDescription(StringUtils.defaultIfEmpty(this.getDescription(), ""));
         artwork.setMimeType(this.getMimeType());
         artwork.setPictureType(pictureTypeId == null ? PictureTypes.DEFAULT_ID : pictureTypeId);
         return artwork;

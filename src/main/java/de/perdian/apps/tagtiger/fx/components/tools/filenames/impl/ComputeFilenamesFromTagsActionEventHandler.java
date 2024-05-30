@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.perdian.apps.tagtiger.fx.components.tools.filenames;
+package de.perdian.apps.tagtiger.fx.components.tools.filenames.impl;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,6 +22,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.perdian.apps.tagtiger.fx.components.tools.filenames.*;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Control;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 
@@ -40,18 +49,47 @@ public class ComputeFilenamesFromTagsActionEventHandler extends FilenamesToolAct
     }
 
     @Override
-    protected FilenamesToolLegendPane createLegendsPane() {
+    protected Pane createDialogPane(ObservableList<FilenamesToolItem> items) {
 
         Map<String, String> legendVariables = Arrays.stream(FilenamesToolAttribute.values())
             .filter(attribute -> attribute.getSongFileResolver() != null)
             .collect(Collectors.toMap(variable -> variable.name().toLowerCase(), variable -> variable.getAttribute().getTitle(), (e1, e2) -> e1, LinkedHashMap::new));
 
-        return new FilenamesToolLegendPane("Available filename variables", legendVariables, "${", "}");
+        FilenamesToolPatternPane patternPane = new FilenamesToolPatternPane();
+        patternPane.patternProperty().addListener((o, oldValue, newValue) -> {
+            try {
+                this.updateToItems(newValue, items);
+                patternPane.errorProperty().setValue(null);
+            } catch (Exception e) {
+                patternPane.errorProperty().setValue(e);
+            }
+        });
+        patternPane.setOnActionEvent(event -> {
+            this.updateToSongFiles(items);
+            ((Stage)((Node)event.getSource()).getScene().getWindow()).close();
+        });
+
+        FilenamesToolLegendPane legendPane = new FilenamesToolLegendPane("Available filename variables", legendVariables, "${", "}");
+        GridPane.setHgrow(legendPane, Priority.ALWAYS);
+        ComputeFilenamesFromTagsTemplatePane templatePane = new ComputeFilenamesFromTagsTemplatePane(patternPane.patternProperty());
+        GridPane topPane = new GridPane(10, 10);
+        topPane.add(legendPane, 0, 0, 1, 1);
+        topPane.add(templatePane, 1, 0, 1, 1);
+
+        TableView<FilenamesToolItem> tableView = this.createTableView(items);
+        VBox.setVgrow(tableView, Priority.ALWAYS);
+
+        VBox dialogPane = new VBox();
+        dialogPane.getChildren().add(topPane);
+        dialogPane.getChildren().add(patternPane);
+        dialogPane.getChildren().add(tableView);
+        dialogPane.setPadding(new Insets(10, 10, 10, 10));
+        dialogPane.setSpacing(10);
+        return dialogPane;
 
     }
 
-    @Override
-    protected TableView<FilenamesToolItem> createTableView(ObservableList<FilenamesToolItem> items) {
+    private TableView<FilenamesToolItem> createTableView(ObservableList<FilenamesToolItem> items) {
 
         TableColumn<FilenamesToolItem, Boolean> dirtyColumn = new TableColumn<>("");
         dirtyColumn.setCellValueFactory(callback -> callback.getValue().getDirty());
@@ -76,13 +114,20 @@ public class ComputeFilenamesFromTagsActionEventHandler extends FilenamesToolAct
         TableView<FilenamesToolItem> itemsTableView = new TableView<>(items);
         itemsTableView.setEditable(true);
         itemsTableView.getColumns().addAll(List.of(dirtyColumn, oldFilenameColumn, newFilenameColumn));
-        itemsTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        itemsTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         return itemsTableView;
 
     }
 
-    @Override
-    protected void updateToItems(String pattern, ObservableList<FilenamesToolItem> items) {
+    private void updateToSongFiles(ObservableList<FilenamesToolItem> items) {
+        for (FilenamesToolItem item : items) {
+            for (Map.Entry<SongAttribute, FilenamesToolItemValue> itemValue : item.getValues().entrySet()) {
+                item.getSongFile().getAttributeValueProperty(itemValue.getKey(), String.class).setValue(itemValue.getValue().getNewValue().getValue());
+            }
+        }
+    }
+
+    private void updateToItems(String pattern, ObservableList<FilenamesToolItem> items) {
         for (FilenamesToolItem item : items) {
             Map<String, String> replacementValues = new HashMap<>();
             for (FilenamesToolAttribute attribute : FilenamesToolAttribute.values()) {

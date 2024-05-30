@@ -22,9 +22,9 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
 
-class FilenamesToolHelpers {
+public class FilenamesToolHelpers {
 
-    static <T> Callback<TableColumn<T, Boolean>, TableCell<T, Boolean>> createIconCellCallback(FontAwesomeIcon trueIcon, FontAwesomeIcon falseIcon) {
+    public static <T> Callback<TableColumn<T, Boolean>, TableCell<T, Boolean>> createIconCellCallback(FontAwesomeIcon trueIcon, FontAwesomeIcon falseIcon) {
         return column -> {
             TableCell<T, Boolean> tableCell = new TableCell<>() {
                 @Override protected void updateItem(Boolean item, boolean empty) {

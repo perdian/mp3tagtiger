@@ -32,16 +32,27 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 
-class FilenamesToolPatternPane extends TitledPane {
+import java.util.Objects;
+
+public class FilenamesToolPatternPane extends TitledPane {
 
     private StringProperty pattern = new SimpleStringProperty();
     private ObjectProperty<Exception> error = new SimpleObjectProperty<>(null);
     private EventHandler<ActionEvent> onActionEvent = event -> {};
 
-    FilenamesToolPatternPane() {
+    public FilenamesToolPatternPane() {
 
         TextField patternField = new TextField();
-        this.patternProperty().bind(patternField.textProperty());
+        this.patternProperty().addListener((o, oldValue, newValue) -> {
+            if (!Objects.equals(newValue, patternField.getText())) {
+                patternField.setText(newValue);
+            }
+        });
+        patternField.textProperty().addListener((o, oldValue, newValue) -> {
+            if (!Objects.equals(newValue, this.patternProperty().getValue())) {
+                this.patternProperty().setValue(newValue);
+            }
+        });
 
         Label errorLabel = new Label();
         errorLabel.textFillProperty().setValue(Color.RED);

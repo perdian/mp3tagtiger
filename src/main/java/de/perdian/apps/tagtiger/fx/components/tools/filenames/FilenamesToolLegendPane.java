@@ -26,7 +26,7 @@ import javafx.scene.layout.Priority;
 
 public class FilenamesToolLegendPane extends TitledPane {
 
-    FilenamesToolLegendPane(String title, Map<String, String> variables, String prefix, String postfix) {
+    public FilenamesToolLegendPane(String title, Map<String, String> variables, String prefix, String postfix) {
 
         GridPane innerPane = new GridPane();
         int columnCount = 3;

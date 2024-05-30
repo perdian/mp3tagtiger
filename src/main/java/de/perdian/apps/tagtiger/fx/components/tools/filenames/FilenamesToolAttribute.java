@@ -20,17 +20,17 @@ import de.perdian.apps.tagtiger.fx.components.tools.filenames.FilenamesToolAttri
 import de.perdian.apps.tagtiger.fx.components.tools.filenames.FilenamesToolAttributeSongFileResolver.SimpleResolver;
 import de.perdian.apps.tagtiger.model.SongAttribute;
 
-enum FilenamesToolAttribute {
+public enum FilenamesToolAttribute {
 
     TITLE(SongAttribute.TITLE, new SimpleResolver(), new RegexGroupResolver()),
     ARTIST(SongAttribute.ARTIST, new SimpleResolver(), new RegexGroupResolver()),
     ALBUM(SongAttribute.ALBUM, new SimpleResolver(), new RegexGroupResolver()),
-    ALBUM_ARTIST(SongAttribute.ALBUM_ARTIST, new SimpleResolver(), new RegexGroupResolver()),
+    ALBUMARTIST(SongAttribute.ALBUM_ARTIST, new SimpleResolver(), new RegexGroupResolver()),
     YEAR(SongAttribute.YEAR, new SimpleResolver(), new RegexGroupResolver()),
-    TRACK_NUMBER(SongAttribute.TRACK_NUMBER, new NumericResolver(SongAttribute.TRACKS_TOTAL, "0"), new RegexGroupResolver()),
-    TRACKS_TOTAL(SongAttribute.TRACKS_TOTAL, new SimpleResolver(), new RegexGroupResolver()),
-    DISC_NUMBER(SongAttribute.DISC_NUMBER, new NumericResolver(SongAttribute.DISCS_TOTAL, "0"), new RegexGroupResolver()),
-    DISCS_TOTAL(SongAttribute.DISCS_TOTAL, new SimpleResolver(), new RegexGroupResolver()),
+    TRACKNUMBER(SongAttribute.TRACK_NUMBER, new NumericResolver(SongAttribute.TRACKS_TOTAL, "0"), new RegexGroupResolver()),
+    TRACKSTOTAL(SongAttribute.TRACKS_TOTAL, new SimpleResolver(), new RegexGroupResolver()),
+    DISCNUMBER(SongAttribute.DISC_NUMBER, new NumericResolver(SongAttribute.DISCS_TOTAL, "0"), new RegexGroupResolver()),
+    DISCSTOTAL(SongAttribute.DISCS_TOTAL, new SimpleResolver(), new RegexGroupResolver()),
     GENRE(SongAttribute.GENRE, new SimpleResolver(), new RegexGroupResolver()),
     COMMENT(SongAttribute.COMMENT, new SimpleResolver(), new RegexGroupResolver()),
     COMPOSER(SongAttribute.COMPOSER, new SimpleResolver(), new RegexGroupResolver()),
@@ -46,21 +46,21 @@ enum FilenamesToolAttribute {
         this.setFilenameResolver(filenameResolver);
     }
 
-    SongAttribute getAttribute() {
+    public SongAttribute getAttribute() {
         return this.attribute;
     }
     private void setAttribute(SongAttribute attribute) {
         this.attribute = attribute;
     }
 
-    FilenamesToolAttributeSongFileResolver getSongFileResolver() {
+    public FilenamesToolAttributeSongFileResolver getSongFileResolver() {
         return this.songFileResolver;
     }
     private void setSongFileResolver(FilenamesToolAttributeSongFileResolver songFileResolver) {
         this.songFileResolver = songFileResolver;
     }
 
-    FilenamesToolAttributeFilenameResolver getFilenameResolver() {
+    public FilenamesToolAttributeFilenameResolver getFilenameResolver() {
         return this.filenameResolver;
     }
     private void setFilenameResolver(FilenamesToolAttributeFilenameResolver filenameResolver) {

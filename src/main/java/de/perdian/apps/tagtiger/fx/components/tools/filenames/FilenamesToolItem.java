@@ -27,14 +27,14 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 
-class FilenamesToolItem {
+public class FilenamesToolItem {
 
     private SongFile songFile = null;
     private BooleanProperty matching = null;
     private BooleanProperty dirty = null;
     private Map<SongAttribute, FilenamesToolItemValue> values = null;
 
-    FilenamesToolItem(SongFile songFile) {
+    public FilenamesToolItem(SongFile songFile) {
         BooleanProperty dirtyProperty = new SimpleBooleanProperty();
         BooleanProperty matchingProperty = new SimpleBooleanProperty(false);
         Map<SongAttribute, FilenamesToolItemValue> values = new HashMap<>();
@@ -57,36 +57,36 @@ class FilenamesToolItem {
         }
     }
 
-    StringProperty originalValueProperty(SongAttribute attribute) {
+    public StringProperty originalValueProperty(SongAttribute attribute) {
         return this.getValues().get(attribute).getOriginalValue();
     }
 
-    StringProperty newValueProperty(SongAttribute attribute) {
+    public StringProperty newValueProperty(SongAttribute attribute) {
         return this.getValues().get(attribute).getNewValue();
     }
 
-    SongFile getSongFile() {
+    public SongFile getSongFile() {
         return this.songFile;
     }
     private void setSongFile(SongFile songFile) {
         this.songFile = songFile;
     }
 
-    BooleanProperty getDirty() {
+    public BooleanProperty getDirty() {
         return this.dirty;
     }
     private void setDirty(BooleanProperty dirty) {
         this.dirty = dirty;
     }
 
-    BooleanProperty getMatching() {
+    public BooleanProperty getMatching() {
         return this.matching;
     }
     private void setMatching(BooleanProperty matching) {
         this.matching = matching;
     }
 
-    Map<SongAttribute, FilenamesToolItemValue> getValues() {
+    public Map<SongAttribute, FilenamesToolItemValue> getValues() {
         return this.values;
     }
     private void setValues(Map<SongAttribute, FilenamesToolItemValue> values) {

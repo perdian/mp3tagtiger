@@ -18,21 +18,21 @@ package de.perdian.apps.tagtiger.fx.components.tools.filenames;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-class FilenamesToolItemValue {
+public class FilenamesToolItemValue {
 
     private final StringProperty originalValue = new SimpleStringProperty();
     private final StringProperty newValue = new SimpleStringProperty();
 
-    FilenamesToolItemValue(String attributeValue) {
+    public FilenamesToolItemValue(String attributeValue) {
         this.getOriginalValue().setValue(attributeValue);
         this.getNewValue().setValue(attributeValue);
     }
 
-    StringProperty getOriginalValue() {
+    public StringProperty getOriginalValue() {
         return this.originalValue;
     }
 
-    StringProperty getNewValue() {
+    public StringProperty getNewValue() {
         return this.newValue;
     }
 
